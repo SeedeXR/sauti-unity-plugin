@@ -1,0 +1,70 @@
+Sauti Unity Plugin
+Copyright 2026 Sauti contributors
+
+Licensed under the Apache License, Version 2.0.
+
+================================================================================
+Third-party AI models and their licenses
+================================================================================
+
+Sauti bundles pre-quantised AI models. Each model retains its own license, recorded
+per-entry in ai-models/<stage>/manifest.json. Summary:
+
+* Whisper Small + Whisper Tiny INT8 ONNX exports
+    Original by OpenAI; ONNX conversion by onnx-community.
+    License: MIT.
+    Source: https://huggingface.co/onnx-community/whisper-small
+            https://huggingface.co/onnx-community/whisper-tiny
+
+* Qwen3-1.7B-Q5_K_M GGUF
+    Original by Alibaba (Qwen team); GGUF quantisation by unsloth.
+    License: Apache 2.0.
+    Source: https://huggingface.co/unsloth/Qwen3-1.7B-GGUF
+
+* all-MiniLM-L6-v2 INT8 ONNX + WordPiece vocab.txt
+    Original by sentence-transformers; INT8 export by Xenova.
+    License: Apache 2.0.
+    Source: https://huggingface.co/Xenova/all-MiniLM-L6-v2
+
+* Kokoro 82M INT8 ONNX + 11 voice .bin files + tokenizer.json
+    ONNX export by onnx-community.
+    License: Apache 2.0.
+    Source: https://huggingface.co/onnx-community/Kokoro-82M-ONNX
+
+* Gemma3-1B Q4_K_M GGUF [DEFERRED — not shipped in v1.2]
+    Original by Google; GGUF quantisation by google.
+    License: Gemma Terms of Use (NOT a standard SPDX licence).
+    Source: https://huggingface.co/google/gemma-3-1b-it-GGUF
+    Status: Manifest entry retained at ai-models/llm/manifest.json with
+    status: deferred. Future releases may re-activate after explicit
+    acceptance of Gemma's terms.
+
+================================================================================
+Third-party Unity packages (UPM dependencies)
+================================================================================
+
+Sauti depends on four UPM packages. Their licenses apply to their respective
+source files; this NOTICE summarises only — see each upstream repo for the
+authoritative LICENSE.
+
+* asus4/onnxruntime-unity (com.github.asus4.onnxruntime, .unity)
+    License: MIT.
+    Source: https://github.com/asus4/onnxruntime-unity
+
+* undreamai/LLMUnity (ai.undream.llm)
+    License: Apache 2.0.
+    Source: https://github.com/undreamai/LLMUnity
+
+* Macoron/whisper.unity (com.whisper.unity)
+    License: MIT.
+    Source: https://github.com/Macoron/whisper.unity
+
+================================================================================
+Sauti world canon ("Frostmere")
+================================================================================
+
+The sample knowledge-base entries under knowledge-base/{lore,locations,npcs}/
+(Frostmere, Stormwall, Crystal Caverns, Elder Maren, Captain Thorne, etc.) are
+original fiction authored for Sauti and released under the same Apache 2.0
+licence as the rest of the codebase. Use them as a starting point or replace
+them entirely.

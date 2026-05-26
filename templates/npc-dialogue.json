@@ -1,0 +1,26 @@
+{
+  "$schema": "./_schemas/npc-dialogue.schema.json",
+  "templateId": "npc-dialogue",
+  "templateVersion": "1.0.0",
+  "description": "Single-NPC dialogue template. Copy, replace ${VAR_NAME} placeholders, and load via SautiNPC inspector. Honours voice_ai_architecture.md § 9 prompt rules.",
+  "npcId": "${NPC_ID}",
+  "displayName": "${NPC_DISPLAY_NAME}",
+  "persona": {
+    "summary": "${NPC_PERSONA_SUMMARY}",
+    "tone": "${NPC_TONE}",
+    "speechQuirks": [
+      "${NPC_QUIRK_1}",
+      "${NPC_QUIRK_2}"
+    ]
+  },
+  "voice": {
+    "voiceId": "${KOKORO_VOICE_ID}",
+    "speed": 1.0
+  },
+  "knowledgeTag": "${NPC_KNOWLEDGE_TAG}",
+  "promptRules": {
+    "maxWordsPerResponse": 40,
+    "plainSpoken": true,
+    "noThink": true
+  }
+}

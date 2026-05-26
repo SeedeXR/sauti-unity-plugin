@@ -1,0 +1,36 @@
+{
+  "$schema": "./_schemas/quest-narrator.schema.json",
+  "templateId": "quest-narrator",
+  "templateVersion": "1.0.0",
+  "description": "Branching world narrator. Each chapter has an enterCondition evaluated against the State Bag and an openingCue spoken once on entry. Add chapters as your story grows.",
+  "narratorId": "${NARRATOR_ID}",
+  "persona": {
+    "summary": "${NARRATOR_PERSONA_SUMMARY}",
+    "tone": "${NARRATOR_TONE}"
+  },
+  "voice": {
+    "voiceId": "${KOKORO_VOICE_ID}",
+    "speed": 1.0
+  },
+  "chapters": [
+    {
+      "chapterId": "${CHAPTER_1_ID}",
+      "title": "${CHAPTER_1_TITLE}",
+      "enterCondition": "${CHAPTER_1_ENTER_CONDITION}",
+      "openingCue": "${CHAPTER_1_OPENING_CUE}",
+      "knowledgeTag": "${CHAPTER_1_KNOWLEDGE_TAG}"
+    },
+    {
+      "chapterId": "${CHAPTER_2_ID}",
+      "title": "${CHAPTER_2_TITLE}",
+      "enterCondition": "${CHAPTER_2_ENTER_CONDITION}",
+      "openingCue": "${CHAPTER_2_OPENING_CUE}",
+      "knowledgeTag": "${CHAPTER_2_KNOWLEDGE_TAG}"
+    }
+  ],
+  "promptRules": {
+    "maxWordsPerResponse": 40,
+    "plainSpoken": true,
+    "noThink": true
+  }
+}

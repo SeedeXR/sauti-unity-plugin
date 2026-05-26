@@ -1,0 +1,149 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitignore — Sauti Unity Plugin
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# What this file ignores: build artefacts, IDE noise, OS junk, downloadable
+# AI-model binaries, and CI outputs. What it keeps: every source file +
+# manifest + schema + JSON template + knowledge-base markdown + every
+# README.md and CHANGELOG.md.
+#
+# Convention: prefer explicit patterns over broad wildcards. Per-line
+# comments document the "why" so a future contributor can challenge each
+# decision individually.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─── Unity-generated folders (regenerated on every Editor launch) ─────────────
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# ─── Visual Studio / Rider / VS Code / IDEA ───────────────────────────────────
+.vs/
+.vsconfig
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ─── Asset .meta files for ignored folders ────────────────────────────────────
+[Ll]ibrary.meta
+[Tt]emp.meta
+[Oo]bj.meta
+[Bb]uild.meta
+[Bb]uilds.meta
+[Ll]ogs.meta
+[Uu]ser[Ss]ettings.meta
+[Mm]emoryCaptures.meta
+
+# ─── OS / shell junk ──────────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ─── Unity package manager lockfile noise ─────────────────────────────────────
+Packages/packages-lock.json
+
+# ─── LLMUnity native binaries ─────────────────────────────────────────────────
+# LLMUnity drops ~4 GB of platform-specific llama.cpp native binaries (Linux x64,
+# Windows x64, macOS arm64/x64/universal, Android arm64/x64, iOS arm64, visionOS)
+# into StreamingAssets/LlamaLib-<version>/ on first install. Re-installable from
+# the UPM package; committing them would 100x the repo size.
+Assets/StreamingAssets/LlamaLib-*/
+Assets/StreamingAssets/LlamaLib-*.meta
+
+# ─── AI model binaries ────────────────────────────────────────────────────────
+# Models are downloaded from Hugging Face per the per-stage manifest.json files
+# (which ARE tracked). Manifests carry SHA-256 hashes for post-download verification.
+# To commit model files directly (e.g. private fork): comment out this block.
+#
+# Source-of-truth checkout
+ai-models/**/*.onnx
+ai-models/**/*.gguf
+ai-models/**/*.db
+ai-models/**/*.bin
+ai-models/**/vocab.txt
+ai-models/**/tokenizer.json
+ai-models/**/config.json
+ai-models/**/generation_config.json
+ai-models/**/preprocessor_config.json
+# Mirrored runtime copy
+Assets/StreamingAssets/VoiceAI/**/*.onnx
+Assets/StreamingAssets/VoiceAI/**/*.gguf
+Assets/StreamingAssets/VoiceAI/**/*.db
+Assets/StreamingAssets/VoiceAI/**/*.bin
+Assets/StreamingAssets/VoiceAI/**/vocab.txt
+Assets/StreamingAssets/VoiceAI/**/tokenizer.json
+Assets/StreamingAssets/VoiceAI/**/config.json
+Assets/StreamingAssets/VoiceAI/**/generation_config.json
+Assets/StreamingAssets/VoiceAI/**/preprocessor_config.json
+
+# ─── Docs site build output ───────────────────────────────────────────────────
+# MkDocs writes the rendered HTML here when running locally. GitHub Pages
+# deploys from a separate ephemeral build via .github/workflows/docs.yml.
+site/
+
+# ─── Packaging output ─────────────────────────────────────────────────────────
+# `tools/package-sauti.sh` writes here: tarball, SHA-256 manifest, staging
+# tree, test results. Built artefacts; downloadable from GitHub Releases.
+dist/
+
+# ─── UPM tarballs (anywhere in the tree) ──────────────────────────────────────
+*.tgz
+
+# ─── Python caches (CI tools, MkDocs build venvs, validators) ─────────────────
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ─── CI / test outputs ────────────────────────────────────────────────────────
+# Unity test runner writes XML; GameCI workflows stage under artifacts/
+test-results.xml
+**/test-results.xml
+artifacts/
+**/artifacts/tests/
+
+# ─── Local Claude / agent state ───────────────────────────────────────────────
+# Subagent task transcripts + tool-output streams. Only present when running
+# Claude Code locally against this repo; never relevant on GitHub.
+.claude/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Project design history + engineering charter — TRACKED (flipped 2026-05-26)
+# ─────────────────────────────────────────────────────────────────────────────
+# Both paths below carry the project's design history and engineering charter.
+# Originally excluded; maintainer chose to include them so new contributors
+# can trace decisions back to their rationale.
+#
+# memory/      — 15-file docs corpus including:
+#                  • voice_ai_architecture.md (CANONICAL pipeline spec)
+#                  • handover_session.md (append-only session audit trail)
+#                  • api_surfaces.md (verified upstream API reference)
+#                  • philosophy.md, project_context.md, agent_profile.md,
+#                    architecture.md, mindmap.md, todo.md, etc.
+#
+# instructions/ — 760-line engineering operations guide (instruction.md)
+#                 covering coding standards, build conventions, CI rules.
+#
+# To exclude either in a private fork, un-comment the matching line below.
+# memory/
+# instructions/

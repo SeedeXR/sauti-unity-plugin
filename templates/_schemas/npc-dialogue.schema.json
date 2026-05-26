@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sauti.dev/schemas/npc-dialogue.schema.json",
+  "title": "NPC Dialogue Configuration",
+  "description": "Single-NPC conversation profile for a Sauti-driven character. Defines persona, voice, knowledge tag, and behaviour. Templates of this shape pair an LLM persona with an RAG knowledge slice so the NPC speaks consistently and in-world.",
+  "type": "object",
+  "required": ["templateId", "templateVersion", "npcId", "displayName", "persona", "voice", "knowledgeTag", "promptRules"],
+  "properties": {
+    "templateId": {
+      "type": "string",
+      "const": "npc-dialogue",
+      "description": "Stable identifier for this template shape. Do not change."
+    },
+    "templateVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "SemVer for the template schema."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 280,
+      "description": "Free-text note about what this concrete NPC is for. Not sent to the LLM."
+    },
+    "npcId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Stable identifier the game uses to reference this NPC."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Player-facing name. May be shown in subtitles."
+    },
+    "persona": {
+      "type": "object",
+      "required": ["summary", "tone"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "One-paragraph who-they-are. Speaks in third person."
+        },
+        "tone": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Speech tone: e.g. 'warm grandmother', 'gruff sergeant', 'wry merchant'."
+        },
+        "speechQuirks": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 80 },
+          "maxItems": 5,
+          "description": "Up to 5 short verbal mannerisms. Avoid markdown — these become LLM system-prompt bullets."
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["voiceId"],
+      "properties": {
+        "voiceId": {
+          "type": "string",
+          "description": "Kokoro voice identifier or ${VAR_NAME} placeholder."
+        },
+        "speed": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 1.5,
+          "default": 1.0,
+          "description": "Speech rate multiplier."
+        }
+      }
+    },
+    "knowledgeTag": {
+      "type": "string",
+      "description": "Tag to filter knowledge-base chunks by. Empty string = retrieve from any chunk."
+    },
+    "promptRules": {
+      "type": "object",
+      "description": "Voice-output constraints. Must mirror voice_ai_architecture.md § 9. Values are merged into the LLM system prompt at runtime.",
+      "required": ["maxWordsPerResponse", "plainSpoken", "noThink"],
+      "properties": {
+        "maxWordsPerResponse": { "type": "integer", "minimum": 5, "maximum": 80, "default": 40 },
+        "plainSpoken": { "type": "boolean", "default": true, "description": "Disallow markdown / lists / headers." },
+        "noThink": { "type": "boolean", "default": true, "description": "Use Qwen3 /no_think mode." }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "templateId": "npc-dialogue",
+      "templateVersion": "1.0.0",
+      "description": "Example: Elder Maren, sage of the Crystal Caverns.",
+      "npcId": "elder_maren",
+      "displayName": "Elder Maren",
+      "persona": {
+        "summary": "An elderly seer who has guarded the Crystal Caverns for sixty winters and only speaks after sundown.",
+        "tone": "calm and oblique",
+        "speechQuirks": ["pauses before answering", "rarely uses contractions"]
+      },
+      "voice": { "voiceId": "af_nicole", "speed": 0.95 },
+      "knowledgeTag": "elder_maren",
+      "promptRules": { "maxWordsPerResponse": 40, "plainSpoken": true, "noThink": true }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Sauti.Editor",
+    "rootNamespace": "Sauti.Editor",
+    "references": [
+        "Sauti.Runtime",
+        "com.github.asus4.onnxruntime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

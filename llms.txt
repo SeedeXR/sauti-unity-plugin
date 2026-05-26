@@ -1,0 +1,82 @@
+# sauti-unity-plugin
+
+> Sauti — a Unity 6+ voice-AI plugin running fully offline. GGUF × ONNX hybrid: Whisper / Kokoro / MiniLM via ONNX Runtime; Qwen3-1.7B / Gemma3-1B via LLMUnity (llama.cpp). Three-layer memory (conversation history + temporary KV + RAG knowledge.db). English-only at v1.2.
+
+## Documentation
+
+- [voice_ai_architecture.md](memory/voice_ai_architecture.md): Canonical v1.2 spec. Pipeline, model formats, three-layer memory, per-platform selection. Source of truth.
+- [project_context.md](memory/project_context.md): Vision, objectives, deliverables, success metrics, hard/soft constraints.
+- [philosophy.md](memory/philosophy.md): Engineering principles. Read before any design call.
+- [architecture.md](memory/architecture.md): Modules, C ABI, runtime, platforms, orchestration. (Sections § 1, § 2.6, § 4, § 5 banner-flagged as pre-v1.2 — see DOCS-005.)
+- [mindmap.md](memory/mindmap.md): High-level system map. (§ 1 diagram, § 7 deps, § 8 asset topology pre-v1.2 — see DOCS-006.)
+- [agent_profile.md](memory/agent_profile.md): Rules of operation for any contributor (human or AI).
+- [session_start.md](memory/session_start.md): Mandatory startup procedure.
+- [instructions/instruction.md](instructions/instruction.md): Coding standards, build, CI, release.
+- [docs.md](memory/docs.md): Documentation standards. (Note: references `docs/` paths; aliased to `memory/` until DOCS-003 lands.)
+- [todo.md](memory/todo.md): Roadmap, active sprint, follow-ups.
+- [handover_session.md](memory/handover_session.md): Append-only session log.
+
+## AI Models
+
+Source-of-truth checkout for every model the plugin ships with. The Unity build pre-processor (BUILD-001) copies platform-relevant files into `Assets/StreamingAssets/VoiceAI/<stage>/` at build time.
+
+- [ai-models/README.md](ai-models/README.md): Layout, source-to-runtime flow, Android persistentDataPath caveat.
+- [ai-models/manifest.json](ai-models/manifest.json): Top-level index + per-platform model selection matrix.
+- [ai-models/_schema/stage-manifest.schema.json](ai-models/_schema/stage-manifest.schema.json): JSON Schema draft-07 every per-stage manifest validates against.
+- [ai-models/stt/manifest.json](ai-models/stt/manifest.json): Whisper Small (flagship) + Whisper Tiny (Quest / low-end).
+- [ai-models/llm/manifest.json](ai-models/llm/manifest.json): Qwen3-1.7B Q5_K_M (flagship) + Gemma3-1B Q4_K_M (Quest / low-end). Gemma has non-SPDX terms.
+- [ai-models/embeddings/manifest.json](ai-models/embeddings/manifest.json): all-MiniLM-L6-v2 INT8 (all platforms; 384-dim).
+- [ai-models/tts/manifest.json](ai-models/tts/manifest.json): Kokoro v1 INT8 (all platforms).
+- [ai-models/rag/README.md](ai-models/rag/README.md): Pre-built `knowledge.db` (built offline by `Sauti/Build Knowledge Base` Editor menu).
+
+## Templates
+
+JSON-first input templates for game / VR narratives. Copy, replace `${VAR_NAME}` placeholders, load via Inspector. All schemas validate against JSON Schema draft-07.
+
+- [templates/README.md](templates/README.md): Conventions, schema location.
+- [templates/npc-dialogue.json](templates/npc-dialogue.json) — Single-NPC conversation.
+- [templates/quest-narrator.json](templates/quest-narrator.json) — Branching world narrator with state.
+- [templates/voice-command-routing.json](templates/voice-command-routing.json) — Speech → game action mapping.
+- [templates/vr-companion.json](templates/vr-companion.json) — Persistent VR companion with location-aware RAG.
+- [templates/knowledge-feed.json](templates/knowledge-feed.json) — Bulk knowledge-base ingestion shape.
+- [templates/structured-output.json](templates/structured-output.json) — LLM tool/action schema.
+
+## Knowledge Base
+
+Plain-text source documents. The Editor tool `Sauti/Build Knowledge Base` (`Assets/Sauti/Editor/RagDatabaseBuilder.cs`) chunks these at paragraph boundaries (~200 tokens / ~750 chars), embeds via MiniLM, and writes `ai-models/rag/knowledge.db` + `Assets/StreamingAssets/VoiceAI/rag/knowledge.db`.
+
+- [knowledge-base/README.md](knowledge-base/README.md): Layout, build flow, quality rules.
+- [knowledge-base/lore/](knowledge-base/lore/) — Frostmere world setting (3 entries).
+- [knowledge-base/locations/](knowledge-base/locations/) — Crystal Caverns + Stormwall.
+- [knowledge-base/npcs/](knowledge-base/npcs/) — Elder Maren + Captain Thorne.
+
+## Experiments
+
+Runnable Unity scenes proving one capability end-to-end. Each experiment is tested by the agent before the closing handover entry.
+
+- [experiments/README.md](experiments/README.md): Layout + agent-runs-it discipline.
+- [experiments/01-tts-hello/](experiments/01-tts-hello/) — Kokoro text-to-speech (scaffold; TTS-API-001 + KOKORO-DL-001 pending).
+- [experiments/02-stt-loopback/](experiments/02-stt-loopback/) — Mic → Whisper → text (scaffold; STT-API-001 + WHISPER-DL-001 pending).
+- [experiments/03-llm-chat/](experiments/03-llm-chat/) — Text → Qwen3 / Gemma3 GGUF → streamed tokens + sentence-boundary UnityEvent (scaffold; LLM-API-001 + QWEN-DL-001 + GEMMA-DL-001 pending).
+
+## Unity Project
+
+The repo root IS the Unity project (decided Session 1, 2026-05-26).
+
+- `Packages/manifest.json` — Unity 6 + three required v1.2 packages: https://github.com/asus4/onnxruntime-unity, https://github.com/undreamai/LLMUnity, https://github.com/Macoron/whisper.unity.
+- `ProjectSettings/` — Unity 6+ LTS pin (adjust `ProjectVersion.txt` to local install).
+- `Assets/Sauti/Runtime/Scripts/` — `TemporaryMemory.cs` (Layer 2), `ISautiRagBackend.cs`, `LlmUnityRagBackend.cs`, `SautiRag.cs` (Layer 3 wrapper).
+- `Assets/Sauti/Editor/` — `KnowledgeBaseChunker.cs` (pure-C# chunker), `IRagEmbedder.cs`, `MiniLmRagEmbedder.cs`, `RagDatabaseBuilder.cs` (with `[MenuItem("Sauti/Build Knowledge Base")]`).
+- `Assets/Sauti/Tests/Editor/` — NUnit EditMode tests (`TemporaryMemoryTests`, `SautiRagTests`, `RagDatabaseBuilderTests`).
+- `Assets/StreamingAssets/VoiceAI/` — Runtime model location, populated by build pre-processor (BUILD-001).
+
+## Optional
+
+- [.gitignore](.gitignore): Unity-managed folders + model binaries.
+- [instructions/](instructions/): Pre-v1.2 build/coding standards. Source of truth for toolchain pins (`instruction.md § 1`); other sections describe the aspirational C++ core that lands post-Unity-pipeline.
+
+## Architecture One-Liner
+
+🎤 Mic → Whisper ONNX → text → Memory (history + RAG + temp KV) → enriched prompt → Qwen3 / Gemma3 GGUF → tokens → Kokoro ONNX → 🔊 Audio
+
+Two runtimes (ONNX + llama.cpp), strictly partitioned. They exchange only C# strings. See `memory/voice_ai_architecture.md § 1` for the rationale.

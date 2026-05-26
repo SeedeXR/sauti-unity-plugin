@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sauti.dev/schemas/voice-command-routing.schema.json",
+  "title": "Voice Command Routing Configuration",
+  "description": "Maps spoken phrases to game actions for non-dialogue interactions. Each entry contains intent name, sample utterances, a target action, and a confidence threshold. Used by the Trigger System to fire game events without invoking the LLM.",
+  "type": "object",
+  "required": ["templateId", "templateVersion", "routingId", "commands"],
+  "properties": {
+    "templateId": { "type": "string", "const": "voice-command-routing" },
+    "templateVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string", "maxLength": 280 },
+    "routingId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "defaultMaxEditDistance": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "default": 2,
+      "description": "Fuzzy-match tolerance applied to any command that does not override it."
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["intent", "phrases", "action"],
+        "properties": {
+          "intent": {
+            "type": "string",
+            "pattern": "^(\\$\\{[A-Z_][A-Z0-9_]*\\}|[a-z][a-z0-9_]*)$",
+            "description": "Stable snake_case identifier the game listens for. Accepts ${VAR_NAME} placeholder in templates pre-substitution."
+          },
+          "phrases": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+            "description": "Up to 20 sample utterances. Variations and synonyms encouraged; STT noise tolerated by fuzzy match."
+          },
+          "action": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["event", "function", "state_mutation"],
+                "description": "Event Bus event, direct callback, or State Bag write."
+              },
+              "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+              "args": { "type": "object", "additionalProperties": true }
+            }
+          },
+          "maxEditDistance": { "type": "integer", "minimum": 0, "maximum": 5 },
+          "minConfidence": { "type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.6 }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "templateId": "voice-command-routing",
+      "templateVersion": "1.0.0",
+      "description": "Combat HUD voice commands.",
+      "routingId": "combat_hud",
+      "defaultMaxEditDistance": 2,
+      "commands": [
+        {
+          "intent": "attack",
+          "phrases": ["attack", "strike", "engage"],
+          "action": { "type": "event", "name": "PLAYER_ATTACK" },
+          "minConfidence": 0.6
+        },
+        {
+          "intent": "open_inventory",
+          "phrases": ["open inventory", "show my bag", "what do I have"],
+          "action": { "type": "event", "name": "OPEN_INVENTORY" }
+        }
+      ]
+    }
+  ]
+}

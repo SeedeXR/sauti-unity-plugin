@@ -1,0 +1,142 @@
+name: Package Sauti UPM release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'                       # v1.2.0, v1.2.1-rc1, etc.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to package (overrides package.json)'
+        required: false
+        type: string
+      skip_tests:
+        description: 'Skip the Unity test pass (faster CI; not recommended for release tags)'
+        required: false
+        type: boolean
+        default: false
+
+# A failed pre-release shouldn't block subsequent runs.
+concurrency:
+  group: package-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write                      # to upload release artefacts
+  packages: write                      # in case we publish to GitHub Packages later
+
+env:
+  UNITY_VERSION: '6000.4.8f1'
+
+jobs:
+  test:
+    name: Unity EditMode tests
+    if: ${{ github.event.inputs.skip_tests != 'true' }}
+    runs-on: macos-14                  # Apple Silicon — matches development env
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Unity activation: use game-ci/unity-test-runner; it activates a personal
+      # license from an encrypted UNITY_LICENSE env var (set in repo Secrets).
+      - name: Cache Unity Library/
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: |
+            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
+            Library-${{ runner.os }}-
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: .
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: editmode
+          artifactsPath: artifacts/tests
+          checkName: 'Sauti EditMode tests'
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: editmode-tests
+          path: artifacts/tests
+          retention-days: 30
+
+  package:
+    name: Build UPM tarball
+    needs: test
+    # `needs: test` only takes effect if `test` ran. When skip_tests=true, allow this job to run alone.
+    if: ${{ always() && (needs.test.result == 'success' || github.event.inputs.skip_tests == 'true') }}
+    runs-on: macos-14
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            # Strip leading "v" from tag (v1.2.0 → 1.2.0)
+            VERSION="${GITHUB_REF_NAME#v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(python3 -c "import json; print(json.load(open('packaging/com.sauti.voice-ai/package.json'))['version'])")
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build tarball
+        run: |
+          # Skip the in-CI Unity test pass — `test` job already ran (or was skipped).
+          tools/package-sauti.sh --skip-tests --version ${{ steps.version.outputs.version }}
+
+      - name: Inspect tarball
+        run: |
+          echo "=== Tarball ==="
+          ls -la dist/com.sauti.voice-ai-*.tgz
+          echo "=== SHA-256 ==="
+          cat dist/sha256sums.txt
+          echo "=== Contents ==="
+          tar -tzf dist/com.sauti.voice-ai-*.tgz | head -40
+          echo "=== Entry count ==="
+          tar -tzf dist/com.sauti.voice-ai-*.tgz | wc -l
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: com.sauti.voice-ai-${{ steps.version.outputs.version }}
+          path: dist/com.sauti.voice-ai-*.tgz
+          retention-days: 90
+
+      - name: Create / update GitHub Release (tag pushes only)
+        if: ${{ github.ref_type == 'tag' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/com.sauti.voice-ai-*.tgz
+            dist/sha256sums.txt
+          generate_release_notes: true
+          body: |
+            ## Sauti ${{ steps.version.outputs.version }}
+
+            Built from `${{ github.sha }}` on `${{ github.ref_name }}`.
+
+            Install via Unity Package Manager:
+            **Window → Package Manager → + → Install package from tarball** → select `com.sauti.voice-ai-${{ steps.version.outputs.version }}.tgz`.
+
+            Refer to `CHANGELOG.md` inside the tarball or [the docs site](https://your-org.github.io/sauti-unity-plugin/) for details.
+
+            ### SHA-256
+            See `sha256sums.txt`.

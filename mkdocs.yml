@@ -1,0 +1,137 @@
+site_name: Sauti — Unity Voice-AI Plugin
+site_description: Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Whisper → memory + RAG → Qwen3 → Kokoro.
+site_author: Sauti contributors
+site_url: https://your-org.github.io/sauti-unity-plugin/
+
+repo_url: https://github.com/your-org/sauti-unity-plugin
+repo_name: your-org/sauti-unity-plugin
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2026 Sauti contributors. Apache-2.0.
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+
+plugins:
+  - search
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/sauti-unity-plugin
+      name: GitHub
+  status:
+    new: Recently added
+    deprecated: Deprecated
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - Designer guide:
+      - Overview: designer-guide/overview.md
+      - JSON templates: designer-guide/templates.md
+      - Knowledge base: designer-guide/knowledge-base.md
+      - Per-platform notes: designer-guide/per-platform.md
+  - Developer guide:
+      - Overview: developer-guide/overview.md
+      - Architecture: developer-guide/architecture.md
+      - Memory layers: developer-guide/memory-layers.md
+      - Extending Sauti: developer-guide/extending.md
+      - API reference: developer-guide/api-reference.md
+  - Experiments:
+      - Overview: experiments/overview.md
+      - 01 · TTS Hello: experiments/01-tts-hello.md
+      - 02 · STT Loopback: experiments/02-stt-loopback.md
+      - 03 · LLM Chat: experiments/03-llm-chat.md
+      - 04 · RAG Grounding: experiments/04-rag-grounding.md
+      - 05 · Full Voice Loop: experiments/05-full-voice-loop.md
+      - 06 · VR Quest NPC: experiments/06-vr-quest-npc.md
+  - Reference:
+      - AI models catalogue: reference/models.md
+      - Manifest schema: reference/manifests.md
+      - Voice prompt rules: reference/prompts.md
+      - Voice IDs: reference/voices.md
+  - Contributing:
+      - Overview: contributing/overview.md
+      - Session workflow: contributing/session-workflow.md
+      - Adding a model: contributing/adding-a-model.md
+      - Adding an experiment: contributing/adding-an-experiment.md
+      - Packaging for release: contributing/packaging.md
+  - Changelog: changelog.md

@@ -1,0 +1,33 @@
+{
+  "$schema": "./_schemas/structured-output.schema.json",
+  "templateId": "structured-output",
+  "templateVersion": "1.0.0",
+  "description": "Tool / action shape the LLM must emit when invoking game mechanics. The runtime validates the LLM's JSON against this schema and rejects non-conforming output. Add one action object per game-side function you want the LLM to call.",
+  "schemaId": "${SCHEMA_ID}",
+  "strict": true,
+  "actions": [
+    {
+      "name": "${ACTION_1_NAME}",
+      "description": "${ACTION_1_DESCRIPTION}",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "${ACTION_1_PARAM_1_NAME}": { "type": "string" },
+          "${ACTION_1_PARAM_2_NAME}": { "type": "integer", "minimum": 1, "maximum": 99, "default": 1 }
+        },
+        "required": ["${ACTION_1_PARAM_1_NAME}"]
+      }
+    },
+    {
+      "name": "${ACTION_2_NAME}",
+      "description": "${ACTION_2_DESCRIPTION}",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "${ACTION_2_PARAM_1_NAME}": { "type": "boolean" }
+        },
+        "required": []
+      }
+    }
+  ]
+}

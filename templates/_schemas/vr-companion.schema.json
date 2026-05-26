@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sauti.dev/schemas/vr-companion.schema.json",
+  "title": "VR Companion Configuration",
+  "description": "Persistent VR companion that follows the player and reacts to their location and gaze. Builds on npc-dialogue with location-aware RAG queries and gaze / proximity triggers.",
+  "type": "object",
+  "required": ["templateId", "templateVersion", "companionId", "displayName", "persona", "voice", "presence", "promptRules"],
+  "properties": {
+    "templateId": { "type": "string", "const": "vr-companion" },
+    "templateVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string", "maxLength": 280 },
+    "companionId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "persona": {
+      "type": "object",
+      "required": ["summary", "tone"],
+      "properties": {
+        "summary": { "type": "string", "maxLength": 200 },
+        "tone": { "type": "string", "maxLength": 80 },
+        "speechQuirks": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 80 },
+          "maxItems": 5
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["voiceId"],
+      "properties": {
+        "voiceId": { "type": "string" },
+        "speed": { "type": "number", "minimum": 0.5, "maximum": 1.5, "default": 1.0 }
+      }
+    },
+    "presence": {
+      "type": "object",
+      "required": ["followDistanceMeters", "speakOn"],
+      "properties": {
+        "followDistanceMeters": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 5.0,
+          "default": 1.5
+        },
+        "speakOn": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["push_to_talk", "wake_word", "gaze", "proximity", "scene_event"]
+          },
+          "description": "Which triggers wake the companion to listen / respond."
+        },
+        "wakeWord": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Required if speakOn includes wake_word."
+        },
+        "locationAwareness": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "ragRadiusMeters": { "type": "number", "minimum": 0, "maximum": 50, "default": 5 },
+            "knowledgeTagPrefix": {
+              "type": "string",
+              "description": "RAG chunks tagged with `${prefix}_<sceneName>` get a retrieval-score boost."
+            }
+          }
+        }
+      }
+    },
+    "promptRules": {
+      "type": "object",
+      "required": ["maxWordsPerResponse", "plainSpoken", "noThink"],
+      "properties": {
+        "maxWordsPerResponse": { "type": "integer", "minimum": 5, "maximum": 80, "default": 35 },
+        "plainSpoken": { "type": "boolean", "default": true },
+        "noThink": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "templateId": "vr-companion",
+      "templateVersion": "1.0.0",
+      "description": "A small wisp that floats by the player's shoulder.",
+      "companionId": "wisp",
+      "displayName": "Pip",
+      "persona": {
+        "summary": "A curious wisp that asks more questions than it answers.",
+        "tone": "bright and inquisitive",
+        "speechQuirks": ["ends statements with a soft 'hm'"]
+      },
+      "voice": { "voiceId": "af_bella", "speed": 1.05 },
+      "presence": {
+        "followDistanceMeters": 1.0,
+        "speakOn": ["push_to_talk", "proximity"],
+        "locationAwareness": { "enabled": true, "ragRadiusMeters": 5, "knowledgeTagPrefix": "loc" }
+      },
+      "promptRules": { "maxWordsPerResponse": 35, "plainSpoken": true, "noThink": true }
+    }
+  ]
+}

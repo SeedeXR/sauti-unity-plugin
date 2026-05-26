@@ -1,0 +1,22 @@
+{
+  "$schema": "./_schemas/knowledge-feed.schema.json",
+  "templateId": "knowledge-feed",
+  "templateVersion": "1.0.0",
+  "description": "Bulk feed for the RAG knowledge base. Each document becomes one or more 384-dim chunks in knowledge.db. The Editor build tool chunks at paragraph boundaries (~200 tokens).",
+  "feedId": "${FEED_ID}",
+  "language": "en",
+  "documents": [
+    {
+      "docId": "${DOC_1_ID}",
+      "title": "${DOC_1_TITLE}",
+      "body": "${DOC_1_BODY}",
+      "tags": ["${DOC_1_TAG_1}", "${DOC_1_TAG_2}"]
+    },
+    {
+      "docId": "${DOC_2_ID}",
+      "title": "${DOC_2_TITLE}",
+      "body": "${DOC_2_BODY}",
+      "tags": ["${DOC_2_TAG_1}"]
+    }
+  ]
+}

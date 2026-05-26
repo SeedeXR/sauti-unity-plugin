@@ -1,0 +1,85 @@
+{
+  "name": "com.sauti.voice-ai",
+  "version": "1.2.0",
+  "displayName": "Sauti — Native Voice-AI Plugin",
+  "description": "Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp) on a managed C# façade with three-layer memory (conversation history + temporary KV + RAG over a knowledge base you author).",
+  "unity": "6000.0",
+  "unityRelease": "32f1",
+  "documentationUrl": "https://your-org.github.io/sauti-unity-plugin/",
+  "changelogUrl": "https://github.com/your-org/sauti-unity-plugin/blob/main/packaging/com.sauti.voice-ai/CHANGELOG.md",
+  "licensesUrl": "https://github.com/your-org/sauti-unity-plugin/blob/main/LICENSE",
+  "license": "Apache-2.0",
+  "keywords": [
+    "voice",
+    "voice-ai",
+    "speech-to-text",
+    "text-to-speech",
+    "llm",
+    "rag",
+    "npc",
+    "vr",
+    "quest",
+    "onnx",
+    "whisper",
+    "kokoro",
+    "qwen3",
+    "llama.cpp",
+    "offline-first"
+  ],
+  "category": "AI",
+  "author": {
+    "name": "Sauti contributors",
+    "url": "https://github.com/your-org/sauti-unity-plugin"
+  },
+  "type": "library",
+  "dependencies": {
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.collections": "2.5.7",
+    "com.unity.mathematics": "1.3.2",
+    "com.github.asus4.onnxruntime": "0.4.7",
+    "com.github.asus4.onnxruntime.unity": "0.4.7"
+  },
+  "samples": [
+    {
+      "displayName": "01 — TTS Hello (smallest end-to-end)",
+      "description": "Type a string in the Inspector, hear it spoken via Kokoro 82M ONNX. Validates the TTS stack independently.",
+      "path": "Samples~/01-tts-hello"
+    },
+    {
+      "displayName": "02 — STT Loopback (push-to-talk)",
+      "description": "Hold a button, speak, release. Whisper Small/Tiny transcribes to on-screen text.",
+      "path": "Samples~/02-stt-loopback"
+    },
+    {
+      "displayName": "03 — LLM Chat (streaming tokens)",
+      "description": "Text input → Qwen3-1.7B → streamed tokens + sentence-boundary UnityEvent for downstream TTS.",
+      "path": "Samples~/03-llm-chat"
+    },
+    {
+      "displayName": "04 — RAG Grounding (A/B toggle)",
+      "description": "Same question with-RAG vs without-RAG, side by side. Proves retrieval changes the answer.",
+      "path": "Samples~/04-rag-grounding"
+    },
+    {
+      "displayName": "05 — Full Voice Loop (integrated demo)",
+      "description": "Mic → STT → memory + RAG → LLM → on-screen text (Kokoro TTS via OnSpeechReady hook). The headline demo.",
+      "path": "Samples~/05-full-voice-loop"
+    },
+    {
+      "displayName": "06 — VR Quest NPC (spatialised audio)",
+      "description": "Quest controller trigger drives the full loop with Kokoro synthesising into a spatial AudioSource on an NPC GameObject.",
+      "path": "Samples~/06-vr-quest-npc"
+    },
+    {
+      "displayName": "Frostmere Knowledge Base (starter content)",
+      "description": "7 sample knowledge-base entries (lore + locations + NPCs). Copy under your own knowledge-base/ then run `Sauti → Build Knowledge Base`.",
+      "path": "Samples~/knowledge-base"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/your-org/sauti-unity-plugin.git",
+    "type": "git",
+    "revision": "main"
+  }
+}

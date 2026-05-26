@@ -1,0 +1,7 @@
+# MkDocs Material + the extensions referenced in mkdocs.yml.
+# Pinned to known-good versions to keep the GitHub Action deterministic.
+
+mkdocs==1.6.1
+mkdocs-material==9.5.49
+pymdown-extensions==10.12
+pygments==2.18.0

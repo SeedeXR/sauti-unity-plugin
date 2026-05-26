@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sauti.dev/schemas/quest-narrator.schema.json",
+  "title": "Quest Narrator Configuration",
+  "description": "A branching world narrator that observes player progress and produces short spoken commentary at chapter / quest / location transitions. Stateful: tracks current chapter and triggers cues when conditions match.",
+  "type": "object",
+  "required": ["templateId", "templateVersion", "narratorId", "voice", "chapters", "promptRules"],
+  "properties": {
+    "templateId": { "type": "string", "const": "quest-narrator" },
+    "templateVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string", "maxLength": 280 },
+    "narratorId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "persona": {
+      "type": "object",
+      "properties": {
+        "summary": { "type": "string", "maxLength": 200 },
+        "tone": { "type": "string", "maxLength": 80 }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["voiceId"],
+      "properties": {
+        "voiceId": { "type": "string" },
+        "speed": { "type": "number", "minimum": 0.5, "maximum": 1.5, "default": 1.0 }
+      }
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Ordered chapters. The narrator advances when a chapter's `enterCondition` matches game state.",
+      "items": {
+        "type": "object",
+        "required": ["chapterId", "title", "enterCondition", "openingCue"],
+        "properties": {
+          "chapterId": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "enterCondition": {
+            "type": "string",
+            "description": "Condition expression evaluated against the State Bag. Free-form string or ${VAR_NAME} placeholder."
+          },
+          "openingCue": {
+            "type": "string",
+            "maxLength": 280,
+            "description": "What the narrator says when the chapter opens. Plain spoken English, under 40 words."
+          },
+          "knowledgeTag": {
+            "type": "string",
+            "description": "Optional RAG tag scoped to this chapter."
+          }
+        }
+      }
+    },
+    "promptRules": {
+      "type": "object",
+      "required": ["maxWordsPerResponse", "plainSpoken", "noThink"],
+      "properties": {
+        "maxWordsPerResponse": { "type": "integer", "minimum": 5, "maximum": 80, "default": 40 },
+        "plainSpoken": { "type": "boolean", "default": true },
+        "noThink": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "templateId": "quest-narrator",
+      "templateVersion": "1.0.0",
+      "description": "Stormwall world narrator with three chapters.",
+      "narratorId": "stormwall_narrator",
+      "persona": { "summary": "Detached chronicler of Stormwall's history.", "tone": "measured" },
+      "voice": { "voiceId": "am_michael", "speed": 1.0 },
+      "chapters": [
+        {
+          "chapterId": "ch1_arrival",
+          "title": "Arrival at Stormwall",
+          "enterCondition": "player.location == 'stormwall_gate'",
+          "openingCue": "The wind here has not eased in living memory. Stormwall waits, as it always has.",
+          "knowledgeTag": "stormwall"
+        }
+      ],
+      "promptRules": { "maxWordsPerResponse": 40, "plainSpoken": true, "noThink": true }
+    }
+  ]
+}

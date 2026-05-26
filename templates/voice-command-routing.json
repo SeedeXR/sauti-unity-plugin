@@ -1,0 +1,36 @@
+{
+  "$schema": "./_schemas/voice-command-routing.schema.json",
+  "templateId": "voice-command-routing",
+  "templateVersion": "1.0.0",
+  "description": "Speech-to-action routing. Each command has an intent name, sample utterances, and a target action. The Trigger System fires these without invoking the LLM. Fuzzy match tolerates STT noise.",
+  "routingId": "${ROUTING_ID}",
+  "defaultMaxEditDistance": 2,
+  "commands": [
+    {
+      "intent": "${INTENT_1_NAME}",
+      "phrases": [
+        "${INTENT_1_PHRASE_1}",
+        "${INTENT_1_PHRASE_2}",
+        "${INTENT_1_PHRASE_3}"
+      ],
+      "action": {
+        "type": "event",
+        "name": "${INTENT_1_EVENT_NAME}"
+      },
+      "minConfidence": 0.6
+    },
+    {
+      "intent": "${INTENT_2_NAME}",
+      "phrases": [
+        "${INTENT_2_PHRASE_1}",
+        "${INTENT_2_PHRASE_2}"
+      ],
+      "action": {
+        "type": "state_mutation",
+        "name": "${INTENT_2_STATE_KEY}",
+        "args": { "value": "${INTENT_2_STATE_VALUE}" }
+      },
+      "minConfidence": 0.7
+    }
+  ]
+}
