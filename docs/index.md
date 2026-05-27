@@ -76,7 +76,7 @@ Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp). They share **no me
 ## Quick install
 
 ```bash
-git clone https://github.com/your-org/sauti-unity-plugin.git
+git clone https://github.com/SeedeXR/sauti-unity-plugin.git
 cd sauti-unity-plugin
 # Then: Unity Hub → Add Project → select this folder
 ```
@@ -121,4 +121,4 @@ Unity will fetch four UPM dependencies on first open. Set two scripting-define s
 | Six `.unity` scene files | :material-clock-outline: Manual Editor GUI work |
 | Quest hardware validation | :material-clock-outline: Needs physical device |
 
-See [`SHIP_READINESS.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/SHIP_READINESS.md) for the step-by-step go-live guide.
+See [`SHIP_READINESS.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/SHIP_READINESS.md) for the step-by-step go-live guide.

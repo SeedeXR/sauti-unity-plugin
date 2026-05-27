@@ -49,7 +49,7 @@ The two **explicit injection points**:
 1. **`ISautiRagBackend`** — `SautiRag` wraps any backend that satisfies the interface. Default: `LlmUnityRagBackend` (delegates to LLMUnity's `DBSearch`-backed RAG MonoBehaviour). Swap to fake out in tests, or to plug in a custom on-disk vector store.
 2. **`IRagEmbedder`** — `RagDatabaseBuilder.BuildAsync` accepts any embedder. Default: `MiniLmRagEmbedder` (raw ONNX Runtime + WordPiece). Swap to use a smaller/faster encoder, or to wire a hosted embedding service for offline-build-only scenarios.
 
-Beyond those two, Sauti also lets you assemble your own prompt — the `BuildPrompt` method in [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) is **a reference shape**, not a runtime requirement. See [Extending Sauti](extending.md) for all three extension paths.
+Beyond those two, Sauti also lets you assemble your own prompt — the `BuildPrompt` method in [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) is **a reference shape**, not a runtime requirement. See [Extending Sauti](extending.md) for all three extension paths.
 
 ---
 
@@ -93,7 +93,7 @@ Lives in the `whisper.unity` package. Inspector-friendly MonoBehaviour facade ov
 - Call `await manager.InitModel()` once at startup.
 - Per turn: `WhisperResult res = await manager.GetTextAsync(audioClip);` then read `res.Result`.
 
-See [`experiments/02-stt-loopback/WhisperLoopback.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/WhisperLoopback.cs) for the verified wiring.
+See [`experiments/02-stt-loopback/WhisperLoopback.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/WhisperLoopback.cs) for the verified wiring.
 
 ### Memory — `Sauti.Memory.*`
 
@@ -120,13 +120,13 @@ Hand-authored against raw `Microsoft.ML.OnnxRuntime.InferenceSession`. Self-cont
 - `float[] pcm = await runner.SynthesizeAsync(sentence, voiceId);`. PCM is 24 kHz mono, in `[-1, 1]`.
 - Wrap in an `AudioClip` with `AudioClip.SetData(pcm, 0)` and play.
 
-See [`experiments/01-tts-hello/KokoroHello.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/KokoroHello.cs).
+See [`experiments/01-tts-hello/KokoroHello.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/KokoroHello.cs).
 
 ---
 
 ## The canonical orchestration
 
-If you want a worked, tested example of all four stages composed, read [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs). It is ~300 lines of MonoBehaviour that wires:
+If you want a worked, tested example of all four stages composed, read [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs). It is ~300 lines of MonoBehaviour that wires:
 
 1. Microphone capture (`UnityEngine.Microphone`).
 2. Whisper transcription (`WhisperManager.GetTextAsync`).
@@ -156,7 +156,7 @@ The same gate convention exists for `SAUTI_WHISPER_UNITY_AVAILABLE` — define i
 
 ## Testing
 
-The test suite under [`Assets/Sauti/Tests/Editor/`](https://github.com/your-org/sauti-unity-plugin/tree/main/Assets/Sauti/Tests/Editor) covers:
+The test suite under [`Assets/Sauti/Tests/Editor/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/Assets/Sauti/Tests/Editor) covers:
 
 - `TemporaryMemoryTests.cs` — 5 tests on Layer 2 semantics.
 - `SautiRagTests.cs` — 7 tests on the façade, using `FakeRagBackend` to avoid pulling LLMUnity into the test assembly.

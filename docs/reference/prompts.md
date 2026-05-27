@@ -2,7 +2,7 @@
 
 Every system prompt Sauti sends to the LLM must obey four behavioural rules. They exist because the LLM output feeds **directly** into Kokoro TTS — markdown or list syntax becomes spoken garbage.
 
-This page quotes the canonical rules verbatim from [`voice_ai_architecture.md § 9`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md), then documents the `/no_think` directive from § 9.1, then shows the actual assembled prompt string Sauti's reference scaffolds use.
+This page quotes the canonical rules verbatim from [`voice_ai_architecture.md § 9`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md), then documents the `/no_think` directive from § 9.1, then shows the actual assembled prompt string Sauti's reference scaffolds use.
 
 ---
 
@@ -56,13 +56,13 @@ Speak as if in a live conversation.
 Without the directive, Qwen3 may emit `<think>...</think>` blocks before the actual response. That's reasoning-mode output — useful for debugging but unwanted in a voice pipeline (Kokoro would read the `<think>` tags aloud).
 
 !!! note "Spec correction (VOICE-AI-SPEC-FIX-001)"
-    Earlier revisions of the spec listed `/no_think` as a runtime mode toggled via an LLMUnity field. **There is no such field.** `LLMUnity.LLM` does expose `bool reasoning` / `SetReasoning(bool)`, but Qwen3's `/no_think` flow is purely the in-prompt directive described above. Verified against `LLMUnity` v3.0.3 source in [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md).
+    Earlier revisions of the spec listed `/no_think` as a runtime mode toggled via an LLMUnity field. **There is no such field.** `LLMUnity.LLM` does expose `bool reasoning` / `SetReasoning(bool)`, but Qwen3's `/no_think` flow is purely the in-prompt directive described above. Verified against `LLMUnity` v3.0.3 source in [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md).
 
 ---
 
 ## The assembled string Sauti uses
 
-### From [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs)
+### From [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs)
 
 ```csharp
 private string AssembleSystemPrompt()
@@ -80,7 +80,7 @@ private string AssembleSystemPrompt()
 }
 ```
 
-### From [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs)
+### From [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs)
 
 Identical:
 
@@ -162,7 +162,7 @@ See [Extending Sauti — Custom prompt assembler](../developer-guide/extending.m
 
 ## Cross-references
 
-- The canonical text: [`voice_ai_architecture.md § 9, § 9.1`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- The canonical text: [`voice_ai_architecture.md § 9, § 9.1`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
 - The per-model `supportsNoThinkDirective` field: [Manifest schema — `supportsNoThinkDirective`](manifests.md#supportsnothinkdirective-boolean).
 - The full prompt-assembly shape: [Memory layers — BuildPrompt pattern](../developer-guide/memory-layers.md#how-all-three-combine-the-buildprompt-pattern).
 - Per-character persona injection: [Extending Sauti](../developer-guide/extending.md#extension-point-3-custom-prompt-assembler).

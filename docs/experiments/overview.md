@@ -1,6 +1,6 @@
 # Experiments — overview
 
-Six runnable Unity scenes that exercise the Sauti pipeline from "smallest possible TTS slice" up to "fully-integrated VR voice loop". Each experiment lives in its own folder under [`experiments/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments) with three files:
+Six runnable Unity scenes that exercise the Sauti pipeline from "smallest possible TTS slice" up to "fully-integrated VR voice loop". Each experiment lives in its own folder under [`experiments/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments) with three files:
 
 - `README.md` — what the experiment proves, prerequisites, how to run.
 - A single MonoBehaviour `.cs` — the scaffold script.
@@ -74,7 +74,7 @@ This is a deliberate trade-off: keeps the repo light and diffable, at the cost o
 | `EventSystem` | Hierarchy root | Required for any experiment with UI buttons. |
 | Canvas with text label / button | Hierarchy root | UI surface to surface transcripts / responses. |
 
-The per-experiment placeholder docs spell out the exact steps. See e.g. [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md).
+The per-experiment placeholder docs spell out the exact steps. See e.g. [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md).
 
 ---
 

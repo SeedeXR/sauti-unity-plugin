@@ -6,7 +6,7 @@
 [![Unity 6+ LTS](https://img.shields.io/badge/Unity-6%2B%20LTS-000?logo=unity)](https://unity.com/)
 [![Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Offline-first](https://img.shields.io/badge/Network-Not%20required-success)](#privacy--offline-first)
-[![Docs](https://img.shields.io/badge/Docs-mkdocs--material-9cf)](https://your-org.github.io/sauti-unity-plugin)
+[![Docs](https://img.shields.io/badge/Docs-mkdocs--material-9cf)](https://SeedeXR.github.io/sauti-unity-plugin)
 
 ---
 
@@ -36,21 +36,21 @@ You have **two ways** to consume Sauti.
 ### A. Clone the full repo (recommended for first explore)
 
 ```bash
-git clone https://github.com/your-org/sauti-unity-plugin.git
+git clone https://github.com/SeedeXR/sauti-unity-plugin.git
 cd sauti-unity-plugin
 # Then: Unity Hub → Add project from disk → select this folder
 ```
 
 ### B. Install as a UPM package (recommended for downstream projects)
 
-Download the latest `com.sauti.voice-ai-<version>.tgz` from [Releases](https://github.com/your-org/sauti-unity-plugin/releases). In your Unity project:
+Download the latest `com.sauti.voice-ai-<version>.tgz` from [Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases). In your Unity project:
 
 **Window → Package Manager → + → Install package from tarball** → select the file.
 
 Or **add by Git URL** (consumes the embedded UPM tree at `packaging/com.sauti.voice-ai/` directly):
 
 ```
-https://github.com/your-org/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
+https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
 ```
 
 Or **build it yourself** from a checked-out repo:
@@ -188,7 +188,7 @@ See [`SHIP_READINESS.md`](SHIP_READINESS.md) for the step-by-step go-live guide.
 |---|---|
 | **Canonical pipeline spec** | [memory/voice_ai_architecture.md](memory/voice_ai_architecture.md) |
 | **Ship readiness checklist** | [SHIP_READINESS.md](SHIP_READINESS.md) |
-| **Full docs site** (mkdocs) | https://your-org.github.io/sauti-unity-plugin |
+| **Full docs site** (mkdocs) | https://SeedeXR.github.io/sauti-unity-plugin |
 | **Session log** (audit trail) | [memory/handover_session.md](memory/handover_session.md) |
 | **Memory + agent files** | [memory/](memory/) (15 docs) |
 | **Per-experiment guides** | [experiments/*/README.md](experiments/) |

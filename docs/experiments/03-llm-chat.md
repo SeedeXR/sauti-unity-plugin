@@ -2,7 +2,7 @@
 
 > **Text -> Qwen3 / Gemma3 GGUF via LLMUnity -> streamed tokens -> on-screen text + sentence-boundary `UnityEvent<string>`.** The sentence event is the integration seam EXP-05 (full voice loop) plugs Kokoro TTS into without changing this scaffold.
 
-The scaffold lives at [`experiments/03-llm-chat/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/03-llm-chat). The full README is at [`experiments/03-llm-chat/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/03-llm-chat/README.md).
+The scaffold lives at [`experiments/03-llm-chat/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/03-llm-chat). The full README is at [`experiments/03-llm-chat/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/03-llm-chat/README.md).
 
 ---
 
@@ -17,7 +17,7 @@ The scaffold lives at [`experiments/03-llm-chat/`](https://github.com/your-org/s
 
 ## Code walkthrough
 
-Source: [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs).
+Source: [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs).
 
 The MonoBehaviour:
 
@@ -69,13 +69,13 @@ private void OnCumulative(string cumulative)
 
 When the buffer hits a `.`/`!`/`?` at index ≥ 8 past the last emitted offset, the prefix is extracted, the cursor advances, and `OnSentenceStreamed(sentence)` fires. The `minSentenceOffset = 8` guard prevents one-word sentences from spamming the TTS hook.
 
-This pattern is reused verbatim by [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) — the orchestration is the same, only the upstream source of `Chat` calls differs.
+This pattern is reused verbatim by [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) — the orchestration is the same, only the upstream source of `Chat` calls differs.
 
 ---
 
 ## Manual scene creation
 
-Follow [`experiments/03-llm-chat/ChatScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/03-llm-chat/ChatScene.unity.placeholder.md). The short version:
+Follow [`experiments/03-llm-chat/ChatScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/03-llm-chat/ChatScene.unity.placeholder.md). The short version:
 
 1. New empty scene; save as `ChatScene.unity` under `experiments/03-llm-chat/`.
 2. Empty `GameObject` named `LlmChat`. Attach `LlmChat.cs`.
@@ -116,9 +116,9 @@ Three modifications to try:
 ## Cross-references
 
 - Upstream: [`undreamai/LLMUnity`](https://github.com/undreamai/LLMUnity)
-- API surface notes: [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — `LLMUnity.LLMAgent` section
+- API surface notes: [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — `LLMUnity.LLMAgent` section
 - [AI models — LLM](../reference/models.md#llm-large-language-model)
-- Spec: [`voice_ai_architecture.md § 8 + § 9 + § 9.1`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
+- Spec: [`voice_ai_architecture.md § 8 + § 9 + § 9.1`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
 - Voice prompt rules: [Voice prompt rules](../reference/prompts.md)
 - Previous experiment: [02 — STT Loopback](02-stt-loopback.md)
 - Next experiment: [04 — RAG Grounding](04-rag-grounding.md)

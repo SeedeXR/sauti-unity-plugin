@@ -2,7 +2,7 @@
 
 > **The smallest end-to-end TTS slice.** Type a string in the Inspector -> Kokoro ONNX synthesises PCM -> Unity's `AudioSource` plays it.
 
-The scaffold lives at [`experiments/01-tts-hello/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/01-tts-hello). The full README is at [`experiments/01-tts-hello/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/README.md).
+The scaffold lives at [`experiments/01-tts-hello/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/01-tts-hello). The full README is at [`experiments/01-tts-hello/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/README.md).
 
 ---
 
@@ -19,7 +19,7 @@ This is the **first** experiment to write because it's the smallest. If TTS does
 
 ## Code walkthrough
 
-Source: [`experiments/01-tts-hello/KokoroHello.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/KokoroHello.cs).
+Source: [`experiments/01-tts-hello/KokoroHello.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/KokoroHello.cs).
 
 The MonoBehaviour:
 
@@ -48,7 +48,7 @@ Key details Sauti's runner handles for you:
 
 ## Manual scene creation
 
-Follow [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md). The short version:
+Follow [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md). The short version:
 
 1. Open the repo as a Unity project.
 2. Create a new empty scene; save it as `HelloScene.unity` under `experiments/01-tts-hello/`.
@@ -92,5 +92,5 @@ Three modifications to try as you read the code:
 - [`KokoroTtsRunner` API](../developer-guide/api-reference.md#kokorottsrunner)
 - [Voice IDs catalogue](../reference/voices.md)
 - [AI models — TTS](../reference/models.md#tts-text-to-speech)
-- Spec: [`voice_ai_architecture.md § 8`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) (streaming TTS pattern)
+- Spec: [`voice_ai_architecture.md § 8`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) (streaming TTS pattern)
 - Next experiment: [02 — STT Loopback](02-stt-loopback.md)

@@ -3,7 +3,7 @@
 > **Fully offline. English. Privacy-first.**
 > Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. Two runtimes (ONNX + llama.cpp). One UPM package.
 
-This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because you installed Sauti via Unity Package Manager. For the full source repository, see [`github.com/your-org/sauti-unity-plugin`](https://github.com/your-org/sauti-unity-plugin).
+This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because you installed Sauti via Unity Package Manager. For the full source repository, see [`github.com/SeedeXR/sauti-unity-plugin`](https://github.com/SeedeXR/sauti-unity-plugin).
 
 ---
 
@@ -15,7 +15,7 @@ This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because y
 
 - **Install package from tarball** → select the `com.sauti.voice-ai-1.2.0.tgz` you downloaded. Best to place the file under `Packages/tarballs/` first and add the dependencies listed below to `Packages/manifest.json` so all peers (ONNX Runtime, LLMUnity, whisper.unity) resolve in the same pass.
 - **Add package by name** → `com.sauti.voice-ai` (once published to OpenUPM / a private registry).
-- **Add package from git URL** → `https://github.com/your-org/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai` (consumes the embedded UPM tree directly).
+- **Add package from git URL** → `https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai` (consumes the embedded UPM tree directly).
 
 After Unity finishes the first import, run **`Sauti → Verify Setup`** from the menu bar. The wizard checks the scoped registry, peer dependencies, scripting defines, and StreamingAssets model layout — and offers one-click fixes for anything missing.
 
@@ -55,7 +55,7 @@ SAUTI_LLMUNITY_AVAILABLE;SAUTI_WHISPER_UNITY_AVAILABLE
 
 Sauti's pre-quantised AI models (~1.6 GiB) are **not bundled in the tarball** — too large for UPM and many users only need a subset. Two options:
 
-- **Source repo** — clone `https://github.com/your-org/sauti-unity-plugin` and copy `Assets/StreamingAssets/VoiceAI/` into your project. Fastest.
+- **Source repo** — clone `https://github.com/SeedeXR/sauti-unity-plugin` and copy `Assets/StreamingAssets/VoiceAI/` into your project. Fastest.
 - **Editor menu** *(planned post-v1.2)* — `Sauti → Download Default Models` reads the bundled `manifest.json` files, fetches from Hugging Face, verifies SHA-256, deposits into `Assets/StreamingAssets/VoiceAI/`.
 
 See [`Documentation~/models.md`](Documentation~/models.md) bundled with this package for the manifest + verified SHA-256s.
@@ -99,13 +99,13 @@ Each sample folder contains a runnable MonoBehaviour, a README, and a `*.unity.p
 
 Two **strictly-partitioned** runtimes (ONNX Runtime for STT/embeddings/TTS; llama.cpp via LLMUnity for LLM). They share no memory and no GPU context — only C# strings cross the boundary.
 
-Full architecture, public API, and design rationale: [docs site](https://your-org.github.io/sauti-unity-plugin/).
+Full architecture, public API, and design rationale: [docs site](https://SeedeXR.github.io/sauti-unity-plugin/).
 
 ---
 
 ## Documentation
 
-- **[Documentation site](https://your-org.github.io/sauti-unity-plugin/)** — getting started, designer guide, developer guide, API reference, contributing, changelog.
+- **[Documentation site](https://SeedeXR.github.io/sauti-unity-plugin/)** — getting started, designer guide, developer guide, API reference, contributing, changelog.
 - **[`Documentation~/`](Documentation~/)** — bundled docs (offline, in the package).
 - **[`CHANGELOG.md`](CHANGELOG.md)** — version history.
 

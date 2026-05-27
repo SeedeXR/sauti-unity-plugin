@@ -12,7 +12,7 @@ Initial public release.
 
 ### Added
 
-- **Three-layer memory architecture** ([spec](https://your-org.github.io/sauti-unity-plugin/developer-guide/memory-layers/))
+- **Three-layer memory architecture** ([spec](https://SeedeXR.github.io/sauti-unity-plugin/developer-guide/memory-layers/))
   - Layer 1 — Conversation history via `LLMUnity.LLMAgent.chat` + a Sauti-side hard cap (default 20 messages / 10 turns).
   - Layer 2 — `Sauti.Memory.TemporaryMemory` static class for session-scoped named facts. 5 NUnit EditMode tests.
   - Layer 3 — `Sauti.Memory.SautiRag` + injectable `ISautiRagBackend`. Default `LlmUnityRagBackend` wraps LLMUnity's `RAG` MonoBehaviour. 7 NUnit tests via in-test `FakeRagBackend`.
@@ -33,7 +33,7 @@ Initial public release.
 - **38 NUnit EditMode tests** across `TemporaryMemoryTests`, `SautiRagTests`, `KnowledgeBaseChunkerTests`, `RagDatabaseBuilderTests`, `WordPieceTokenizerTests`. Plus integration + regression suites (new in v1.2 — see below).
 - **Integration tests** — `Sauti.Tests.Editor.IntegrationTests` runs chunker → embedder → search round-trips against the actual on-disk knowledge.db.
 - **Regression tests** — `Sauti.Tests.Editor.RegressionTests` uses golden-fixture queries against the Frostmere knowledge base; failures indicate semantic-search drift.
-- **MkDocs Material documentation site** at `https://your-org.github.io/sauti-unity-plugin/`. Auto-deploys from `main` via GitHub Action.
+- **MkDocs Material documentation site** at `https://SeedeXR.github.io/sauti-unity-plugin/`. Auto-deploys from `main` via GitHub Action.
 
 ### Runtime composition
 
@@ -65,5 +65,5 @@ Each model's exact SHA-256 + license-confirmation date is recorded in `ai-models
 - `EnglishG2P` is best-effort; out-of-vocabulary words sound robotic. Upgrade tracked in code comments.
 - Quest 3 RAM budget runs tight with Qwen3-1.7B (1.26 GB) + Unity baseline (~1.5 GB). Consider `numGPULayers` tuning.
 
-[Unreleased]: https://github.com/your-org/sauti-unity-plugin/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/your-org/sauti-unity-plugin/releases/tag/v1.2.0
+[Unreleased]: https://github.com/SeedeXR/sauti-unity-plugin/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/SeedeXR/sauti-unity-plugin/releases/tag/v1.2.0

@@ -8,7 +8,7 @@ The whole pipeline lives under one menu item: **Sauti -> Build Knowledge Base**.
 
 ## File structure
 
-The repo ships three conventional categories under [`knowledge-base/`](https://github.com/your-org/sauti-unity-plugin/tree/main/knowledge-base):
+The repo ships three conventional categories under [`knowledge-base/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/knowledge-base):
 
 ```
 knowledge-base/
@@ -116,7 +116,7 @@ The chunker treats the first non-blank line of a file as the `title` (stripping 
 
 ## A model entry — verbatim from the Frostmere canon
 
-Quote of [`knowledge-base/npcs/elder-maren.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md):
+Quote of [`knowledge-base/npcs/elder-maren.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md):
 
 ```markdown
 Elder Maren is the oldest practitioner of the Seep in the Frostmere. She is
@@ -252,7 +252,7 @@ The fastest way to check whether RAG is doing useful work: open [Experiment 04 �
 
 ## Cross-references
 
-- The Markdown-to-chunk pipeline lives in [`Assets/Sauti/Editor/KnowledgeBaseChunker.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/KnowledgeBaseChunker.cs).
-- The embedder lives in [`Assets/Sauti/Editor/MiniLmRagEmbedder.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/MiniLmRagEmbedder.cs).
-- The binary writer + Editor menu live in [`Assets/Sauti/Editor/RagDatabaseBuilder.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/RagDatabaseBuilder.cs).
-- The spec lives in [`memory/voice_ai_architecture.md § 4.3 + § 4.4`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- The Markdown-to-chunk pipeline lives in [`Assets/Sauti/Editor/KnowledgeBaseChunker.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/KnowledgeBaseChunker.cs).
+- The embedder lives in [`Assets/Sauti/Editor/MiniLmRagEmbedder.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/MiniLmRagEmbedder.cs).
+- The binary writer + Editor menu live in [`Assets/Sauti/Editor/RagDatabaseBuilder.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/RagDatabaseBuilder.cs).
+- The spec lives in [`memory/voice_ai_architecture.md § 4.3 + § 4.4`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).

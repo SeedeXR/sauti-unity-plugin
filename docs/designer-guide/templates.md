@@ -2,7 +2,7 @@
 
 Sauti ships **six JSON templates** under `templates/` that cover the most common voice-AI shapes a game or VR project needs. Each one is a copy-and-adapt starting point: replace the `${VAR_NAME}` placeholders, save the result alongside your game data, and load it from the Sauti inspector for the matching scene.
 
-Schemas live in [`templates/_schemas/`](https://github.com/your-org/sauti-unity-plugin/tree/main/templates/_schemas) (one draft-07 JSON Schema per template). Your IDE will validate on save if the `$schema` reference is intact.
+Schemas live in [`templates/_schemas/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/templates/_schemas) (one draft-07 JSON Schema per template). Your IDE will validate on save if the `$schema` reference is intact.
 
 ---
 
@@ -23,8 +23,8 @@ Every template honours the four voice prompt rules from [`voice_ai_architecture.
 
 ## NPC dialogue
 
-**File:** [`templates/npc-dialogue.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/npc-dialogue.json)
-**Schema:** [`templates/_schemas/npc-dialogue.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/npc-dialogue.schema.json)
+**File:** [`templates/npc-dialogue.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/npc-dialogue.json)
+**Schema:** [`templates/_schemas/npc-dialogue.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/npc-dialogue.schema.json)
 **Use when:** the player talks one-on-one to a single named character.
 
 ### Copy and adapt
@@ -60,7 +60,7 @@ Every template honours the four voice prompt rules from [`voice_ai_architecture.
 
 ### Worked example — Elder Maren
 
-Using the Frostmere canon (see [`knowledge-base/npcs/elder-maren.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md)):
+Using the Frostmere canon (see [`knowledge-base/npcs/elder-maren.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md)):
 
 ```json
 {
@@ -110,8 +110,8 @@ Using the Frostmere canon (see [`knowledge-base/npcs/elder-maren.md`](https://gi
 
 ## Quest narrator
 
-**File:** [`templates/quest-narrator.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/quest-narrator.json)
-**Schema:** [`templates/_schemas/quest-narrator.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/quest-narrator.schema.json)
+**File:** [`templates/quest-narrator.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/quest-narrator.json)
+**Schema:** [`templates/_schemas/quest-narrator.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/quest-narrator.schema.json)
 **Use when:** a disembodied storyteller speaks an opening line when the player crosses a story threshold (entering a region, finishing a quest, picking up a key item).
 
 ### Copy and adapt
@@ -187,8 +187,8 @@ The `openingCue` is spoken **once** on chapter entry. Subsequent dialogue with t
 
 ## Voice command routing
 
-**File:** [`templates/voice-command-routing.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/voice-command-routing.json)
-**Schema:** [`templates/_schemas/voice-command-routing.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/voice-command-routing.schema.json)
+**File:** [`templates/voice-command-routing.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/voice-command-routing.json)
+**Schema:** [`templates/_schemas/voice-command-routing.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/voice-command-routing.schema.json)
 **Use when:** you want spoken shortcuts (`"open inventory"`, `"cast fireball"`, `"save game"`) to fire game events **without** invoking the LLM. Lower latency, predictable behaviour.
 
 ### Copy and adapt
@@ -265,8 +265,8 @@ The Whisper transcript is matched against each command's `phrases[]` with a fuzz
 
 ## VR companion
 
-**File:** [`templates/vr-companion.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/vr-companion.json)
-**Schema:** [`templates/_schemas/vr-companion.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/vr-companion.schema.json)
+**File:** [`templates/vr-companion.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/vr-companion.json)
+**Schema:** [`templates/_schemas/vr-companion.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/vr-companion.schema.json)
 **Use when:** an NPC follows the player in 3D space, listens on push-to-talk or proximity, and answers contextually about the current scene.
 
 ### Copy and adapt
@@ -302,7 +302,7 @@ The Whisper transcript is matched against each command's `phrases[]` with a fuzz
 
 ### Worked example — Captain Thorne as companion
 
-Using the Captain Thorne entry under [`knowledge-base/npcs/captain-thorne.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/npcs/captain-thorne.md):
+Using the Captain Thorne entry under [`knowledge-base/npcs/captain-thorne.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/npcs/captain-thorne.md):
 
 ```json
 {
@@ -346,8 +346,8 @@ See [Experiment 06 — VR Quest NPC](../experiments/06-vr-quest-npc.md) for a wo
 
 ## Knowledge feed
 
-**File:** [`templates/knowledge-feed.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/knowledge-feed.json)
-**Schema:** [`templates/_schemas/knowledge-feed.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/knowledge-feed.schema.json)
+**File:** [`templates/knowledge-feed.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/knowledge-feed.json)
+**Schema:** [`templates/_schemas/knowledge-feed.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/knowledge-feed.schema.json)
 **Use when:** you have lore in a CMS / spreadsheet / wiki and want to bulk-ingest it into the RAG knowledge base.
 
 ### Copy and adapt
@@ -406,8 +406,8 @@ The chunker behaviour is documented at [Knowledge base authoring](knowledge-base
 
 ## Structured output
 
-**File:** [`templates/structured-output.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/structured-output.json)
-**Schema:** [`templates/_schemas/structured-output.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/templates/_schemas/structured-output.schema.json)
+**File:** [`templates/structured-output.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/structured-output.json)
+**Schema:** [`templates/_schemas/structured-output.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/templates/_schemas/structured-output.schema.json)
 **Use when:** the LLM needs to emit JSON that drives a game mechanic (cast a spell, equip an item, set a flag). The runtime validates the LLM's JSON against this schema and rejects non-conforming output.
 
 ### Copy and adapt

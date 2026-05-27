@@ -2,7 +2,7 @@
 
 You want to demo a new pipeline configuration — say, a different STT engine, a multi-NPC scene, or an integration with a third-party XR rig. This page walks the convention for adding it as a runnable experiment under `experiments/`.
 
-The six existing experiments under [`experiments/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments) are your reference. Each is a small, focused MonoBehaviour + README + scene placeholder triple.
+The six existing experiments under [`experiments/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments) are your reference. Each is a small, focused MonoBehaviour + README + scene placeholder triple.
 
 ---
 
@@ -36,7 +36,7 @@ cd experiments/07-my-new-experiment
 
 ### 3. Write the README
 
-Mirror the shape of [`experiments/05-full-voice-loop/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/README.md). Eight sections:
+Mirror the shape of [`experiments/05-full-voice-loop/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/README.md). Eight sections:
 
 1. **Title + one-paragraph summary** — what it does, what it proves.
 2. **What this experiment proves** — bullet list of testable claims.
@@ -56,13 +56,13 @@ The script lives in the same folder. Conventions:
 - **One file.** Don't split across multiple `.cs` files. If the script grows past ~400 lines, that's the signal you're building a subsystem, not an experiment — consider moving the reusable parts into `Assets/Sauti/Runtime/`.
 - **Inlined orchestration, not composition.** Don't depend on classes from other experiments. Reuse **patterns**, not classes. This keeps each experiment readable in isolation and prevents cross-experiment dependency tangles.
 - **Namespace: `Sauti.Experiments.<TopicCamelCase>`.** E.g. `Sauti.Experiments.MultiNpcScene`.
-- **Heavy comments at the top.** Sauti experiments start with a 10–30-line header comment explaining the intent, the upstream APIs touched, and any `[NEEDS_VERIFICATION]` fences. See the header of [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) for the template.
+- **Heavy comments at the top.** Sauti experiments start with a 10–30-line header comment explaining the intent, the upstream APIs touched, and any `[NEEDS_VERIFICATION]` fences. See the header of [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) for the template.
 - **Gate upstream packages with `#if SAUTI_LLMUNITY_AVAILABLE` and `#if SAUTI_WHISPER_UNITY_AVAILABLE`.** Compiles cleanly when either is missing.
 - **Expose `UnityEvent<>` outputs.** Game-side consumers wire them in the Inspector without recompiling.
 
 ### 5. Write the scene placeholder
 
-`<SceneName>.unity.placeholder.md` is a step-by-step recipe to recreate the scene by hand. Mirror [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md):
+`<SceneName>.unity.placeholder.md` is a step-by-step recipe to recreate the scene by hand. Mirror [`experiments/01-tts-hello/HelloScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/01-tts-hello/HelloScene.unity.placeholder.md):
 
 1. Open a new empty scene; save it under this experiment's folder.
 2. Create root GameObjects (the orchestrator, any NPC stand-ins, any UI canvas).

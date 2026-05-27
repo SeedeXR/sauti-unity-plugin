@@ -8,7 +8,7 @@ This page summarises everything a designer needs to know to budget for, and to t
 
 ## Per-platform model selection
 
-Verbatim from [`memory/voice_ai_architecture.md § 6`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md):
+Verbatim from [`memory/voice_ai_architecture.md § 6`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md):
 
 | Platform | STT | LLM | Embeddings | TTS |
 |---|---|---|---|---|
@@ -128,7 +128,7 @@ Models live under `StreamingAssets/VoiceAI/` at build time. Read-path quirks:
 | Android | **First-launch copy required.** | StreamingAssets is inside a compressed `.jar` and cannot be mmapped. Copy each model to `Application.persistentDataPath/VoiceAI/...` on first run, then load from there. |
 | Quest | Same as Android. | Quest is an Android variant; the same copy-on-first-launch rule applies. |
 
-Sauti's runtime is expected to handle the Android copy-on-first-launch transparently — this is part of the planned `BUILD-001` packaging work tracked in [`memory/todo.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/todo.md).
+Sauti's runtime is expected to handle the Android copy-on-first-launch transparently — this is part of the planned `BUILD-001` packaging work tracked in [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md).
 
 ---
 
@@ -171,7 +171,7 @@ The simulator / emulator targets (iOS Simulator, Android Emulator) **cannot run 
 
 ## Cross-references
 
-- The canonical per-platform table: [`memory/voice_ai_architecture.md § 6`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- The canonical per-platform table: [`memory/voice_ai_architecture.md § 6`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
 - GPU acceleration matrix: [Architecture - GPU acceleration](../developer-guide/architecture.md#gpu-acceleration-automatic-per-runtime).
 - AI models catalogue: [Reference - Models](../reference/models.md).
 - VR-specific scaffold: [Experiment 06 — VR Quest NPC](../experiments/06-vr-quest-npc.md).

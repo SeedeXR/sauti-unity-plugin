@@ -2007,10 +2007,10 @@ INFO -  Documentation built in 0.50 seconds
 **Architectural decisions:**
 - **MkDocs Material theme** over alternatives — best plain-markdown ergonomics; Sauti's existing memory/ markdown ports without rewrite.
 - **GitHub Action over `mkdocs gh-deploy`** — Action gives proper Pages env, build artefacts, `--strict` mode in CI, cancel-in-progress concurrency. Triggers on docs-only push to keep CI cost low.
-- **`your-org` placeholder** in all source-link URLs (mkdocs.yml + README + docs). Replace via one `sed` post-release once canonical GitHub org/repo is set.
+- **`your-org` placeholder** in all source-link URLs (mkdocs.yml + README + docs). Replace via one `sed` post-release once canonical GitHub org/repo is set. *Resolved in Session 20: all references now point to `SeedeXR/sauti-unity-plugin`.*
 
 **Suggested next steps:**
-1. **Replace `your-org` placeholder** in `mkdocs.yml`, `README.md`, all `docs/**/*.md` source-link URLs: `find . -type f \( -name "*.md" -o -name "*.yml" \) | xargs sed -i '' 's|your-org/sauti-unity-plugin|<real>/<repo>|g'`
+1. ~~**Replace `your-org` placeholder**~~ *(done in Session 20 — all URLs now resolve to `https://github.com/SeedeXR/sauti-unity-plugin`).*
 2. **Enable GitHub Pages** in repo settings (Settings → Pages → Source: "GitHub Actions"). First push to `main` after that fires the workflow and docs go live.
 3. **Add screenshots** to experiment pages + per-platform notes (currently text-only).
 4. **CI link-checker** for outward HTTP 404s.
@@ -2074,7 +2074,7 @@ $ tools/package-sauti.sh --skip-tests --no-models
 - **`npm pack` over plain `tar`** when available, for npm/UPM-conformant tarballs with deterministic ordering. Plain-`tar` fallback is implemented.
 
 **Suggested next steps:**
-1. **Tag a release.** After the `your-org` placeholder is replaced in `mkdocs.yml` + `README.md`, commit + `git tag v1.2.0` + push. The `.github/workflows/package.yml` workflow fires.
+1. **Tag a release.** With the `SeedeXR/sauti-unity-plugin` URLs now in place (Session 20), commit + `git tag v1.2.0` + push. The `.github/workflows/package.yml` workflow fires.
 2. **Add Unity license secrets** to the repo (`UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`) so the CI test job activates. Walkthrough in `docs/contributing/packaging.md`.
 3. **Validate the tarball against a consumer project** — fresh Unity 6 project, install the `.tgz`, import a sample, confirm compile + run. Quick human task.
 4. **Decide on OpenUPM publication** vs only-GitHub-Releases. Defer to a later release.

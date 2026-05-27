@@ -1,6 +1,6 @@
 # Manifest schema
 
-Every model file Sauti can load is described in a per-stage manifest under `ai-models/<stage>/manifest.json`. All four current manifests (`stt`, `llm`, `embeddings`, `tts`) validate against one shared JSON Schema: [`ai-models/_schema/stage-manifest.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/_schema/stage-manifest.schema.json).
+Every model file Sauti can load is described in a per-stage manifest under `ai-models/<stage>/manifest.json`. All four current manifests (`stt`, `llm`, `embeddings`, `tts`) validate against one shared JSON Schema: [`ai-models/_schema/stage-manifest.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/_schema/stage-manifest.schema.json).
 
 The manifest is the data the build pre-processor uses to:
 
@@ -9,7 +9,7 @@ The manifest is the data the build pre-processor uses to:
 - Respect license constraints (including click-through-required licenses).
 - Surface the `/no_think` directive support flag to runtime prompt assemblers.
 
-This page documents every field. To see real manifests, browse [`ai-models/stt/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/stt/manifest.json), [`/llm/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json), [`/embeddings/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/embeddings/manifest.json), [`/tts/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json).
+This page documents every field. To see real manifests, browse [`ai-models/stt/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/stt/manifest.json), [`/llm/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json), [`/embeddings/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/embeddings/manifest.json), [`/tts/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json).
 
 ---
 
@@ -154,7 +154,7 @@ Free-text follow-ups, caveats, source remap notes, or cross-references to `memor
 
 ## A complete worked example
 
-The Qwen3-1.7B entry from [`ai-models/llm/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json):
+The Qwen3-1.7B entry from [`ai-models/llm/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json):
 
 ```json
 {
@@ -229,7 +229,7 @@ If you're adding a new model, see [Contributing — Adding a model](../contribut
 3. Append a new entry to `ai-models/<stage>/manifest.json` filling every required field.
 4. If the license is non-SPDX, also fill `licenseUrl` and `requiresExplicitAcceptance`.
 5. Re-validate: any JSON-schema-aware editor should highlight missing required fields against the `$schema` reference.
-6. Update [`voice_ai_architecture.md § 6`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) if the per-platform selection changes.
+6. Update [`voice_ai_architecture.md § 6`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) if the per-platform selection changes.
 
 ---
 
@@ -244,6 +244,6 @@ If you're adding a new model, see [Contributing — Adding a model](../contribut
 ## Cross-references
 
 - The catalogue rendered from these manifests: [AI models](models.md).
-- The schema itself: [`ai-models/_schema/stage-manifest.schema.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/_schema/stage-manifest.schema.json).
+- The schema itself: [`ai-models/_schema/stage-manifest.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/_schema/stage-manifest.schema.json).
 - Adding a new model: [Contributing — Adding a model](../contributing/adding-a-model.md).
 - The deferred-Gemma decision: [Per-platform notes — Quest 3 RAM tightness](../designer-guide/per-platform.md#quest-3-ram-tightness).

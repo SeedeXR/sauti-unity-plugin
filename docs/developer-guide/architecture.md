@@ -1,6 +1,6 @@
 # Architecture
 
-> The canonical specification for Sauti's runtime lives in [`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). This page reframes that spec for an outside reader. Where the two ever disagree, the canonical file wins.
+> The canonical specification for Sauti's runtime lives in [`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). This page reframes that spec for an outside reader. Where the two ever disagree, the canonical file wins.
 
 ---
 
@@ -107,7 +107,7 @@ public static class TemporaryMemory
 }
 ```
 
-Source: [`Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs).
+Source: [`Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs).
 
 ### Layer 3 — Vector database (RAG)
 
@@ -144,7 +144,7 @@ string BuildPrompt(string userMessage, string[] ragChunks)
 
 The system-prompt rules come from § 9 (see [Voice prompt rules](../reference/prompts.md)). The `/no_think` tail is a Qwen3-specific directive ([§ 9.1](../reference/prompts.md#non-thinking-directive)).
 
-The real implementation lives in [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs)'s `BuildPrompt` method — wired to all three layers and the Layer 1 trim helper.
+The real implementation lives in [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs)'s `BuildPrompt` method — wired to all three layers and the Layer 1 trim helper.
 
 ---
 
@@ -234,7 +234,7 @@ void OnLLMToken(string cumulativeText)
 ```
 
 !!! note "Cumulative, not delta"
-    LLMUnity's `LLMAgent.Chat` first callback receives the **cumulative** assembled response so far, not per-token deltas. Sauti's sentence-boundary loop tracks an `_emittedThroughOffset` cursor into the cumulative string and only emits sentences past that cursor. See [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs) and [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) for the verified pattern.
+    LLMUnity's `LLMAgent.Chat` first callback receives the **cumulative** assembled response so far, not per-token deltas. Sauti's sentence-boundary loop tracks an `_emittedThroughOffset` cursor into the cumulative string and only emits sentences past that cursor. See [`experiments/03-llm-chat/LlmChat.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/03-llm-chat/LlmChat.cs) and [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) for the verified pattern.
 
 **Target latency** (user speaks to hears first word):
 

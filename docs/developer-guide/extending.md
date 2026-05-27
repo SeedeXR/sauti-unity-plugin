@@ -16,7 +16,7 @@ Swap LLMUnity's `DBSearch` for any other vector backend (in-memory, on-disk flat
 
 ### The interface
 
-Source: [`Assets/Sauti/Runtime/Scripts/ISautiRagBackend.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/ISautiRagBackend.cs).
+Source: [`Assets/Sauti/Runtime/Scripts/ISautiRagBackend.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/ISautiRagBackend.cs).
 
 ```csharp
 namespace Sauti.Memory
@@ -179,7 +179,7 @@ public sealed class FlatCosineRagBackend : ISautiRagBackend
 
 ### Unit-test pattern
 
-Use the `FakeRagBackend` from [`SautiRagTests.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/SautiRagTests.cs) as the template. The same shape applies to any custom backend that holds state:
+Use the `FakeRagBackend` from [`SautiRagTests.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/SautiRagTests.cs) as the template. The same shape applies to any custom backend that holds state:
 
 ```csharp
 [Test]
@@ -218,7 +218,7 @@ Swap `MiniLmRagEmbedder` for a smaller, faster, or differently-trained sentence 
 
 ### The interface
 
-Source: [`Assets/Sauti/Editor/IRagEmbedder.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/IRagEmbedder.cs).
+Source: [`Assets/Sauti/Editor/IRagEmbedder.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/IRagEmbedder.cs).
 
 ```csharp
 namespace Sauti.Editor.Rag
@@ -285,7 +285,7 @@ public sealed class DeterministicHashEmbedder : IRagEmbedder
 }
 ```
 
-This isn't useful for retrieval quality, but it's useful for testing the chunker + writer + reader round-trip without dragging the 22 MB MiniLM ONNX into the test suite. See [`RagDatabaseBuilderTests.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/RagDatabaseBuilderTests.cs) for a worked test that uses a fake embedder.
+This isn't useful for retrieval quality, but it's useful for testing the chunker + writer + reader round-trip without dragging the 22 MB MiniLM ONNX into the test suite. See [`RagDatabaseBuilderTests.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/RagDatabaseBuilderTests.cs) for a worked test that uses a fake embedder.
 
 ### Worked stub — a smaller real model
 
@@ -511,5 +511,5 @@ Five Sauti types touched (`IRagEmbedder`, `ISautiRagBackend`, `SautiRag`, `Tempo
 
 - The interfaces: [`ISautiRagBackend`](api-reference.md#isautiragbackend), [`IRagEmbedder`](api-reference.md#iragembedder).
 - The defaults: [`LlmUnityRagBackend`](api-reference.md#llmunityragbackend), [`MiniLmRagEmbedder`](api-reference.md#minilmragembedder).
-- The reference orchestrator: [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs).
-- The tests to read for the test-pattern shape: [`SautiRagTests.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/SautiRagTests.cs), [`RagDatabaseBuilderTests.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/RagDatabaseBuilderTests.cs).
+- The reference orchestrator: [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs).
+- The tests to read for the test-pattern shape: [`SautiRagTests.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/SautiRagTests.cs), [`RagDatabaseBuilderTests.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/RagDatabaseBuilderTests.cs).

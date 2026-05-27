@@ -2,13 +2,13 @@
 
 > **The VR variant of the integrated voice loop.** Quest 3 controller trigger starts mic capture -> Whisper Tiny ONNX -> memory + RAG -> Qwen3 GGUF -> Kokoro TTS -> spatialised audio at the NPC's position. Demonstrates the Quest-platform path through the Sauti pipeline.
 
-The scaffold lives at [`experiments/06-vr-quest-npc/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/06-vr-quest-npc). The full README is at [`experiments/06-vr-quest-npc/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/README.md).
+The scaffold lives at [`experiments/06-vr-quest-npc/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/06-vr-quest-npc). The full README is at [`experiments/06-vr-quest-npc/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/README.md).
 
 ---
 
 ## What this experiment proves
 
-1. The four pipeline stages from [`voice_ai_architecture.md § 0`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) run on Quest with the **Quest-targeted model variants** (Whisper Tiny + Qwen3 [^1] + MiniLM + Kokoro).
+1. The four pipeline stages from [`voice_ai_architecture.md § 0`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) run on Quest with the **Quest-targeted model variants** (Whisper Tiny + Qwen3 [^1] + MiniLM + Kokoro).
 2. XR Toolkit controller bindings drive push-to-talk without conflicting with the existing audio capture path.
 3. The NPC's spatial position is honoured — audio plays from the NPC GameObject's `AudioSource` (3D), not the player's camera.
 4. The Sauti pipeline is **the same** on Quest as on flagship — only the model selection differs (handled by the runtime-detection convention from EXP-02 / 03 / 05).
@@ -19,7 +19,7 @@ The scaffold lives at [`experiments/06-vr-quest-npc/`](https://github.com/your-o
 
 ## Code walkthrough
 
-Source: [`experiments/06-vr-quest-npc/QuestVrCompanion.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/QuestVrCompanion.cs).
+Source: [`experiments/06-vr-quest-npc/QuestVrCompanion.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/QuestVrCompanion.cs).
 
 The MonoBehaviour mirrors `FullVoiceLoop.cs` for the inner orchestration (mic -> STT -> memory + RAG -> LLM -> sentence-stream), but adds:
 
@@ -46,7 +46,7 @@ voiceLoop.OnSpeechReady += async sentence =>
 
 ## Manual scene creation
 
-Follow [`experiments/06-vr-quest-npc/VrCompanionScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/VrCompanionScene.unity.placeholder.md). The short version:
+Follow [`experiments/06-vr-quest-npc/VrCompanionScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/06-vr-quest-npc/VrCompanionScene.unity.placeholder.md). The short version:
 
 1. **Build settings:** **File -> Build Settings -> Switch Platform -> Android.**
 2. **XR config:** **Edit -> Project Settings -> XR Plugin Management -> Android tab -> check "OpenXR".** Then **OpenXR -> Android tab -> Interaction Profiles -> add "Oculus Touch Controller Profile".**
@@ -90,5 +90,5 @@ Three modifications to try:
 - Per-platform model selection: [Architecture — per-platform](../developer-guide/architecture.md#per-platform-model-selection)
 - Quest-specific tips: [Per-platform notes](../designer-guide/per-platform.md)
 - Microphone permissions: [Per-platform notes — Microphone permissions](../designer-guide/per-platform.md#microphone-permissions)
-- Spec: [`voice_ai_architecture.md § 6, § 7, § 8, § 9`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
+- Spec: [`voice_ai_architecture.md § 6, § 7, § 8, § 9`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
 - Previous experiment: [05 — Full Voice Loop](05-full-voice-loop.md)

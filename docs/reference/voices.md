@@ -2,7 +2,7 @@
 
 Kokoro ships **eleven** built-in English voices. Each one is a single `.bin` style-vector file under `ai-models/tts/voices/`. Pick by passing the `voiceId` (filename without `.bin`) to [`KokoroTtsRunner.SynthesizeAsync(text, voiceId)`](../developer-guide/api-reference.md#kokorottsrunner).
 
-All entries sourced verbatim from [`ai-models/tts/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json) and verified Apache-2.0.
+All entries sourced verbatim from [`ai-models/tts/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json) and verified Apache-2.0.
 
 ---
 
@@ -112,7 +112,7 @@ The `speed` modifier scales playback rate. `1.0` is natural; `0.8` for slower / 
 
 ## What you don't get in v1.x
 
-- **Non-English voices.** Kokoro itself supports more, but Sauti is English-only per [`voice_ai_architecture.md § 10`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). The voices ship only the English style vectors.
+- **Non-English voices.** Kokoro itself supports more, but Sauti is English-only per [`voice_ai_architecture.md § 10`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). The voices ship only the English style vectors.
 - **Voice cloning.** Kokoro is not a voice-cloning model. You cannot upload a few seconds of a recorded voice and have Kokoro mimic it.
 - **Emotional control.** Kokoro inflection is determined by the style vector and the punctuation in the input. There is no `"emotion": "angry"` parameter.
 
@@ -122,6 +122,6 @@ The `speed` modifier scales playback rate. `1.0` is natural; `0.8` for slower / 
 
 - API: [`KokoroTtsRunner`](../developer-guide/api-reference.md#kokorottsrunner)
 - Model catalogue: [AI models — TTS](models.md#tts-text-to-speech)
-- Manifest source: [`ai-models/tts/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json)
+- Manifest source: [`ai-models/tts/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json)
 - Per-NPC voice assignment: [Templates — NPC dialogue](../designer-guide/templates.md#npc-dialogue)
 - Try voices live: [Experiment 01 — TTS Hello](../experiments/01-tts-hello.md)

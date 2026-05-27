@@ -2,13 +2,13 @@
 
 > **The headline demo.** Mic -> Whisper STT -> memory + RAG -> Qwen3 LLM -> sentence-stream event (ready for Kokoro TTS). The first experiment that composes **every** Sauti subsystem into the canonical voice-AI pipeline from `voice_ai_architecture.md`.
 
-The scaffold lives at [`experiments/05-full-voice-loop/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/05-full-voice-loop). The full README is at [`experiments/05-full-voice-loop/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/README.md).
+The scaffold lives at [`experiments/05-full-voice-loop/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/05-full-voice-loop). The full README is at [`experiments/05-full-voice-loop/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/README.md).
 
 ---
 
 ## What this experiment proves
 
-1. The four pipeline stages from [`voice_ai_architecture.md § 0`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) work together end-to-end without manual hand-offs:
+1. The four pipeline stages from [`voice_ai_architecture.md § 0`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) work together end-to-end without manual hand-offs:
    - Mic -> `Whisper.WhisperManager` -> text (EXP-02 pattern).
    - text -> `TemporaryMemory.BuildPromptBlock()` (Layer 2) + `SautiRag.SearchAsync(query, 3)` (Layer 3) -> enriched prompt (§ 4.5 verbatim).
    - prompt -> `LLMUnity.LLMAgent.Chat(...)` -> cumulative-text callback (EXP-03 / EXP-04 pattern).
@@ -22,7 +22,7 @@ This is the **reference orchestrator**. When you write your own voice-AI MonoBeh
 
 ## Code walkthrough
 
-Source: [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs).
+Source: [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs).
 
 ### Init flow (`Awake`)
 
@@ -131,7 +131,7 @@ Set once on `Awake`; never rebuilt per turn.
 
 ## Manual scene creation
 
-Follow [`experiments/05-full-voice-loop/VoiceLoopScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/VoiceLoopScene.unity.placeholder.md). The short version:
+Follow [`experiments/05-full-voice-loop/VoiceLoopScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/VoiceLoopScene.unity.placeholder.md). The short version:
 
 1. **Prerequisites:** all model files in place; **Sauti -> Build Knowledge Base** menu has been run once.
 2. New empty scene; save as `VoiceLoopScene.unity` under `experiments/05-full-voice-loop/`.
@@ -193,6 +193,6 @@ Three modifications to try:
 - The four pipeline stages: [Architecture — runtime stack](../developer-guide/architecture.md#runtime-stack)
 - The three layers in one prompt: [Memory layers — how all three combine](../developer-guide/memory-layers.md#how-all-three-combine-the-buildprompt-pattern)
 - The system-prompt rules: [Voice prompt rules](../reference/prompts.md)
-- Spec: [`voice_ai_architecture.md § 0, § 4, § 4.5, § 8, § 9`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
+- Spec: [`voice_ai_architecture.md § 0, § 4, § 4.5, § 8, § 9`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
 - Previous experiment: [04 — RAG Grounding](04-rag-grounding.md)
 - Next experiment: [06 — VR Quest NPC](06-vr-quest-npc.md)

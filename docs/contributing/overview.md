@@ -2,7 +2,7 @@
 
 Sauti is built by a small swarm of contributors — human and agentic. Both follow the same set of ground rules. Read this page before opening a PR or starting a session.
 
-The full agent profile lives at [`memory/agent_profile.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/agent_profile.md). Three rules from § 3 of that file matter most for outside contributors.
+The full agent profile lives at [`memory/agent_profile.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/agent_profile.md). Three rules from § 3 of that file matter most for outside contributors.
 
 ---
 
@@ -20,7 +20,7 @@ This is the most important rule. Sauti's value proposition is "every claim trace
 
 > *When ending a session, the agent MUST append to `handover_session.md`: timestamp, role, files touched, tests added/passed/broken, decisions made, open blockers, suggested next steps.*
 
-Every contributor session ends with a new entry in [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md). The file is **append-only** — never edit or delete previous entries. The session log is the audit trail; rewriting it destroys context for the next contributor.
+Every contributor session ends with a new entry in [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md). The file is **append-only** — never edit or delete previous entries. The session log is the audit trail; rewriting it destroys context for the next contributor.
 
 The exact format and an example sit on the [Session workflow](session-workflow.md) page.
 
@@ -38,7 +38,7 @@ If you're contributing one PR, pick the role that fits and stick with it. If you
 
 | Area | Reviewer checks |
 |---|---|
-| Code (`Assets/Sauti/Runtime/**`, `Assets/Sauti/Editor/**`) | Tests pass; no `[NEEDS_VERIFICATION]` fences left open without a tracker ID; public API additions documented in [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md). |
+| Code (`Assets/Sauti/Runtime/**`, `Assets/Sauti/Editor/**`) | Tests pass; no `[NEEDS_VERIFICATION]` fences left open without a tracker ID; public API additions documented in [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md). |
 | Tests (`Assets/Sauti/Tests/Editor/**`) | New tests are deterministic; cover at least one edge case (empty input, null arg, out-of-range value). |
 | Models (`ai-models/**`) | Manifest entry complete; SHA-256 verified; license confirmed; tracker ID in `notes`. |
 | Knowledge base (`knowledge-base/**`) | Self-contained chunks; no markdown lists in NPC bodies; build-menu rerun confirmed. |
@@ -75,9 +75,9 @@ If you're contributing one PR, pick the role that fits and stick with it. If you
 1. Clone the repo. Open the root as a Unity project in Unity Hub. (Unity 6+ LTS — `ProjectVersion.txt` pins the build.)
 2. Let Unity import the three required UPM packages (already pinned in `Packages/manifest.json`).
 3. Run the existing tests: **Window -> General -> Test Runner -> Edit Mode -> Run All**. All ~30 tests should pass.
-4. Read [`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) — the canonical spec.
-5. Read [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md) tail (last 5–10 entries) for context on what's currently in flight.
-6. Pick a task from [`memory/todo.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/todo.md) — the project's open-tracker.
+4. Read [`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) — the canonical spec.
+5. Read [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md) tail (last 5–10 entries) for context on what's currently in flight.
+6. Pick a task from [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md) — the project's open-tracker.
 
 ---
 

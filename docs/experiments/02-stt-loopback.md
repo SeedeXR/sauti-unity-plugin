@@ -2,7 +2,7 @@
 
 > **Mic -> Whisper ONNX -> on-screen text.** The smallest end-to-end STT slice. Validates the speech-to-text pipeline before adding memory, RAG, or LLM.
 
-The scaffold lives at [`experiments/02-stt-loopback/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/02-stt-loopback). The full README is at [`experiments/02-stt-loopback/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/README.md).
+The scaffold lives at [`experiments/02-stt-loopback/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/02-stt-loopback). The full README is at [`experiments/02-stt-loopback/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/README.md).
 
 ---
 
@@ -17,7 +17,7 @@ The scaffold lives at [`experiments/02-stt-loopback/`](https://github.com/your-o
 
 ## Code walkthrough
 
-Source: [`experiments/02-stt-loopback/WhisperLoopback.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/WhisperLoopback.cs).
+Source: [`experiments/02-stt-loopback/WhisperLoopback.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/WhisperLoopback.cs).
 
 The MonoBehaviour:
 
@@ -44,13 +44,13 @@ For raw PCM (Sauti's likely use case once VAD is wired):
 WhisperResult res = await manager.GetTextAsync(samples, frequency, channels);
 ```
 
-The full upstream API: see [API reference — Upstream APIs](../developer-guide/api-reference.md#whisperwhispermanager-monobehaviour) and the verified surface notes at [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md).
+The full upstream API: see [API reference — Upstream APIs](../developer-guide/api-reference.md#whisperwhispermanager-monobehaviour) and the verified surface notes at [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md).
 
 ---
 
 ## Manual scene creation
 
-Follow [`experiments/02-stt-loopback/LoopbackScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/LoopbackScene.unity.placeholder.md). The short version:
+Follow [`experiments/02-stt-loopback/LoopbackScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/02-stt-loopback/LoopbackScene.unity.placeholder.md). The short version:
 
 1. New empty scene; save as `LoopbackScene.unity` under `experiments/02-stt-loopback/`.
 2. Empty `GameObject` named `WhisperLoopback`. Attach `WhisperLoopback.cs`.
@@ -94,8 +94,8 @@ Three modifications to try as you read the code:
 ## Cross-references
 
 - Upstream: [`Macoron/whisper.unity`](https://github.com/Macoron/whisper.unity)
-- API surface notes: [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — `Whisper.WhisperManager` section
+- API surface notes: [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — `Whisper.WhisperManager` section
 - [AI models — STT](../reference/models.md#stt-speech-to-text)
-- Spec: [`voice_ai_architecture.md § 2 + § 6`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
+- Spec: [`voice_ai_architecture.md § 2 + § 6`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
 - Previous experiment: [01 — TTS Hello](01-tts-hello.md)
 - Next experiment: [03 — LLM Chat](03-llm-chat.md)

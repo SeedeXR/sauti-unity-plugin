@@ -2,7 +2,7 @@
 
 Sauti's voice agent has **three memory layers**, each with a different lifecycle, write path, and reason to exist. This page walks each layer in depth and ends with the `BuildPrompt` function that combines all three.
 
-The canonical spec is [`memory/voice_ai_architecture.md § 4`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). The architecture overview lives at [Architecture — three-layer memory](architecture.md#the-three-layer-memory-architecture).
+The canonical spec is [`memory/voice_ai_architecture.md § 4`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). The architecture overview lives at [Architecture — three-layer memory](architecture.md#the-three-layer-memory-architecture).
 
 ---
 
@@ -41,7 +41,7 @@ The voice-AI spec calls for a rolling 10-turn (= 20 message) window. Since LLMUn
 while (llmAgent.chat.Count > 20) llmAgent.chat.RemoveAt(0);
 ```
 
-[`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) implements this as `EnforceChatHistoryCap`, parameterised by `maxChatMessages`:
+[`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs) implements this as `EnforceChatHistoryCap`, parameterised by `maxChatMessages`:
 
 ```csharp
 private void EnforceChatHistoryCap()
@@ -75,7 +75,7 @@ Named facts learned mid-session. Survives across turns. Gone on app exit.
 
 `Sauti.Memory.TemporaryMemory` — a **static class** holding a `Dictionary<string, string>`. Pure C# — no `UnityEngine` dependency. Unit-testable headlessly.
 
-Source: [`Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs).
+Source: [`Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/TemporaryMemory.cs).
 
 ### The full implementation (it's tiny)
 
@@ -151,7 +151,7 @@ Call `Clear()` on:
 
 ### Tests
 
-[`TemporaryMemoryTests.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/TemporaryMemoryTests.cs) covers:
+[`TemporaryMemoryTests.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Tests/Editor/TemporaryMemoryTests.cs) covers:
 
 - Empty dictionary -> empty prompt block.
 - Set then read.
@@ -169,7 +169,7 @@ Semantic search over a **pre-built, read-only** knowledge base. The user query i
 
 ### Where it lives
 
-- **The façade** — [`Sauti.Memory.SautiRag`](api-reference.md#sautirag), in [`Assets/Sauti/Runtime/Scripts/SautiRag.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/SautiRag.cs). A sealed class that wraps an `ISautiRagBackend`.
+- **The façade** — [`Sauti.Memory.SautiRag`](api-reference.md#sautirag), in [`Assets/Sauti/Runtime/Scripts/SautiRag.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/SautiRag.cs). A sealed class that wraps an `ISautiRagBackend`.
 - **The interface** — [`Sauti.Memory.ISautiRagBackend`](api-reference.md#isautiragbackend). Two methods: `LoadAsync`, `SearchAsync`.
 - **The default backend** — [`Sauti.Memory.LlmUnityRagBackend`](api-reference.md#llmunityragbackend). Delegates to LLMUnity's `RAG` MonoBehaviour (which itself wraps the `DBSearch` ANN backend over the `usearch` C library).
 - **The binary index** — `Assets/StreamingAssets/VoiceAI/rag/knowledge.db`. Built offline by the Editor menu **Sauti -> Build Knowledge Base** (see [Knowledge base authoring](../designer-guide/knowledge-base.md)).
@@ -291,7 +291,7 @@ string BuildPrompt(string userMessage, string[] ragChunks)
 }
 ```
 
-The full reference implementation lives at [`experiments/05-full-voice-loop/FullVoiceLoop.cs:BuildPrompt`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs), wired to all three layers:
+The full reference implementation lives at [`experiments/05-full-voice-loop/FullVoiceLoop.cs:BuildPrompt`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/05-full-voice-loop/FullVoiceLoop.cs), wired to all three layers:
 
 ```csharp
 public string BuildPrompt(string userMessage, string[] ragChunks)
@@ -383,7 +383,7 @@ private async Task RunOneTurn(string transcript)
 ## Cross-references
 
 - Architecture overview: [Architecture — three-layer memory](architecture.md#the-three-layer-memory-architecture).
-- Spec: [`memory/voice_ai_architecture.md § 4`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- Spec: [`memory/voice_ai_architecture.md § 4`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
 - API reference: [Sauti.Memory namespace](api-reference.md#sautimemory-namespace).
 - Knowledge base authoring (Layer 3 inputs): [Knowledge base](../designer-guide/knowledge-base.md).
 - Voice prompt rules embedded in the system prompt: [Voice prompt rules](../reference/prompts.md).

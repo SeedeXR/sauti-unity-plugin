@@ -33,7 +33,7 @@ The five stages are fixed:
 | `tts` | Text-to-speech models (Kokoro). |
 | `rag` | Built artefacts (`knowledge.db`). |
 
-If your model doesn't fit one of these, you're introducing a new stage — which means a spec amendment. Open a discussion in [`memory/todo.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/todo.md) under `### Open Questions` first.
+If your model doesn't fit one of these, you're introducing a new stage — which means a spec amendment. Open a discussion in [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md) under `### Open Questions` first.
 
 ---
 
@@ -114,7 +114,7 @@ For non-SPDX licenses (Gemma TOS, Llama community license, etc.):
 - **Open the URL. Read the terms. Verify redistribution is permitted.** If the terms require a click-through and the maintainer hasn't clicked through, status should be `"deferred"`, not `"ready"`.
 - The Editor download tool will surface this before fetching.
 
-The deferred-Gemma3 entry in [`ai-models/llm/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json) is the worked example.
+The deferred-Gemma3 entry in [`ai-models/llm/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json) is the worked example.
 
 ---
 
@@ -123,7 +123,7 @@ The deferred-Gemma3 entry in [`ai-models/llm/manifest.json`](https://github.com/
 If your model **changes which file ships on which platform** — e.g. it's a smaller variant that should replace an existing one on Quest — update:
 
 - The `targets` array in your manifest entry (which platforms ship this file).
-- The per-platform table in [`memory/voice_ai_architecture.md § 6`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- The per-platform table in [`memory/voice_ai_architecture.md § 6`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
 - The mirror table in [Architecture — per-platform model selection](../developer-guide/architecture.md#per-platform-model-selection).
 - The mirror table in [Per-platform notes](../designer-guide/per-platform.md#per-platform-model-selection).
 
@@ -252,5 +252,5 @@ Half-day task. The bulk is the prompt-assembler branching.
 
 - Manifest schema in full: [Manifest schema](../reference/manifests.md).
 - Per-platform model selection: [Architecture](../developer-guide/architecture.md#per-platform-model-selection).
-- Runner templates: [`KokoroTtsRunner.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/Tts/KokoroTtsRunner.cs), [`MiniLmRagEmbedder.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/MiniLmRagEmbedder.cs).
+- Runner templates: [`KokoroTtsRunner.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Runtime/Scripts/Tts/KokoroTtsRunner.cs), [`MiniLmRagEmbedder.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/Assets/Sauti/Editor/MiniLmRagEmbedder.cs).
 - The contributor charter on "no fictional APIs": [Contributing — overview](overview.md).

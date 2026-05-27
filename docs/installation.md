@@ -24,7 +24,7 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
     Best for exploring the source, running the experiments, or contributing.
 
     ```bash
-    git clone https://github.com/your-org/sauti-unity-plugin.git
+    git clone https://github.com/SeedeXR/sauti-unity-plugin.git
     cd sauti-unity-plugin
     ```
 
@@ -40,7 +40,7 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
     !!! danger "Never extract the tarball into `Assets/`"
         Unity will not resolve the dependencies if you drop the unpacked `package/` folder under `Assets/`. The Console will throw `Failed to resolve assembly 'Sauti.Editor'` and `CS0234: 'ML' does not exist in namespace 'Microsoft'`. **Treat the `.tgz` as a UPM package — install it via Package Manager.**
 
-    1. Download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/your-org/sauti-unity-plugin/releases).
+    1. Download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases).
     2. Place it somewhere under your project's `Packages/` directory (e.g. `Packages/tarballs/`). Do **not** put it in `Assets/`.
     3. **Add a scoped registry** to `Packages/manifest.json` so ONNX Runtime resolves:
        ```json
@@ -72,7 +72,7 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
        ```
     6. (Optional) **Add by Git URL** instead of the tarball:
        ```
-       https://github.com/your-org/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
+       https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
        ```
     7. (Optional) **Build the tarball yourself** from a checked-out repo:
        ```bash

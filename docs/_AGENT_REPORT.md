@@ -45,7 +45,7 @@ These are places where the brief was open-ended and I picked a direction. Listed
 
 1. **API reference scope: public members only.** Private fields, internal helpers, the `Sauti.Experiments.*` per-experiment MonoBehaviour publics, and the test-only `FakeRagBackend` from `SautiRagTests.cs` are deliberately omitted. The reference points readers at the source files for internals. Trade-off: keeps the reference page focused; doesn't double-maintain the heavily-commented source headers.
 
-2. **Source-link format.** I link to source files using the `github.com/your-org/sauti-unity-plugin/blob/main/...` URL pattern that matches `mkdocs.yml`'s placeholder `repo_url`. The `your-org` slug is a template; the GitHub Action / release-process will replace it. Until then the links resolve to a placeholder repo — known limitation.
+2. **Source-link format.** I link to source files using the `github.com/SeedeXR/sauti-unity-plugin/blob/main/...` URL pattern that matches `mkdocs.yml`'s `repo_url`. *(Originally written against a `your-org` placeholder; Session 20 ran the canonical-org substitution and all links now resolve to the real repository.)*
 
 3. **Line-number anchors in source links.** A handful of API-reference entries link to a specific line in the source (e.g. `#L18` for `TemporaryMemory`). These will drift if the source file is edited. The pragma is: link to the file unanchored when in doubt; line-anchor only the class-declaration line that's the most stable target.
 
@@ -67,7 +67,7 @@ These are places where the brief was open-ended and I picked a direction. Listed
 
 ## Cross-reference health
 
-Every page links **inward** (other docs pages) and **outward** (the canonical source files in the repo). Inward links are exclusively relative paths so the site builds clean. Outward links use the `github.com/your-org/sauti-unity-plugin/blob/main/...` pattern; when the real `org` lands, a single repo-wide `sed` will update them.
+Every page links **inward** (other docs pages) and **outward** (the canonical source files in the repo). Inward links are exclusively relative paths so the site builds clean. Outward links use the `github.com/SeedeXR/sauti-unity-plugin/blob/main/...` pattern — pointing at the canonical repo.
 
 Internal cross-reference density: every page has a "Cross-references" or "Where to go next" section. The grid-cards pattern is used on every overview page (designer overview, developer overview, contributing overview, experiments overview, plus the `index.md` written by main thread) to give readers obvious next-hop links.
 
@@ -84,7 +84,7 @@ Internal cross-reference density: every page has a "Cross-references" or "Where 
 
 ## Suggested follow-ups for the next docs session
 
-1. **Replace the `your-org` placeholder in all source-link URLs** once the canonical GitHub org/repo is known. Single `sed -i 's|your-org/sauti-unity-plugin|<real-org>/<real-repo>|g'` across `docs/**/*.md`.
+1. ~~**Replace the `your-org` placeholder in all source-link URLs**~~ *(done in Session 20 — all source links now resolve to `https://github.com/SeedeXR/sauti-unity-plugin`).*
 2. **Add screenshots** to: the experiments pages (Editor scene-creation step results), the per-platform notes (Quest dashboard, iOS permission dialog). Currently text-only.
 3. **Generate the API reference from source instead of hand-maintaining.** A `doxygen` / `xmldoc-to-md` pipeline would let the public-API table track the source automatically. Today the table is hand-maintained against the heavily-commented source.
 4. **Wire mkdocs link-checking into CI.** The `pymdownx.snippets:check_paths: true` setting in `mkdocs.yml` already covers some of this; a dedicated link-checker would catch outward HTTP 404s.

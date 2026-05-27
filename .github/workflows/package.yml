@@ -136,7 +136,7 @@ jobs:
             Install via Unity Package Manager:
             **Window → Package Manager → + → Install package from tarball** → select `com.sauti.voice-ai-${{ steps.version.outputs.version }}.tgz`.
 
-            Refer to `CHANGELOG.md` inside the tarball or [the docs site](https://your-org.github.io/sauti-unity-plugin/) for details.
+            Refer to `CHANGELOG.md` inside the tarball or [the docs site](https://SeedeXR.github.io/sauti-unity-plugin/) for details.
 
             ### SHA-256
             See `sha256sums.txt`.

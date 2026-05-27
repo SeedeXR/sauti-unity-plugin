@@ -1,6 +1,6 @@
 # Session workflow
 
-Sauti is developed in **sessions** — bounded units of work, each with a declared role, a fixed scope, and an append-only entry in [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md) at the end. The same workflow applies whether the contributor is a human or an AI agent.
+Sauti is developed in **sessions** — bounded units of work, each with a declared role, a fixed scope, and an append-only entry in [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md) at the end. The same workflow applies whether the contributor is a human or an AI agent.
 
 This page is the procedural companion to [Contributing — overview](overview.md). Read that first for the ground rules; this page is the mechanical "how".
 
@@ -39,15 +39,15 @@ The bookend rituals — reading the recent handover entries at the start, append
 
 Before writing any code:
 
-1. Read the most recent five entries in [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md). This tells you what's in flight, what blockers exist, what conventions have been set this week.
-2. Skim [`memory/todo.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/todo.md). Pick a task. If the task description is ambiguous, **ask** before starting — don't guess.
-3. Check whether the spec ([`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)) has changed since you last looked. The v1.2 spec was retro-aligned across multiple sessions; older files in `memory/` may disagree with the canonical spec. Where they disagree, the canonical file wins.
+1. Read the most recent five entries in [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md). This tells you what's in flight, what blockers exist, what conventions have been set this week.
+2. Skim [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md). Pick a task. If the task description is ambiguous, **ask** before starting — don't guess.
+3. Check whether the spec ([`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)) has changed since you last looked. The v1.2 spec was retro-aligned across multiple sessions; older files in `memory/` may disagree with the canonical spec. Where they disagree, the canonical file wins.
 
 If you're starting your **first** session:
 
-- Read [`memory/agent_profile.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/agent_profile.md) — the contributor charter.
-- Read [`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) — the canonical spec.
-- Read [`memory/api_surfaces.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — verified upstream APIs (so you don't invent fictional ones).
+- Read [`memory/agent_profile.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/agent_profile.md) — the contributor charter.
+- Read [`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md) — the canonical spec.
+- Read [`memory/api_surfaces.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/api_surfaces.md) — verified upstream APIs (so you don't invent fictional ones).
 
 ---
 
@@ -196,8 +196,8 @@ This is the **only** allowed handling. Don't pick a side, ship code that locks i
 
 ## Cross-references
 
-- The contributor charter: [`memory/agent_profile.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/agent_profile.md).
-- The session log: [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md).
-- The task tracker: [`memory/todo.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/todo.md).
-- The canonical spec: [`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
+- The contributor charter: [`memory/agent_profile.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/agent_profile.md).
+- The session log: [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md).
+- The task tracker: [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md).
+- The canonical spec: [`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md).
 - Other ground rules: [Contributing — overview](overview.md).

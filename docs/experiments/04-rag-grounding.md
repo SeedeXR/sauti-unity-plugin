@@ -2,7 +2,7 @@
 
 > **The first experiment that composes Sauti's three-layer memory.** Text question -> MiniLM retrieves top-3 chunks from `knowledge.db` -> assembled prompt (§ 4.5 verbatim) -> Qwen3 / Gemma3 -> grounded English answer. The Inspector exposes a `Disable RAG For Comparison` toggle so the same question runs twice — with and without retrieval — and you can **see** the answer change.
 
-The scaffold lives at [`experiments/04-rag-grounding/`](https://github.com/your-org/sauti-unity-plugin/tree/main/experiments/04-rag-grounding). The full README is at [`experiments/04-rag-grounding/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/README.md).
+The scaffold lives at [`experiments/04-rag-grounding/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/experiments/04-rag-grounding). The full README is at [`experiments/04-rag-grounding/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/README.md).
 
 ---
 
@@ -20,7 +20,7 @@ A common failure mode in RAG demos: the LLM "knew the answer anyway" from traini
 Run the experiment twice:
 
 1. **`disableRagForComparison = true`.** Ask: *"Who guards the artifact in the Crystal Caverns?"* Expected answer: generic / hedging / "I don't know."
-2. **`disableRagForComparison = false`.** Same question. Expected answer: references Elder Maren and the after-dark constraint, drawn from [`knowledge-base/npcs/elder-maren.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md) via retrieval.
+2. **`disableRagForComparison = false`.** Same question. Expected answer: references Elder Maren and the after-dark constraint, drawn from [`knowledge-base/npcs/elder-maren.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md) via retrieval.
 
 If both answers look similar, retrieval is not firing — check the `OnRetrievedChunks` debug panel.
 
@@ -28,7 +28,7 @@ If both answers look similar, retrieval is not firing — check the `OnRetrieved
 
 ## Code walkthrough
 
-Source: [`experiments/04-rag-grounding/RagGroundedAsk.cs`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/RagGroundedAsk.cs).
+Source: [`experiments/04-rag-grounding/RagGroundedAsk.cs`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/RagGroundedAsk.cs).
 
 The MonoBehaviour:
 
@@ -60,7 +60,7 @@ string prompt = sb.ToString();
 
 ## Manual scene creation
 
-Follow [`experiments/04-rag-grounding/GroundedScene.unity.placeholder.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/GroundedScene.unity.placeholder.md). The short version:
+Follow [`experiments/04-rag-grounding/GroundedScene.unity.placeholder.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/GroundedScene.unity.placeholder.md). The short version:
 
 1. **First-time only:** run the **Sauti -> Build Knowledge Base** menu in the Editor. This is what produces the `knowledge.db` the scene loads.
 2. New empty scene; save as `GroundedScene.unity` under `experiments/04-rag-grounding/`.
@@ -91,7 +91,7 @@ Three modifications to try:
 
 ## Known limitations
 
-- **All five upstream dependencies must be in place** — MiniLM model, Qwen3 model, LLMUnity asmdef wired, the `SAUTI_LLMUNITY_AVAILABLE` symbol defined, `knowledge.db` built. The README at [`experiments/04-rag-grounding/README.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/README.md) walks the dependency tree in detail.
+- **All five upstream dependencies must be in place** — MiniLM model, Qwen3 model, LLMUnity asmdef wired, the `SAUTI_LLMUNITY_AVAILABLE` symbol defined, `knowledge.db` built. The README at [`experiments/04-rag-grounding/README.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/experiments/04-rag-grounding/README.md) walks the dependency tree in detail.
 - **Layer 1 conversation history is not used here** — single-shot Q&A. EXP-05 wires it up.
 - **No score-threshold gating.** Every retrieved chunk lands in the prompt regardless of score. A future polish would drop chunks below a cosine threshold (e.g. < 0.3).
 
@@ -102,6 +102,6 @@ Three modifications to try:
 - [`SautiRag` API](../developer-guide/api-reference.md#sautirag)
 - [Memory layers — Layer 3](../developer-guide/memory-layers.md#layer-3-vector-database-rag)
 - [Knowledge base authoring](../designer-guide/knowledge-base.md)
-- Spec: [`voice_ai_architecture.md § 4.3 + § 4.5`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
+- Spec: [`voice_ai_architecture.md § 4.3 + § 4.5`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md)
 - Previous experiment: [03 — LLM Chat](03-llm-chat.md)
 - Next experiment: [05 — Full Voice Loop](05-full-voice-loop.md)

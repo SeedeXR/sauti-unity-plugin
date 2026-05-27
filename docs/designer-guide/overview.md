@@ -57,9 +57,9 @@ Most projects need **both**: templates for who a character *is*, the knowledge b
 
 A concrete example: in the Frostmere sample world the team uses both.
 
-- **Elder Maren** is a single NPC the player can talk to. Her *persona* lives in an `npc-dialogue.json` template. Her *biography* (sixty-three years old, lives by the frozen lake, knows the artifact's location) lives in [`knowledge-base/npcs/elder-maren.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md). The template tells Sauti how Maren speaks; the knowledge base tells Sauti what she knows.
+- **Elder Maren** is a single NPC the player can talk to. Her *persona* lives in an `npc-dialogue.json` template. Her *biography* (sixty-three years old, lives by the frozen lake, knows the artifact's location) lives in [`knowledge-base/npcs/elder-maren.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/npcs/elder-maren.md). The template tells Sauti how Maren speaks; the knowledge base tells Sauti what she knows.
 
-- The **opening narration** when the player enters the Crystal Caverns lives as a chapter inside a `quest-narrator.json`. The chapter's `knowledgeTag` points the narrator's retrieval at [`knowledge-base/locations/crystal-caverns.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/knowledge-base/locations/crystal-caverns.md), so the narrator can mention details that match the actual location lore.
+- The **opening narration** when the player enters the Crystal Caverns lives as a chapter inside a `quest-narrator.json`. The chapter's `knowledgeTag` points the narrator's retrieval at [`knowledge-base/locations/crystal-caverns.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/knowledge-base/locations/crystal-caverns.md), so the narrator can mention details that match the actual location lore.
 
 ---
 
@@ -72,7 +72,7 @@ You should reach for a template when:
 - You want to **tune** behaviour per-character — a terser word cap for a taciturn elder, a faster speed for a hurried envoy.
 - You want **non-LLM shortcuts** — `voice-command-routing.json` matches the transcript against pre-defined phrases and fires game events with no LLM call (lower latency, deterministic behaviour).
 
-Templates are JSON files; you can author them in any editor (VS Code with the JSON-schema extension is the smoothest path because the schemas wire up auto-validation). The six templates ship in [`templates/`](https://github.com/your-org/sauti-unity-plugin/tree/main/templates):
+Templates are JSON files; you can author them in any editor (VS Code with the JSON-schema extension is the smoothest path because the schemas wire up auto-validation). The six templates ship in [`templates/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/templates):
 
 | File | What it controls |
 |---|---|
@@ -96,7 +96,7 @@ You should reach for the knowledge base when:
 - You expect to **iterate** on lore. Knowledge-base files are plain Markdown — version-controllable, diffable, easy to refactor.
 - The text is **long** — paragraphs of backstory, not single sentences. The chunker is designed for prose.
 
-The knowledge base lives under [`knowledge-base/`](https://github.com/your-org/sauti-unity-plugin/tree/main/knowledge-base) in three conventional subfolders:
+The knowledge base lives under [`knowledge-base/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/knowledge-base) in three conventional subfolders:
 
 - `knowledge-base/lore/` — broad world facts (`world-overview.md`, `factions.md`, `magic-system.md`).
 - `knowledge-base/locations/` — places (`stormwall.md`, `crystal-caverns.md`).

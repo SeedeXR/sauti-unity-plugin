@@ -10,7 +10,7 @@ Every model file Sauti can load, by stage. Each row is verbatim from the per-sta
 ## STT — Speech-to-text
 
 **Stage:** `stt`
-**Manifest:** [`ai-models/stt/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/stt/manifest.json)
+**Manifest:** [`ai-models/stt/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/stt/manifest.json)
 **Runtime:** `asus4/onnxruntime-unity` via `Macoron/whisper.unity`
 **Language:** English only (`language = "en"`)
 
@@ -53,7 +53,7 @@ The Whisper Tiny tokenizer is byte-identical to the Whisper Small tokenizer (`sh
 ## LLM — Large language model
 
 **Stage:** `llm`
-**Manifest:** [`ai-models/llm/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json)
+**Manifest:** [`ai-models/llm/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json)
 **Runtime:** `undreamai/LLMUnity` (wraps llama.cpp)
 
 ### Qwen3-1.7B Q5_K_M (flagship)
@@ -98,7 +98,7 @@ The Whisper Tiny tokenizer is byte-identical to the Whisper Small tokenizer (`sh
 ## Embeddings — RAG encoder
 
 **Stage:** `embeddings`
-**Manifest:** [`ai-models/embeddings/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/embeddings/manifest.json)
+**Manifest:** [`ai-models/embeddings/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/embeddings/manifest.json)
 **Runtime:** `asus4/onnxruntime-unity`
 **Used by:** offline build ([`KnowledgeBaseChunker`](../developer-guide/api-reference.md#knowledgebasechunker) -> [`MiniLmRagEmbedder`](../developer-guide/api-reference.md#minilmragembedder)) **and** runtime query path. Same encoder for both is mandatory.
 
@@ -135,7 +135,7 @@ The Whisper Tiny tokenizer is byte-identical to the Whisper Small tokenizer (`sh
 ## TTS — Text-to-speech
 
 **Stage:** `tts`
-**Manifest:** [`ai-models/tts/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json)
+**Manifest:** [`ai-models/tts/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/tts/manifest.json)
 **Runtime:** `asus4/onnxruntime-unity` via Sauti's own [`KokoroTtsRunner`](../developer-guide/api-reference.md#kokorottsrunner)
 **Source:** all files from [`onnx-community/Kokoro-82M-ONNX`](https://huggingface.co/onnx-community/Kokoro-82M-ONNX) — Apache-2.0.
 
@@ -182,7 +182,7 @@ Total Kokoro footprint: **~88 MB model + 5 KB tokenizer + 11 × 512 KB voices = 
 | Location (source-of-truth) | `ai-models/rag/knowledge.db` |
 | Location (runtime) | `Assets/StreamingAssets/VoiceAI/rag/knowledge.db` |
 | Built by | **Sauti -> Build Knowledge Base** Editor menu ([`RagDatabaseBuilder.BuildFromMenu`](../developer-guide/api-reference.md#ragdatabasebuilder)) |
-| Input | All `*.md` / `*.txt` under [`knowledge-base/`](https://github.com/your-org/sauti-unity-plugin/tree/main/knowledge-base) except `README.md` |
+| Input | All `*.md` / `*.txt` under [`knowledge-base/`](https://github.com/SeedeXR/sauti-unity-plugin/tree/main/knowledge-base) except `README.md` |
 | Status | pending — build via Editor menu once `MiniLmRagEmbedder` model is in place |
 
 See [Knowledge base authoring](../designer-guide/knowledge-base.md) for the full build pipeline.

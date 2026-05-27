@@ -86,7 +86,7 @@ Each experiment ships README + MonoBehaviour + scene placeholder.
 
 ### Deferred
 
-- **Gemma3-1B Q4_K_M (LLM, Quest / low-end target).** Manifest entry retained at `status: deferred`. The Gemma Terms of Use require manual acceptance via Hugging Face login; the team chose simplicity-of-shipping over second-LLM-variety for v1.2. Quest builds in v1.2 fall back to Qwen3-1.7B-Q5_K_M (1.26 GB) — tight on Quest 3's 8 GB RAM but functional. Future v1.3+ can re-activate this entry by: (1) accepting terms at https://ai.google.dev/gemma/terms, (2) downloading with HF token, (3) filling `sha256` + `licenseConfirmedAt`, (4) flipping `status` to `ready`. See [Per-platform notes — Quest 3 RAM tightness](designer-guide/per-platform.md#quest-3-ram-tightness) and the `notes` field in [`ai-models/llm/manifest.json`](https://github.com/your-org/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json).
+- **Gemma3-1B Q4_K_M (LLM, Quest / low-end target).** Manifest entry retained at `status: deferred`. The Gemma Terms of Use require manual acceptance via Hugging Face login; the team chose simplicity-of-shipping over second-LLM-variety for v1.2. Quest builds in v1.2 fall back to Qwen3-1.7B-Q5_K_M (1.26 GB) — tight on Quest 3's 8 GB RAM but functional. Future v1.3+ can re-activate this entry by: (1) accepting terms at https://ai.google.dev/gemma/terms, (2) downloading with HF token, (3) filling `sha256` + `licenseConfirmedAt`, (4) flipping `status` to `ready`. See [Per-platform notes — Quest 3 RAM tightness](designer-guide/per-platform.md#quest-3-ram-tightness) and the `notes` field in [`ai-models/llm/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/llm/manifest.json).
 - **XR Interaction Toolkit pinning (`XR-PKG-001`).** Not yet committed to `Packages/manifest.json`. EXP-06 requires manual install on first open.
 - **`XR-API-001` controller binding verification.** EXP-06's controller polling uses the legacy `UnityEngine.XR.InputDevices.GetDeviceAtXRNode` pattern. Modern `XR Interaction Toolkit` `InputAction` binding is the recommended replacement; deferred until a session can verify on hardware.
 - **`BUILD-001` build pre-processor.** Per-platform model-stripping at build time is designed but not yet implemented. v1.2 ships the full model bundle to every target.
@@ -106,7 +106,7 @@ Each experiment ships README + MonoBehaviour + scene placeholder.
 
 ## Pre-1.2 history
 
-Sauti's pre-1.2 development happened across 17 sessions of multi-agent work, all logged append-only in [`memory/handover_session.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/handover_session.md). Highlights:
+Sauti's pre-1.2 development happened across 17 sessions of multi-agent work, all logged append-only in [`memory/handover_session.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/handover_session.md). Highlights:
 
 - **Sessions 1–5** — Project scaffolding, philosophy, architecture, initial experiments.
 - **Sessions 6–10** — Model downloads, manifest schema, knowledge-base authoring conventions.
@@ -126,4 +126,4 @@ Sauti uses **semantic versioning** with the architecture-spec version as the maj
 - **Minor (1.2.x)** — additive non-breaking changes. New experiments, new templates, new model variants, new documentation.
 - **Patch (1.2.0.x)** — bug fixes, manifest updates, doc corrections.
 
-The architecture-spec version lives at the top of [`memory/voice_ai_architecture.md`](https://github.com/your-org/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). Pin Sauti's plugin version to the spec version it implements.
+The architecture-spec version lives at the top of [`memory/voice_ai_architecture.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/voice_ai_architecture.md). Pin Sauti's plugin version to the spec version it implements.

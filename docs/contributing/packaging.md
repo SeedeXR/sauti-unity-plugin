@@ -42,7 +42,7 @@ package/                                ← npm/UPM packs everything inside as "
 
 ## Build it locally
 
-The packaging script lives at [`tools/package-sauti.sh`](https://github.com/your-org/sauti-unity-plugin/blob/main/tools/package-sauti.sh).
+The packaging script lives at [`tools/package-sauti.sh`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/tools/package-sauti.sh).
 
 ```bash
 # Default — run Unity tests, then package
