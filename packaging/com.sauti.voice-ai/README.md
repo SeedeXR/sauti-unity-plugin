@@ -9,11 +9,15 @@ This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because y
 
 ## Install
 
+> ⚠ **Never extract the `.tgz` into `Assets/`.** The Unity Editor cannot resolve dependencies for unpacked tarballs — you'll get `Failed to resolve assembly 'Sauti.Editor'` and `CS0234: 'ML' does not exist in namespace 'Microsoft'`. Install it through the Package Manager instead.
+
 **In an existing Unity 6+ project,** open `Window → Package Manager → +` and choose one of:
 
-- **Install package from tarball** → select the `com.sauti.voice-ai-1.2.0.tgz` you downloaded.
+- **Install package from tarball** → select the `com.sauti.voice-ai-1.2.0.tgz` you downloaded. Best to place the file under `Packages/tarballs/` first and add the dependencies listed below to `Packages/manifest.json` so all peers (ONNX Runtime, LLMUnity, whisper.unity) resolve in the same pass.
 - **Add package by name** → `com.sauti.voice-ai` (once published to OpenUPM / a private registry).
 - **Add package from git URL** → `https://github.com/your-org/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai` (consumes the embedded UPM tree directly).
+
+After Unity finishes the first import, run **`Sauti → Verify Setup`** from the menu bar. The wizard checks the scoped registry, peer dependencies, scripting defines, and StreamingAssets model layout — and offers one-click fixes for anything missing.
 
 Sauti's required upstream dependencies (auto-fetched per `package.json`):
 

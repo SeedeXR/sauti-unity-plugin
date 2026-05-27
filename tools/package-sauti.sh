@@ -143,11 +143,17 @@ rm -rf "$STAGING_DIR"
 mkdir -p "$STAGING_DIR/com.sauti.voice-ai"
 STAGE="$STAGING_DIR/com.sauti.voice-ai"
 
-# Copy package metadata
-cp "$PKG_SRC/package.json"   "$STAGE/"
-cp "$PKG_SRC/README.md"      "$STAGE/"
-cp "$PKG_SRC/CHANGELOG.md"   "$STAGE/"
-cp "$PKG_SRC/LICENSE.md"     "$STAGE/"
+# Copy package metadata. The .meta sidecars are required for Unity to import
+# the package-root files without logging "no meta file, but it's in an
+# immutable folder" warnings.
+cp "$PKG_SRC/package.json"        "$STAGE/"
+cp "$PKG_SRC/package.json.meta"   "$STAGE/"
+cp "$PKG_SRC/README.md"           "$STAGE/"
+cp "$PKG_SRC/README.md.meta"      "$STAGE/"
+cp "$PKG_SRC/CHANGELOG.md"        "$STAGE/"
+cp "$PKG_SRC/CHANGELOG.md.meta"   "$STAGE/"
+cp "$PKG_SRC/LICENSE.md"          "$STAGE/"
+cp "$PKG_SRC/LICENSE.md.meta"     "$STAGE/"
 
 # Sync version into package.json if overridden
 if [[ -n "$VERSION_OVERRIDE" ]]; then
@@ -171,6 +177,16 @@ rsync -a "$SAUTI_EDITOR/" "$STAGE/Editor/"
 # Copy Tests tree — preserves the in-package test asmdef so consumers can also run them.
 mkdir -p "$STAGE/Tests/Editor"
 rsync -a "$SAUTI_TESTS/" "$STAGE/Tests/Editor/"
+
+# Copy the folder-level .meta files. They live as SIBLINGS of the source
+# folders (e.g. Assets/Sauti/Runtime.meta is next to Assets/Sauti/Runtime/),
+# so the rsync calls above don't pick them up. Without these, the Unity
+# Editor refuses to import the package root folders and logs
+# "no meta file, but it's in an immutable folder. The asset will be ignored."
+cp "$REPO_ROOT/Assets/Sauti/Runtime.meta"      "$STAGE/Runtime.meta"
+cp "$REPO_ROOT/Assets/Sauti/Editor.meta"       "$STAGE/Editor.meta"
+cp "$REPO_ROOT/Assets/Sauti/Tests.meta"        "$STAGE/Tests.meta"
+cp "$REPO_ROOT/Assets/Sauti/Tests/Editor.meta" "$STAGE/Tests/Editor.meta"
 
 # Copy Samples~ (the tilde keeps them out of regular asset import)
 log "Copying experiments → Samples~/"

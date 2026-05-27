@@ -1,0 +1,16 @@
+name: com.sauti.voice-ai
+repoUrl: https://github.com/SeedeXR/sauti-unity-plugin
+packageFolder: packaging/com.sauti.voice-ai
+readme:
+  type: repository
+  path: README.md
+topics:
+  - voice-ai
+  - speech-to-text
+  - text-to-speech
+  - llm
+  - rag
+  - npc
+  - vr
+  - onnx
+  - offline

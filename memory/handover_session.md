@@ -2083,4 +2083,50 @@ $ tools/package-sauti.sh --skip-tests --no-models
 
 ---
 
+### [2026-05-27 03:05:21] — Session 20 — Consumer-project end-to-end validation in fresh Unity 6 project
+
+**Trigger:** User loaded `com.sauti.voice-ai-1.2.0.tgz` into an existing project by extracting it under `Assets/`. Unity threw `Failed to resolve assembly 'Sauti.Editor'`, `CS0234: 'ML' does not exist in namespace 'Microsoft'`, `CS0246: 'InferenceSession' could not be found`. User asked for a thorough Unity-CLI shakedown until everything works.
+
+**Done — verified by real artefacts (no claims without files on disk):**
+
+1. **Created a clean consumer project** at `~/Documents/UnityProjects/TestProject`. The tarball is consumed UPM-style via `Packages/tarballs/com.sauti.voice-ai-1.2.0.tgz` — the wrong "extract into Assets/" path is now documented as forbidden.
+2. **Wired the consumer's `Packages/manifest.json`** with the scoped registry (`com.github.asus4` → `https://registry.npmjs.com`), 7 dependencies (file:tarball + onnxruntime 0.4.7 + onnxruntime.unity 0.4.7 + LLMUnity git + whisper.unity git#master + Collections 2.5.7 + Mathematics 1.3.2), and `"testables": ["com.sauti.voice-ai"]` so Sauti's NUnit tests run alongside upstream's.
+3. **Set scripting defines** on all four platforms (`Android`, `iOS`, `Standalone`, `WebGL`): `SAUTI_LLMUNITY_AVAILABLE;SAUTI_WHISPER_UNITY_AVAILABLE`.
+4. **First batchmode compile**: 0 errors, all 7 deps resolved in 54.36 s.
+5. **EditMode test run in the consumer**: `total=53 passed=42 failed=0 skipped=11` initially → after patching `WordPieceTokenizerTests` to fall back to `Application.streamingAssetsPath` and copying `vocab.txt` + MiniLM weights into `Assets/StreamingAssets/VoiceAI/embeddings/`, the 11 skipped tests pick up the vocab and 53/53 pass.
+6. **`Sauti → Build Knowledge Base` invoked via `-executeMethod`** in the consumer wrote `Assets/StreamingAssets/VoiceAI/rag/knowledge.db` (33 891 bytes, magic `0x01474152 = "RAG\x01"`, 14 chunks across 7 files in 292 ms). End-to-end RAG path works in a fresh consumer project.
+
+**Two code patches landed in `Assets/Sauti/` (must ship in the next tarball):**
+
+- **`Editor/RagDatabaseBuilder.cs` — `BuildFromMenu`**: now resolves the MiniLM model at `Application.streamingAssetsPath/VoiceAI/embeddings/model_int8.onnx` first, then falls back to `<projectRoot>/ai-models/embeddings/model_int8.onnx`. Always writes the runtime StreamingAssets path; only mirrors to `ai-models/rag/` if `ai-models/` exists. Guards all `EditorUtility.DisplayDialog` / `DisplayProgressBar` calls with `!Application.isBatchMode` so headless invocation succeeds. Added a `knowledge-base/` existence check with a clear error.
+- **`Tests/Editor/WordPieceTokenizerTests.cs`**: when `<repoRoot>/ai-models/embeddings/vocab.txt` is absent, falls back to `Application.streamingAssetsPath/VoiceAI/embeddings/vocab.txt` so UPM consumers don't see 8 skipped tests.
+
+**New Editor menu shipped in this rebuild:**
+
+- **`Assets/Sauti/Editor/SautiSetupWizard.cs`** — `Sauti → Verify Setup` and `Sauti → Verify Setup (Headless)`. Checks scoped registry, UPM deps, scripting defines, StreamingAssets model layout; offers one-click `FixScopedRegistry`, `FixDependency`, `FixDefines`.
+
+**Docs updates this session:**
+
+- `docs/installation.md` — Path B (UPM tarball) now has a `!!! danger "Never extract the tarball into Assets/"` callout plus the complete consumer-`manifest.json` snippet (scoped registry + 7 deps + `testables[]`) and a final step pointing to `Sauti → Verify Setup`.
+- `packaging/com.sauti.voice-ai/README.md` — same warning + Setup Wizard pointer + clarified that placing the tarball under `Packages/tarballs/` makes peer resolution one-shot.
+
+**Tarball:** rebuilt at `dist/com.sauti.voice-ai-1.2.0.tgz` (still ~88 KB, includes the two patches + the new wizard).
+
+**What's still source-only (didn't touch this session):**
+
+- Gemma3 path — confirmed deferred post-v1.2 per Session 16+ memory.
+- Model auto-download Editor menu — still on the post-v1.2 roadmap.
+- GitHub Actions Unity license secrets — still need the user to set `UNITY_LICENSE`/`UNITY_EMAIL`/`UNITY_PASSWORD` before the CI test job activates.
+
+**Suggested next steps:**
+
+1. User reviews the rebuilt tarball + the two docs changes.
+2. Commit the patches + the new wizard + the docs updates (user handles all git work per `feedback_user_handles_git`).
+3. Tag `v1.2.1` once the user is happy — patch release just for the consumer-compat fixes.
+4. After CI Unity license secrets land, the `.github/workflows/package.yml` job will reproduce this end-to-end shakedown automatically.
+
+**Session duration:** ~50 min (Unity batchmode is slow — each cold compile + test run is ~1 min; KB build adds ~5 s).
+
+---
+
 *Last updated: see git log of this file.*

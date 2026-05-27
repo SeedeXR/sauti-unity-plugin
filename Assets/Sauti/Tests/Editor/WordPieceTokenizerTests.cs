@@ -55,6 +55,16 @@ namespace Sauti.Tests.Editor.Rag
                 }
             }
 
+            // Fallback for UPM-consumer projects: there's no ai-models/ folder there,
+            // but the consumer should have copied vocab.txt under StreamingAssets.
+            if (!File.Exists(_vocabPath))
+            {
+                string streamingVocab = Path.Combine(
+                    UnityEngine.Application.streamingAssetsPath,
+                    "VoiceAI", "embeddings", "vocab.txt");
+                if (File.Exists(streamingVocab)) _vocabPath = streamingVocab;
+            }
+
             if (!File.Exists(_vocabPath))
                 Assert.Ignore($"vocab.txt not found at {_vocabPath} — skipping tokeniser tests.");
 

@@ -16,6 +16,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -36,48 +37,88 @@ namespace Sauti.Editor.Rag
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string kbDir = Path.Combine(projectRoot, "knowledge-base");
-            // Filename matches the Xenova/all-MiniLM-L6-v2 export that landed in ai-models/embeddings/
-            // (per the Session-11 download agent's source-remapping from optimum → Xenova). See
-            // ai-models/embeddings/manifest.json.
-            string modelPath = Path.Combine(projectRoot, "ai-models/embeddings/model_int8.onnx");
 
-            if (!File.Exists(modelPath))
+            // Model resolution — try BOTH layouts so the same menu works for:
+            //   (a) UPM-consumer projects: Assets/StreamingAssets/VoiceAI/embeddings/
+            //   (b) Sauti source repo:     ai-models/embeddings/  (mirrored to StreamingAssets at build)
+            string streamingModelPath = Path.Combine(
+                Application.streamingAssetsPath, "VoiceAI/embeddings/model_int8.onnx");
+            string sourceRepoModelPath = Path.Combine(
+                projectRoot, "ai-models/embeddings/model_int8.onnx");
+
+            string modelPath = File.Exists(streamingModelPath) ? streamingModelPath
+                            : File.Exists(sourceRepoModelPath) ? sourceRepoModelPath
+                            : null;
+
+            if (modelPath == null)
             {
-                EditorUtility.DisplayDialog(
-                    "Sauti — Build Knowledge Base",
+                string msg =
                     "MiniLM embedding model not found.\n\n" +
-                    "Expected: ai-models/embeddings/model_int8.onnx\n" +
-                    "Download from Xenova/all-MiniLM-L6-v2 per ai-models/embeddings/manifest.json " +
-                    "(tracked as MINILM-DL-001).",
-                    "OK");
+                    "Expected at either:\n" +
+                    "  • " + streamingModelPath + "  (consumer projects)\n" +
+                    "  • " + sourceRepoModelPath + "  (Sauti source repo)\n\n" +
+                    "Download `model_int8.onnx` + `vocab.txt` from Xenova/all-MiniLM-L6-v2 on Hugging Face " +
+                    "and place under Assets/StreamingAssets/VoiceAI/embeddings/. " +
+                    "(Sauti → Verify Setup shows full required model list.)";
+                Debug.LogError("[Sauti][RAG] " + msg);
+                if (!Application.isBatchMode)
+                    EditorUtility.DisplayDialog("Sauti — Build Knowledge Base", msg, "OK");
                 return;
             }
 
-            EditorUtility.DisplayProgressBar("Sauti", "Building RAG knowledge base...", 0f);
+            if (!Directory.Exists(kbDir))
+            {
+                string msg =
+                    "knowledge-base/ directory not found at " + kbDir + ".\n\n" +
+                    "Create it at the project root and add plain-text/markdown source files " +
+                    "(see the Frostmere sample shipped with the package under Samples~/knowledge-base).";
+                Debug.LogError("[Sauti][RAG] " + msg);
+                if (!Application.isBatchMode)
+                    EditorUtility.DisplayDialog("Sauti — Build Knowledge Base", msg, "OK");
+                return;
+            }
+
+            if (!Application.isBatchMode)
+                EditorUtility.DisplayProgressBar("Sauti", "Building RAG knowledge base...", 0f);
+
             try
             {
                 IRagEmbedder embedder = new MiniLmRagEmbedder(modelPath);
 
+                // Always write the runtime path (StreamingAssets); also write the source-repo
+                // canonical path if it exists (so the source repo's checked-in artefact stays
+                // in sync). Consumer projects only get the StreamingAssets write.
+                string runtimeOut = Path.Combine(
+                    Application.streamingAssetsPath, "VoiceAI/rag", OutputFileName);
                 string canonicalOut = Path.Combine(projectRoot, "ai-models/rag", OutputFileName);
-                string runtimeOut = Path.Combine(Application.streamingAssetsPath, "VoiceAI/rag", OutputFileName);
+                bool writeCanonical = Directory.Exists(Path.Combine(projectRoot, "ai-models"));
 
-                // Run synchronously in the editor; small input set.
-                BuildAsync(kbDir, new[] { canonicalOut, runtimeOut }, embedder).GetAwaiter().GetResult();
+                string[] outputs = writeCanonical
+                    ? new[] { runtimeOut, canonicalOut }
+                    : new[] { runtimeOut };
+
+                BuildAsync(kbDir, outputs, embedder).GetAwaiter().GetResult();
 
                 AssetDatabase.Refresh();
-                EditorUtility.DisplayDialog(
-                    "Sauti — Build Knowledge Base",
-                    $"Wrote {OutputFileName} to:\n• {canonicalOut}\n• {runtimeOut}",
-                    "OK");
+                string written = string.Join("\n", outputs.Select(p => "  • " + p));
+                Debug.Log($"[Sauti][RAG] knowledge.db written to:\n{written}");
+                if (!Application.isBatchMode)
+                {
+                    EditorUtility.DisplayDialog(
+                        "Sauti — Build Knowledge Base",
+                        "Wrote " + OutputFileName + " to:\n" + written,
+                        "OK");
+                }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[Sauti][RAG] build failed: {ex}");
-                EditorUtility.DisplayDialog("Sauti — Build Knowledge Base", $"Build failed:\n{ex.Message}", "OK");
+                if (!Application.isBatchMode)
+                    EditorUtility.DisplayDialog("Sauti — Build Knowledge Base", $"Build failed:\n{ex.Message}", "OK");
             }
             finally
             {
-                EditorUtility.ClearProgressBar();
+                if (!Application.isBatchMode) EditorUtility.ClearProgressBar();
             }
         }
 

@@ -37,18 +37,50 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
 
     Best for shipping Sauti as a dependency in **your own** Unity project.
 
+    !!! danger "Never extract the tarball into `Assets/`"
+        Unity will not resolve the dependencies if you drop the unpacked `package/` folder under `Assets/`. The Console will throw `Failed to resolve assembly 'Sauti.Editor'` and `CS0234: 'ML' does not exist in namespace 'Microsoft'`. **Treat the `.tgz` as a UPM package — install it via Package Manager.**
+
     1. Download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/your-org/sauti-unity-plugin/releases).
-    2. In your Unity project: **Window → Package Manager → + → Install package from tarball** → select the file.
-    3. **Or** add by Git URL:
+    2. Place it somewhere under your project's `Packages/` directory (e.g. `Packages/tarballs/`). Do **not** put it in `Assets/`.
+    3. **Add a scoped registry** to `Packages/manifest.json` so ONNX Runtime resolves:
+       ```json
+       {
+         "scopedRegistries": [
+           {
+             "name": "npmjs",
+             "url": "https://registry.npmjs.com",
+             "scopes": ["com.github.asus4"]
+           }
+         ]
+       }
+       ```
+    4. **Add the dependencies** to the same `manifest.json` (the file: reference to the tarball, plus its peer dependencies):
+       ```json
+       "dependencies": {
+         "com.sauti.voice-ai": "file:tarballs/com.sauti.voice-ai-1.2.0.tgz",
+         "com.github.asus4.onnxruntime": "0.4.7",
+         "com.github.asus4.onnxruntime.unity": "0.4.7",
+         "ai.undream.llm": "https://github.com/undreamai/LLMUnity.git",
+         "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git#master",
+         "com.unity.collections": "2.5.7",
+         "com.unity.mathematics": "1.3.2"
+       }
+       ```
+    5. To run Sauti's tests in your project, also add:
+       ```json
+       "testables": ["com.sauti.voice-ai"]
+       ```
+    6. (Optional) **Add by Git URL** instead of the tarball:
        ```
        https://github.com/your-org/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
        ```
-    4. **Or** build it yourself from a checked-out repo:
+    7. (Optional) **Build the tarball yourself** from a checked-out repo:
        ```bash
        tools/package-sauti.sh                  # full build with tests
        tools/package-sauti.sh --skip-tests     # quick build
        # → dist/com.sauti.voice-ai-1.2.0.tgz + dist/sha256sums.txt
        ```
+    8. Open your project in the Unity Editor. After the first import completes, run **Sauti → Verify Setup** to confirm everything is wired up (registry, defines, models). The wizard auto-fixes missing pieces.
 
     The tarball is ~88 KB (code + samples + offline docs). **The AI models are NOT bundled** — too large for UPM. Copy `Assets/StreamingAssets/VoiceAI/` from the source repo into your project, or wait for the planned `Sauti → Download Default Models` Editor menu (post-v1.2).
 

@@ -5,9 +5,9 @@
   "description": "Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp) on a managed C# façade with three-layer memory (conversation history + temporary KV + RAG over a knowledge base you author).",
   "unity": "6000.0",
   "unityRelease": "32f1",
-  "documentationUrl": "https://your-org.github.io/sauti-unity-plugin/",
-  "changelogUrl": "https://github.com/your-org/sauti-unity-plugin/blob/main/packaging/com.sauti.voice-ai/CHANGELOG.md",
-  "licensesUrl": "https://github.com/your-org/sauti-unity-plugin/blob/main/LICENSE",
+  "documentationUrl": "https://seedexr.github.io/sauti-unity-plugin/",
+  "changelogUrl": "https://github.com/SeedeXR/sauti-unity-plugin/blob/main/packaging/com.sauti.voice-ai/CHANGELOG.md",
+  "licensesUrl": "https://github.com/SeedeXR/sauti-unity-plugin/blob/main/LICENSE",
   "license": "Apache-2.0",
   "keywords": [
     "voice",
@@ -29,7 +29,7 @@
   "category": "AI",
   "author": {
     "name": "Sauti contributors",
-    "url": "https://github.com/your-org/sauti-unity-plugin"
+    "url": "https://github.com/SeedeXR/sauti-unity-plugin"
   },
   "type": "library",
   "dependencies": {
@@ -38,7 +38,9 @@
     "com.unity.collections": "2.5.7",
     "com.unity.mathematics": "1.3.2",
     "com.github.asus4.onnxruntime": "0.4.7",
-    "com.github.asus4.onnxruntime.unity": "0.4.7"
+    "com.github.asus4.onnxruntime.unity": "0.4.7",
+    "ai.undream.llm": "https://github.com/undreamai/LLMUnity.git#main",
+    "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git?path=/Packages/com.whisper.unity#master"
   },
   "samples": [
     {
@@ -78,8 +80,8 @@
     }
   ],
   "repository": {
-    "url": "https://github.com/your-org/sauti-unity-plugin.git",
     "type": "git",
-    "revision": "main"
+    "url": "https://github.com/SeedeXR/sauti-unity-plugin.git",
+    "directory": "packaging/com.sauti.voice-ai"
   }
 }

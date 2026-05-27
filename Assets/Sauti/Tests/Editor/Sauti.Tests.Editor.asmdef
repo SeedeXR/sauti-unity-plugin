@@ -2,8 +2,8 @@
     "name": "Sauti.Tests.Editor",
     "rootNamespace": "Sauti.Tests",
     "references": [
-        "Sauti.Runtime",
-        "Sauti.Editor",
+        "GUID:84925c5bd13904b26b7d21887a620542",
+        "GUID:276a08153b46e4beb94e9f50e635ec38",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

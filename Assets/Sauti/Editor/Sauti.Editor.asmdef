@@ -2,8 +2,8 @@
     "name": "Sauti.Editor",
     "rootNamespace": "Sauti.Editor",
     "references": [
-        "Sauti.Runtime",
-        "com.github.asus4.onnxruntime"
+        "GUID:84925c5bd13904b26b7d21887a620542",
+        "GUID:8600c83db57f44fe2aa05f4cf22420bf"
     ],
     "includePlatforms": [
         "Editor"
