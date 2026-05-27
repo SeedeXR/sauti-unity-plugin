@@ -1,4 +1,4 @@
-# Sauti
+# Sauti Unity Plugin
 
 > **Native Unity voice-AI plugin. Fully offline. English. Privacy-first.**
 > Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. One package. Zero cloud.
