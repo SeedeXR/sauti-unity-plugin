@@ -25,19 +25,32 @@ You've completed [Installation](installation.md) steps 1–5:
 
 ---
 
-## Step 2 — Drop in the `KokoroHello` MonoBehaviour
+## Step 2 — Drop in the TTS component
 
-1. **Hierarchy → right-click → Create Empty.** Rename it `Sauti TTS Demo`.
-2. With it selected, **Inspector → Add Component → search "Kokoro Hello"** → click `Kokoro Hello` (namespace `Sauti.Experiments.TtsHello`).
-3. The Inspector now shows the component's fields. Defaults are sensible:
-   - **Text To Speak:** `"Hello from Sauti. The hybrid runtime is alive."`
-   - **Model File Name:** `model_quantized.onnx`
-   - **Tokenizer File Name:** `tokenizer.json`
-   - **Voices Directory Name:** `voices`
-   - **Voice Id:** `af_bella` (American female, voiced)
-   - **Speak On Start:** ✓
-4. **Add Component → Audio Source** (the script requires one).
-5. **AudioSource:** untick **Play On Awake** (the script controls playback).
+There are **two equivalent paths** for this step. Pick whichever matches your team — the rest of the quickstart works the same either way.
+
+=== "Path A — Editor components *(v1.3+, no-code)*"
+
+    1. **GameObject → Sauti → Sauti Speaker (TTS only).** A new `Sauti Speaker` GameObject appears, pre-wired with `AudioSource + SautiSpeaker`.
+    2. **Assets → Create → Sauti → Voice Profile.** Name it `Bella` (or anything). The default `voiceId = "af_bella"` is good — no edits needed.
+    3. Drag the `Bella` asset into the `Profile` slot on the `SautiSpeaker` inspector.
+    4. **Enter Play mode.** In the inspector, type `Hello from Sauti.` into the **Test Speak** field and click the **Test Speak** button.
+
+    That's the whole no-code path. The Inspector's UnityEvents (`OnAudioReady`, `OnPcmReady`) are ready for you to wire up to a UI button / animation event when you're ready to leave the test field behind.
+
+=== "Path B — Sample MonoBehaviour *(code-only)*"
+
+    1. **Hierarchy → right-click → Create Empty.** Rename it `Sauti TTS Demo`.
+    2. With it selected, **Inspector → Add Component → search "Kokoro Hello"** → click `Kokoro Hello` (namespace `Sauti.Experiments.TtsHello`).
+    3. The Inspector now shows the component's fields. Defaults are sensible:
+        - **Text To Speak:** `"Hello from Sauti. The hybrid runtime is alive."`
+        - **Model File Name:** `model_quantized.onnx`
+        - **Tokenizer File Name:** `tokenizer.json`
+        - **Voices Directory Name:** `voices`
+        - **Voice Id:** `af_bella` (American female, voiced)
+        - **Speak On Start:** ✓
+    4. **Add Component → Audio Source** (the script requires one).
+    5. **AudioSource:** untick **Play On Awake** (the script controls playback).
 
 ---
 
@@ -96,6 +109,7 @@ That's the end-to-end TTS path. Same idea scales to STT + LLM + memory + RAG —
 
 | If you want to | Go to |
 |---|---|
+| Wire the **full pipeline from the Inspector** *(v1.3+, no-code)* | [Designer guide — Editor components](designer-guide/editor-components.md) |
 | Hear a voice **respond** to your speech | [Experiment 05 — Full voice loop](experiments/05-full-voice-loop.md) |
 | Build an **NPC with a persona** + lore | [Designer guide — Templates](designer-guide/templates.md) |
 | **Extend Sauti** with your own RAG backend | [Developer guide — Extending Sauti](developer-guide/extending.md) |

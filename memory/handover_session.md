@@ -2129,4 +2129,116 @@ $ tools/package-sauti.sh --skip-tests --no-models
 
 ---
 
+### [2026-05-27 12:35:20] — Session 21 — v1.3: Editor UX layer (drag-and-drop components + ScriptableObjects + custom inspectors)
+
+**Trigger:** User noted that with the package installed and compiling cleanly, there was no way to "click a script, see input fields in the Inspector, drop in knowledge, wire things up by drag-and-drop." Asked whether that was even possible for a Unity plugin, then approved the v1.3 plan: ship a drag-and-drop component layer alongside the existing pure-C# API so novice / designer developers can wire Sauti from the Inspector while code-only consumers keep their original workflow untouched.
+
+**Done — verified end-to-end in both the source repo AND the consumer TestProject:**
+
+**Three ScriptableObject configs** under `Sauti.Components.*` (`Assets/Sauti/Runtime/Scripts/Components/`):
+
+- `SautiVoiceProfile` — voice id, speech rate, StreamingAssets-relative model paths. `[CreateAssetMenu]` at `Assets → Create → Sauti → Voice Profile`.
+- `SautiKnowledgeConfig` — knowledge.db path, MiniLM model path, top-K, knowledge-base source-dir pointer.
+- `SautiLlmConfig` — system prompt, `/no_think` flag, RAG-injection toggle, temporary-memory toggle.
+
+**Three MonoBehaviour components** in the same namespace — each is a thin wrapper that **delegates to the existing pure-C# class without modifying it**:
+
+- `SautiSpeaker` — `[RequireComponent(AudioSource)]` + `[AddComponentMenu("Sauti/Sauti Speaker")]`. Wraps `Sauti.Tts.KokoroTtsRunner`. Public surface: `Speak(string)` (fire-and-forget for UnityEvents) + `SpeakAsync(string, CancellationToken)` for code. UnityEvent fields: `OnAudioReady`, `OnPcmReady`, `OnSpeakError` — all initialized inline so they survive `AddComponent` (designer doesn't have to enter Play mode to fire them).
+- `SautiKnowledgeBase` — wraps `Sauti.Memory.SautiRag`. Two paths: `Initialise(ISautiRagBackend)` for code, `[SerializeField] LLMUnity.RAG llmUnityRag` (gated by `#if SAUTI_LLMUNITY_AVAILABLE`) for designer drag-and-drop. `EnsureLoadedAsync()` is lazy.
+- `SautiAgent` — top-level orchestrator. Holds `Speaker`, `Knowledge`, `LlmConfig` references. Two paths: `AskAsync(question, ILlmCompleter)` for code (the new `ILlmCompleter` interface lives in `SautiAgent.cs`), OR `EmitPromptAsync(question)` + `AcceptReply(string)` UnityEvent pair for designer-driven LLM wiring. `BuildPromptAsync` is exposed publicly so the inspector's Preview Prompt button can show the assembled prompt without an LLM call.
+
+**Three custom inspectors** under `Sauti.Editor.Components.*` (`Assets/Sauti/Editor/Components/`):
+
+- `SautiSpeakerEditor` — Play-mode Test Speak button + text field.
+- `SautiKnowledgeBaseEditor` — Build Knowledge Base button (delegates to `RagDatabaseBuilder.BuildFromMenu`), Reveal in Finder button, live status display (file size + last-built timestamp + runtime-loaded indicator).
+- `SautiAgentEditor` — Verify Wiring button (logs unassigned slots) + Preview Prompt (no LLM call) button (runs the full retrieval + assembly pipeline, prints to console).
+
+**GameObject menu** — `Assets/Sauti/Editor/Components/SautiGameObjectMenu.cs` adds:
+
+- `GameObject → Sauti → Sauti Agent` — creates a GameObject with `AudioSource + SautiSpeaker + SautiKnowledgeBase + SautiAgent`, references pre-wired.
+- `GameObject → Sauti → Sauti Speaker (TTS only)` — bare-minimum TTS GameObject.
+
+**8 new NUnit EditMode tests** — `Assets/Sauti/Tests/Editor/ComponentsTests.cs`:
+
+- SO default-value sanity for all three configs.
+- `BuildPromptAsync` shape under 4 distinct flag combinations (system-prompt-only, RAG context injected, temporary-memory injected, all-off).
+- `AcceptReply` UnityEvent path fires `OnReplyReady`.
+
+Total EditMode tests now **61** (was 53). All pass in source repo AND consumer.
+
+**Discovered bug + fix:** UnityEvent fields declared as plain `public UnityEvent<T> Name;` are NULL when components are created via `AddComponent` in tests / code (Unity's serialization is what normally initializes them — it doesn't run in that path). Test `AcceptReply_FiresOnReplyReady` failed with NullReferenceException at `AddListener`. **Fix:** added field-initializers (`= new UnityEvent<T>()`) on every UnityEvent in `SautiSpeaker`, `SautiKnowledgeBase`, `SautiAgent`. After the fix: 61/61 pass.
+
+**Discovered Unity batchmode quirk:** `-runTests` against a cold project will silently exit in ~5s if the project's Bee compilation cache is in an interrupted state from a prior aborted run. Workaround that worked: run a plain `-batchmode -nographics -quit` compile first to warm `Library/ScriptAssemblies` + `Library/Bee`, THEN run `-runTests`. Noted for future automation — the CI workflow may need a `compile-first-then-test` two-step.
+
+**Docs updates this session:**
+
+- New page `docs/designer-guide/editor-components.md` — full walkthrough of the no-code path, side-by-side with the code-only equivalent. Linked from `docs/quickstart.md` (added a "Path A — Editor components" tabbed section alongside the existing "Path B — Sample MonoBehaviour"), `docs/index.md` (new bullet under "What it does"), `README.md` (new feature bullet).
+- `mkdocs.yml` — added the new page under `Designer guide → Editor components (no-code)`.
+- `packaging/com.sauti.voice-ai/CHANGELOG.md` — `[1.3.0] — 2026-05-27` entry with the full inventory.
+- `packaging/com.sauti.voice-ai/README.md` — version subtitle updated.
+- `packaging/com.sauti.voice-ai/package.json` — `version: "1.3.0"`.
+- `tools/package-sauti.sh` — added `docs/designer-guide/editor-components.md` to the `Documentation~/` bundle list.
+
+**Tarball:** rebuilt at `dist/com.sauti.voice-ai-1.3.0.tgz` (117 KB; 113 KB before docs addition, +4 KB for the new page). Meta audit clean (44 assets / 44 metas / 0 missing / 0 orphan). All 10 new component files + their .meta sidecars are in.
+
+**Compatibility:** the v1.2 pure-C# API is **unchanged**. Code that does `new KokoroTtsRunner(...)`, `new SautiRag(backend)`, `TemporaryMemory.Set(...)` continues to work without modification. Existing 53 tests continue to pass; the 8 new tests are purely additive.
+
+**Suggested next steps:**
+
+1. User reviews the diff: 10 new source files, 1 new test file, several docs + package metadata edits.
+2. User commits + tags `v1.3.0` (the patches landed since v1.2.0 are non-breaking; semver-compliant minor bump).
+3. **v1.4 candidate scope** (from the discussion):
+   - Timeline integration — `SautiSpeakTrack` / `SautiSpeakClip` (`PlayableAsset` + `PlayableBehaviour`) so a director can drop "say this line at 0:12 with this voice" onto a timeline track. Requires `com.unity.timeline` as a peer dep.
+   - Animator integration — state-machine behaviour that fires `SautiSpeaker.Speak` on state enter.
+   - Model auto-downloader Editor menu (still on the post-v1.2 roadmap).
+
+**Session duration:** ~75 min (most of it Unity batchmode wall-clock for the various compile + test loops).
+
+---
+
+### [2026-05-27 13:23:31] — Session 22 — v1.3.1: Install-location defense (3-layer)
+
+**Trigger:** User dropped `com.sauti.voice-ai-1.3.0.tgz` into `Assets/` again (Unity auto-extracted to `Assets/package/`). Got 12 `CS0246: 'InferenceSession' could not be found` errors and the `Failed to resolve assembly 'Sauti.Editor'` cascade. Asked to (a) fix it, (b) make sure it never happens silently again, and (c) ship CLI tests that catch the wrong install + ensure executable files have proper metadata.
+
+**Done — verified end-to-end with three real artefacts (correct install passes / wrong install caught at multiple checkpoints):**
+
+**Three-layer defense (each layer addresses a different failure mode the same UPM mis-install can take):**
+
+1. **`Sauti.Runtime.asmdef` + `Sauti.Editor.asmdef` + `Sauti.Tests.Editor.asmdef` gained `versionDefines` + `defineConstraints`.** When `com.github.asus4.onnxruntime` is UPM-installed, Unity auto-defines `SAUTI_ONNX_AVAILABLE` (versionDefines); the asmdefs *require* that symbol (defineConstraints). The user-facing effect: dropping the tarball into `Assets/` without UPM peer deps now produces **0 CS0246 errors** (was 12) — Sauti's asmdefs are cleanly skipped instead of failing to resolve their GUID references. The "wall of misleading internal errors" symptom is dead.
+
+2. **`Sauti.Editor.Sentinel.asmdef`** — zero references, zero defineConstraints, always compiles regardless of peer-dep state. Uses BOTH `AssetPostprocessor.OnPostprocessAllAssets` AND `[InitializeOnLoadMethod]` (belt-and-braces). Scans for `Sauti.Runtime.asmdef` at any path other than `Assets/Sauti/Runtime/` (source repo) or `Packages/<id>/` (UPM); on hit, emits `Debug.LogError` + Editor popup with the exact fix. *Verified:* in `-batchmode -quit` the postprocessor hook didn't reliably fire (Unity quirk — postprocessor runs in a window where Debug.Log to the log file is unreliable), so the Sentinel is best-effort. The next layer is the authoritative catch.
+
+3. **`Sauti.Tests.InstallGuard` asmdef + `InstallLocationGuardTest`** — a standalone NUnit EditMode test in its own asmdef with NO Sauti.Runtime reference. Runs via `-runTests` / `Window → Test Runner` even when Sauti's other asmdefs are skipped. **Verified by simulating the wrong install:** after extracting the tarball into `Assets/package/` with no UPM peer deps, `unity -runTests -testPlatform EditMode` returned `total=1 passed=0 failed=1`, with the failure message reading: *"Sauti is installed at the wrong path(s): Assets/package/Runtime/Sauti.Runtime.asmdef … Sauti is a UPM package — it must NOT be extracted into Assets/. Delete the folder(s) above and install via Packages/manifest.json. See https://SeedeXR.github.io/sauti-unity-plugin/installation/ (Path B)."*
+
+**Other v1.3.1 work:**
+
+- **`INSTALL.md`** at the package root (with `.meta`) — opens with a big warning, shows the exact error text a wrong install produces, then walks through the right install. First file users see when they `tar tzf` the tarball or open it in a file browser.
+- **`tools/package-sauti.sh`** updated to bundle `INSTALL.md` + `.meta` and the new `Tests/InstallGuard/` folder.
+- **`docs/installation.md`** + **`docs/designer-guide/editor-components.md`** + **`packaging/com.sauti.voice-ai/README.md`** all reference the new defenses where appropriate.
+- **`packaging/com.sauti.voice-ai/CHANGELOG.md`** — full v1.3.1 entry with rationale.
+- **TestProject cleaned** — `Assets/package/` and the stray `.tgz` removed, manifest restored to point at `Packages/tarballs/com.sauti.voice-ai-1.3.1.tgz` with all peer deps + scoped registry + `testables[]`.
+
+**Final test matrix:**
+
+| Scenario | CS errors | Meta warnings | Sentinel | InstallLocationGuardTest | Other tests |
+|---|---|---|---|---|---|
+| Source repo (correct, dev) | 0 | 0 | silent | 1/1 pass | 61/61 pass |
+| TestProject (correct UPM install) | 0 | 0 | silent | 1/1 pass | 50/50 pass + 11 fixture-skipped (vocab.txt missing) |
+| TestProject (wrong install: Assets/package, no UPM) | **0** (was 12) | 0 | best-effort | **1/1 FAIL with actionable msg** | (asmdefs skipped — expected) |
+
+**Key gotcha for future sessions:** Unity's `[InitializeOnLoad]` and `AssetPostprocessor` hooks do NOT reliably fire `Debug.Log` to the batchmode log file when the project is in `-batchmode -quit`. The authoritative way to catch install-time problems in CI is **EditMode tests** in a standalone asmdef (no peer-dep references, no defineConstraints), invoked via `-runTests`.
+
+**Tarball:** `dist/com.sauti.voice-ai-1.3.1.tgz` (121 KB, meta audit 51/51 clean). Bundled `Documentation~/installation.md`, `quickstart.md`, `architecture.md`, `models.md`, `editor-components.md`, plus the new `INSTALL.md` at root.
+
+**Compatibility:** the v1.2 + v1.3.0 pure-C# API is unchanged. The asmdef constraints are met automatically when the UPM peer (`com.github.asus4.onnxruntime`) is installed — which is the only documented install path. Existing consumers see no behavioural change.
+
+**Suggested next steps:**
+1. User reviews the diff and tags `v1.3.1`.
+2. Consider adding equivalent `versionDefines` for `ai.undream.llm` (currently the only gate for LLM is the manual `SAUTI_LLMUNITY_AVAILABLE` define).
+3. v1.4 candidate scope unchanged from Session 21: Timeline integration, Animator state-machine behaviour, model auto-downloader.
+
+**Session duration:** ~50 min (mostly Unity batchmode wall-clock for compile+test loops, including the diagnostic loop to discover that `[InitializeOnLoad]` doesn't fire in `-batchmode -quit` when there are compile errors — which is why the asmdef-skipping approach was needed in the first place).
+
+---
+
 *Last updated: see git log of this file.*

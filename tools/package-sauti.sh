@@ -92,6 +92,7 @@ fi
 SAUTI_RUNTIME="$REPO_ROOT/Assets/Sauti/Runtime"
 SAUTI_EDITOR="$REPO_ROOT/Assets/Sauti/Editor"
 SAUTI_TESTS="$REPO_ROOT/Assets/Sauti/Tests/Editor"
+SAUTI_INSTALL_GUARD="$REPO_ROOT/Assets/Sauti/Tests/InstallGuard"
 for d in "$SAUTI_RUNTIME" "$SAUTI_EDITOR" "$SAUTI_TESTS"; do
   [[ -d "$d" ]] || fatal "Missing source tree: $d"
 done
@@ -154,6 +155,8 @@ cp "$PKG_SRC/CHANGELOG.md"        "$STAGE/"
 cp "$PKG_SRC/CHANGELOG.md.meta"   "$STAGE/"
 cp "$PKG_SRC/LICENSE.md"          "$STAGE/"
 cp "$PKG_SRC/LICENSE.md.meta"     "$STAGE/"
+cp "$PKG_SRC/INSTALL.md"          "$STAGE/"
+cp "$PKG_SRC/INSTALL.md.meta"     "$STAGE/"
 
 # Sync version into package.json if overridden
 if [[ -n "$VERSION_OVERRIDE" ]]; then
@@ -178,15 +181,22 @@ rsync -a "$SAUTI_EDITOR/" "$STAGE/Editor/"
 mkdir -p "$STAGE/Tests/Editor"
 rsync -a "$SAUTI_TESTS/" "$STAGE/Tests/Editor/"
 
+# Copy the standalone InstallGuard test asmdef (zero refs, runs even when the
+# rest of Sauti is skipped). Lives in its own folder so it's loadable in
+# wrong-install / missing-peer-deps states that would skip Sauti.Tests.Editor.
+mkdir -p "$STAGE/Tests/InstallGuard"
+rsync -a "$SAUTI_INSTALL_GUARD/" "$STAGE/Tests/InstallGuard/"
+
 # Copy the folder-level .meta files. They live as SIBLINGS of the source
 # folders (e.g. Assets/Sauti/Runtime.meta is next to Assets/Sauti/Runtime/),
 # so the rsync calls above don't pick them up. Without these, the Unity
 # Editor refuses to import the package root folders and logs
 # "no meta file, but it's in an immutable folder. The asset will be ignored."
-cp "$REPO_ROOT/Assets/Sauti/Runtime.meta"      "$STAGE/Runtime.meta"
-cp "$REPO_ROOT/Assets/Sauti/Editor.meta"       "$STAGE/Editor.meta"
-cp "$REPO_ROOT/Assets/Sauti/Tests.meta"        "$STAGE/Tests.meta"
-cp "$REPO_ROOT/Assets/Sauti/Tests/Editor.meta" "$STAGE/Tests/Editor.meta"
+cp "$REPO_ROOT/Assets/Sauti/Runtime.meta"            "$STAGE/Runtime.meta"
+cp "$REPO_ROOT/Assets/Sauti/Editor.meta"             "$STAGE/Editor.meta"
+cp "$REPO_ROOT/Assets/Sauti/Tests.meta"              "$STAGE/Tests.meta"
+cp "$REPO_ROOT/Assets/Sauti/Tests/Editor.meta"       "$STAGE/Tests/Editor.meta"
+cp "$REPO_ROOT/Assets/Sauti/Tests/InstallGuard.meta" "$STAGE/Tests/InstallGuard.meta"
 
 # Copy Samples~ (the tilde keeps them out of regular asset import)
 log "Copying experiments → Samples~/"
@@ -214,6 +224,10 @@ for doc in installation.md quickstart.md; do
 done
 cp "$REPO_ROOT/memory/voice_ai_architecture.md" "$STAGE/Documentation~/architecture.md"
 cp "$REPO_ROOT/docs/reference/models.md" "$STAGE/Documentation~/models.md" 2>/dev/null || warn "models.md missing"
+cp "$REPO_ROOT/docs/designer-guide/editor-components.md" "$STAGE/Documentation~/editor-components.md" 2>/dev/null || warn "docs/designer-guide/editor-components.md missing"
+# INSTALL.md is also bundled at package root by the metadata block; the
+# Documentation~ copy is a convenience so it appears in the offline doc tree.
+cp "$PKG_SRC/INSTALL.md" "$STAGE/Documentation~/install-troubleshooting.md" 2>/dev/null || warn "INSTALL.md missing"
 
 # Generate models.txt manifest digest for the documentation
 python3 - <<PY

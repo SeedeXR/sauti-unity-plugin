@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="Sauti.Tests.Editor.csproj" />
+  <Project Path="Sauti.Editor.csproj" />
+  <Project Path="Sauti.Runtime.csproj" />
+  <Project Path="Sauti.Editor.Sentinel.csproj" />
+  <Project Path="Sauti.Tests.InstallGuard.csproj" />
+</Solution>

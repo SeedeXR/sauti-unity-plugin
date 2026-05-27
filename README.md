@@ -19,6 +19,7 @@ Sauti (*"voice"* in Swahili) lets a Unity game or VR experience hold a real spok
 - 🤖 **LLM brain.** Qwen3-1.7B GGUF via llama.cpp on flagship; smaller variants on Quest.
 - 🔊 **Voice out.** Kokoro 82M ONNX with 11 voices.
 - 🎮 **Drop-in for Unity 6+.** Three UPM packages, one Editor menu, done.
+- 🖱️ **Two parallel APIs** *(v1.3+)*. Pure C# for programmers (`new KokoroTtsRunner(...)`), drag-and-drop `SautiSpeaker`/`SautiKnowledgeBase`/`SautiAgent` MonoBehaviours + `Voice Profile`/`Knowledge Config`/`LLM Config` ScriptableObjects for designers. Same runtime — choose either.
 
 ```
 🎤 Mic  →  Whisper ONNX  →  text  →  Memory (history + RAG + temp KV)  →  Qwen3 GGUF  →  tokens  →  Kokoro ONNX  →  🔊 Audio

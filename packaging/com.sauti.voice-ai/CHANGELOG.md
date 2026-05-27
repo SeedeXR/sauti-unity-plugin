@@ -6,6 +6,52 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
+## [1.3.1] — 2026-05-27
+
+Patch release: prevent the "extracted into Assets/" mis-install from being silent. Three-layer defense.
+
+### Added
+
+- **`Sauti.Editor.Sentinel` asmdef** — zero references, zero defineConstraints, always compiles. Runs `AssetPostprocessor.OnPostprocessAllAssets` (which fires before script reload, regardless of compile state) AND `[InitializeOnLoadMethod]` belt-and-braces. Detects `Sauti.Runtime.asmdef` at any path other than `Assets/Sauti/Runtime/` (source repo) or `Packages/<id>/` (UPM-installed) and emits a `Debug.LogError` + Editor popup with the exact fix.
+- **`Sauti.Tests.InstallGuard` asmdef** with `InstallLocationGuardTest` — a standalone EditMode NUnit test in its own asmdef with no Sauti.Runtime references and no defineConstraints. Runs via `-runTests` / `Window → Test Runner` even when Sauti's other asmdefs are skipped due to missing peer deps. Fails fast with an actionable message pointing at the wrong path and the docs URL.
+- **`INSTALL.md`** at the package root — opens with a big warning, shows the exact error text a wrong install produces, then walks through the right install. First file users see when they `tar tzf` the tarball.
+- Total EditMode tests now **62** (was 61).
+
+### Changed
+
+- **`Sauti.Runtime.asmdef`, `Sauti.Editor.asmdef`, `Sauti.Tests.Editor.asmdef` now use `versionDefines` + `defineConstraints`.** When `com.github.asus4.onnxruntime` is installed via UPM, Unity auto-defines `SAUTI_ONNX_AVAILABLE` (via `versionDefines`); the asmdefs require that symbol (via `defineConstraints`). The practical effect: when a user drops the tarball into `Assets/` without installing peer deps, Sauti's asmdefs are **cleanly skipped** instead of producing a wall of misleading `CS0246: 'InferenceSession' could not be found` errors from inside Sauti. The user sees zero CS0246, the Sentinel fires from its zero-dep asmdef, and the guard test fails on the same condition via `-runTests`.
+- `tools/package-sauti.sh` now bundles `INSTALL.md` + its `.meta` and the new `Tests/InstallGuard/` folder.
+
+### Compatibility
+
+The source repo + correct UPM-consumer install still work unchanged — `versionDefines` defines `SAUTI_ONNX_AVAILABLE` automatically when the peer is installed, so existing consumers see no behavioural change. All 62 EditMode tests pass in both source and consumer.
+
+## [1.3.0] — 2026-05-27
+
+**Editor UX layer.** Sauti now ships both the original pure-C# API *and* a drag-and-drop component layer so non-coders can wire voice-AI into a scene from the Inspector.
+
+### Added
+
+- **Three new ScriptableObject configs** under `Sauti.Components.*` — created via *Assets → Create → Sauti → …*:
+  - `SautiVoiceProfile` — voice id, speech rate, StreamingAssets-relative model paths.
+  - `SautiKnowledgeConfig` — knowledge.db path, MiniLM model path, top-K retrieval setting, knowledge-base source-dir pointer.
+  - `SautiLlmConfig` — system / persona prompt, `/no_think` directive flag, RAG-injection toggle, temporary-memory injection toggle.
+- **Three new MonoBehaviour components** (under *Add Component → Sauti → …*) — each thin-wraps an existing pure-C# class:
+  - `SautiSpeaker` — TTS-only. RequireComponent\<AudioSource\>. `Speak(string)` for UnityEvent hookups, `SpeakAsync(string, ct)` for code.
+  - `SautiKnowledgeBase` — wraps `Sauti.Memory.SautiRag`. `Initialise(backend)` for code-only, `LlmUnityRag` field for designer-driven wiring when `SAUTI_LLMUNITY_AVAILABLE`.
+  - `SautiAgent` — top-level orchestrator. `AskAsync(question, ILlmCompleter)` for code; `OnPromptReady` + `AcceptReply(string)` UnityEvent pair for designer-driven LLM wiring.
+- **Three custom inspectors** with in-Editor action buttons:
+  - `SautiSpeaker` inspector → **Test Speak** (Play-mode text field + button).
+  - `SautiKnowledgeBase` inspector → **Build Knowledge Base** + **Reveal** + live status (file size, last-built time, runtime-loaded indicator).
+  - `SautiAgent` inspector → **Verify Wiring** + **Preview Prompt (no LLM call)** — runs the retrieval + assembly pipeline and prints the prompt to the console.
+- **GameObject menu entries** — *GameObject → Sauti → Sauti Agent* / *Sauti Speaker (TTS only)* — create pre-wired GameObjects so a designer doesn't have to chain four `Add Component` clicks.
+- **8 new NUnit EditMode tests** — `Sauti.Tests.Components.ComponentsTests` — cover SO defaults, prompt assembly under each opt-in flag combo, and the `AcceptReply` event path. Brings the total to **61 EditMode tests**.
+- **New documentation page** — [Editor components (no-code workflow)](https://SeedeXR.github.io/sauti-unity-plugin/designer-guide/editor-components/) explains both the no-code and code-only paths side by side.
+
+### Compatibility
+
+**The v1.2 pure-C# API is unchanged.** Code that constructs `KokoroTtsRunner`, `SautiRag`, or `TemporaryMemory` directly continues to work without modification — the component layer is purely additive. Consumers who don't want the components can simply ignore them.
+
 ## [1.2.0] — 2026-05-26
 
 Initial public release.

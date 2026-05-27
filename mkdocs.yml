@@ -106,6 +106,7 @@ nav:
   - Quickstart: quickstart.md
   - Designer guide:
       - Overview: designer-guide/overview.md
+      - Editor components (no-code): designer-guide/editor-components.md
       - JSON templates: designer-guide/templates.md
       - Knowledge base: designer-guide/knowledge-base.md
       - Per-platform notes: designer-guide/per-platform.md

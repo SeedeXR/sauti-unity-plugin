@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "sauti-unity-plugin.sln"
+    "dotnet.defaultSolution": "sauti-unity-plugin.slnx"
 }

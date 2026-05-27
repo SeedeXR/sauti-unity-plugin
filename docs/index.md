@@ -19,6 +19,7 @@ Sauti (*"voice"* in Swahili) lets a Unity game or VR experience hold a real spok
 - :material-robot: **LLM brain** — Qwen3-1.7B Q5_K_M GGUF via llama.cpp, with `/no_think` voice mode.
 - :material-volume-high: **Voice out** — Kokoro 82M ONNX with 11 built-in voices at 24 kHz.
 - :material-package-variant: **Drop-in for Unity 6+** — four UPM packages, one Editor menu, six runnable experiments.
+- :material-cursor-pointer: **Two parallel APIs** *(v1.3+)* — pure-C# for programmers, drag-and-drop MonoBehaviour + ScriptableObject components for designers. Same runtime, choose either.
 
 ---
 

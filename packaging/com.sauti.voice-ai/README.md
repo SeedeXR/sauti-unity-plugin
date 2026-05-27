@@ -2,6 +2,8 @@
 
 > **Fully offline. English. Privacy-first.**
 > Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. Two runtimes (ONNX + llama.cpp). One UPM package.
+>
+> *v1.3 — drag-and-drop Editor components for designers, alongside the original code-only API. Pick either.*
 
 This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because you installed Sauti via Unity Package Manager. For the full source repository, see [`github.com/SeedeXR/sauti-unity-plugin`](https://github.com/SeedeXR/sauti-unity-plugin).
 

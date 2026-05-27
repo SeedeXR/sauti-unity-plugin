@@ -13,7 +13,15 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
+    "defineConstraints": [
+        "SAUTI_ONNX_AVAILABLE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.github.asus4.onnxruntime",
+            "expression": "0.4.0",
+            "define": "SAUTI_ONNX_AVAILABLE"
+        }
+    ],
     "noEngineReferences": false
 }

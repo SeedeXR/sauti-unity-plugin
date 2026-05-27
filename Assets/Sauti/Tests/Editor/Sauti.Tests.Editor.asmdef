@@ -18,8 +18,15 @@
     ],
     "autoReferenced": false,
     "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
+        "UNITY_INCLUDE_TESTS",
+        "SAUTI_ONNX_AVAILABLE"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.github.asus4.onnxruntime",
+            "expression": "0.4.0",
+            "define": "SAUTI_ONNX_AVAILABLE"
+        }
+    ],
     "noEngineReferences": false
 }

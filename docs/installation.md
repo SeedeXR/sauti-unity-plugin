@@ -38,7 +38,9 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
     Best for shipping Sauti as a dependency in **your own** Unity project.
 
     !!! danger "Never extract the tarball into `Assets/`"
-        Unity will not resolve the dependencies if you drop the unpacked `package/` folder under `Assets/`. The Console will throw `Failed to resolve assembly 'Sauti.Editor'` and `CS0234: 'ML' does not exist in namespace 'Microsoft'`. **Treat the `.tgz` as a UPM package — install it via Package Manager.**
+        Unity will not resolve the dependencies if you drop the unpacked `package/` folder under `Assets/`. The Console will throw `CS0246: 'InferenceSession' could not be found`, `CS0246: 'IDisposableReadOnlyCollection<>' could not be found`, and `Failed to resolve assembly 'Sauti.Editor'`. **Treat the `.tgz` as a UPM package — install it via Package Manager.**
+
+        Since **v1.3.1**, Sauti ships a built-in sentinel: if it detects `Sauti.Runtime.asmdef` at `Assets/package/...` (or any other non-UPM location) it logs a big red Console error and pops up a dialog with the exact fix. An EditMode test (`InstallLocationGuardTest`) catches the same mistake in CI / `Window → Test Runner`. You can't install Sauti the wrong way without something telling you immediately.
 
     1. Download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases).
     2. Place it somewhere under your project's `Packages/` directory (e.g. `Packages/tarballs/`). Do **not** put it in `Assets/`.
@@ -61,7 +63,7 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
          "com.github.asus4.onnxruntime": "0.4.7",
          "com.github.asus4.onnxruntime.unity": "0.4.7",
          "ai.undream.llm": "https://github.com/undreamai/LLMUnity.git",
-         "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git#master",
+         "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git?path=/Packages/com.whisper.unity#master",
          "com.unity.collections": "2.5.7",
          "com.unity.mathematics": "1.3.2"
        }
