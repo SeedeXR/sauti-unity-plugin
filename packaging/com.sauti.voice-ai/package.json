@@ -1,8 +1,8 @@
 {
   "name": "com.sauti.voice-ai",
-  "version": "1.3.1",
-  "displayName": "Sauti — Native Voice-AI Plugin",
-  "description": "Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Mic → Whisper → memory + RAG → Qwen3 GGUF → Kokoro → audio. Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp) on a managed C# façade with three-layer memory (conversation history + temporary KV + RAG over a knowledge base you author).",
+  "version": "1.3.2",
+  "displayName": "Sauti \u2014 Native Voice-AI Plugin",
+  "description": "Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Mic \u2192 Whisper \u2192 memory + RAG \u2192 Qwen3 GGUF \u2192 Kokoro \u2192 audio. Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp) on a managed C# fa\u00e7ade with three-layer memory (conversation history + temporary KV + RAG over a knowledge base you author).",
   "unity": "6000.0",
   "unityRelease": "32f1",
   "documentationUrl": "https://seedexr.github.io/sauti-unity-plugin/",
@@ -38,44 +38,47 @@
     "com.unity.collections": "2.5.7",
     "com.unity.mathematics": "1.3.2",
     "com.github.asus4.onnxruntime": "0.4.7",
-    "com.github.asus4.onnxruntime.unity": "0.4.7",
+    "com.github.asus4.onnxruntime.unity": "0.4.7"
+  },
+  "_peerDependencies_documentation_only": {
+    "_comment": "UPM doesn't allow Git URL values inside a package's 'dependencies' (semver only). These two MUST be added to the consumer's Packages/manifest.json \u2014 Sauti's Setup Wizard does that automatically via 'Sauti \u2192 Verify Setup \u2192 Fix everything I can'.",
     "ai.undream.llm": "https://github.com/undreamai/LLMUnity.git#main",
     "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git?path=/Packages/com.whisper.unity#master"
   },
   "samples": [
     {
-      "displayName": "01 — TTS Hello (smallest end-to-end)",
+      "displayName": "01 \u2014 TTS Hello (smallest end-to-end)",
       "description": "Type a string in the Inspector, hear it spoken via Kokoro 82M ONNX. Validates the TTS stack independently.",
       "path": "Samples~/01-tts-hello"
     },
     {
-      "displayName": "02 — STT Loopback (push-to-talk)",
+      "displayName": "02 \u2014 STT Loopback (push-to-talk)",
       "description": "Hold a button, speak, release. Whisper Small/Tiny transcribes to on-screen text.",
       "path": "Samples~/02-stt-loopback"
     },
     {
-      "displayName": "03 — LLM Chat (streaming tokens)",
-      "description": "Text input → Qwen3-1.7B → streamed tokens + sentence-boundary UnityEvent for downstream TTS.",
+      "displayName": "03 \u2014 LLM Chat (streaming tokens)",
+      "description": "Text input \u2192 Qwen3-1.7B \u2192 streamed tokens + sentence-boundary UnityEvent for downstream TTS.",
       "path": "Samples~/03-llm-chat"
     },
     {
-      "displayName": "04 — RAG Grounding (A/B toggle)",
+      "displayName": "04 \u2014 RAG Grounding (A/B toggle)",
       "description": "Same question with-RAG vs without-RAG, side by side. Proves retrieval changes the answer.",
       "path": "Samples~/04-rag-grounding"
     },
     {
-      "displayName": "05 — Full Voice Loop (integrated demo)",
-      "description": "Mic → STT → memory + RAG → LLM → on-screen text (Kokoro TTS via OnSpeechReady hook). The headline demo.",
+      "displayName": "05 \u2014 Full Voice Loop (integrated demo)",
+      "description": "Mic \u2192 STT \u2192 memory + RAG \u2192 LLM \u2192 on-screen text (Kokoro TTS via OnSpeechReady hook). The headline demo.",
       "path": "Samples~/05-full-voice-loop"
     },
     {
-      "displayName": "06 — VR Quest NPC (spatialised audio)",
+      "displayName": "06 \u2014 VR Quest NPC (spatialised audio)",
       "description": "Quest controller trigger drives the full loop with Kokoro synthesising into a spatial AudioSource on an NPC GameObject.",
       "path": "Samples~/06-vr-quest-npc"
     },
     {
       "displayName": "Frostmere Knowledge Base (starter content)",
-      "description": "7 sample knowledge-base entries (lore + locations + NPCs). Copy under your own knowledge-base/ then run `Sauti → Build Knowledge Base`.",
+      "description": "7 sample knowledge-base entries (lore + locations + NPCs). Copy under your own knowledge-base/ then run `Sauti \u2192 Build Knowledge Base`.",
       "path": "Samples~/knowledge-base"
     }
   ],

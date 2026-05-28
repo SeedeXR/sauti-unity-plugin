@@ -33,58 +33,70 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
     !!! warning "Don't use Git LFS unless you need history of model binaries"
         The model files are committed as regular blobs to keep onboarding simple. If you fork and intend to track model-file revisions, switch them to LFS at that point.
 
-=== "Path B — UPM tarball into an existing project"
+=== "Path B — UPM into an existing project *(recommended)*"
 
-    Best for shipping Sauti as a dependency in **your own** Unity project.
+    Best for shipping Sauti as a dependency in **your own** Unity project. **Three steps + one click.**
 
     !!! danger "Never extract the tarball into `Assets/`"
-        Unity will not resolve the dependencies if you drop the unpacked `package/` folder under `Assets/`. The Console will throw `CS0246: 'InferenceSession' could not be found`, `CS0246: 'IDisposableReadOnlyCollection<>' could not be found`, and `Failed to resolve assembly 'Sauti.Editor'`. **Treat the `.tgz` as a UPM package — install it via Package Manager.**
+        If you download the `.tgz` and drop it into `Assets/` (Unity auto-extracts to `Assets/package/`), the install is silently broken — peer dependencies don't get resolved. From **v1.3.1**, Sauti ships a sentinel that detects this and an EditMode test (`InstallLocationGuardTest`) that fails fast in CI. **The path below avoids the trap entirely.**
 
-        Since **v1.3.1**, Sauti ships a built-in sentinel: if it detects `Sauti.Runtime.asmdef` at `Assets/package/...` (or any other non-UPM location) it logs a big red Console error and pops up a dialog with the exact fix. An EditMode test (`InstallLocationGuardTest`) catches the same mistake in CI / `Window → Test Runner`. You can't install Sauti the wrong way without something telling you immediately.
+    **Step 1 — Add three lines to `Packages/manifest.json`.** Open the file in any text editor and paste this minimum bootstrap (the rest comes from the wizard):
 
-    1. Download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases).
-    2. Place it somewhere under your project's `Packages/` directory (e.g. `Packages/tarballs/`). Do **not** put it in `Assets/`.
-    3. **Add a scoped registry** to `Packages/manifest.json` so ONNX Runtime resolves:
-       ```json
-       {
-         "scopedRegistries": [
-           {
-             "name": "npmjs",
-             "url": "https://registry.npmjs.com",
-             "scopes": ["com.github.asus4"]
-           }
-         ]
-       }
-       ```
-    4. **Add the dependencies** to the same `manifest.json` (the file: reference to the tarball, plus its peer dependencies):
-       ```json
-       "dependencies": {
-         "com.sauti.voice-ai": "file:tarballs/com.sauti.voice-ai-1.2.0.tgz",
-         "com.github.asus4.onnxruntime": "0.4.7",
-         "com.github.asus4.onnxruntime.unity": "0.4.7",
-         "ai.undream.llm": "https://github.com/undreamai/LLMUnity.git",
-         "com.whisper.unity": "https://github.com/Macoron/whisper.unity.git?path=/Packages/com.whisper.unity#master",
-         "com.unity.collections": "2.5.7",
-         "com.unity.mathematics": "1.3.2"
-       }
-       ```
-    5. To run Sauti's tests in your project, also add:
-       ```json
-       "testables": ["com.sauti.voice-ai"]
-       ```
-    6. (Optional) **Add by Git URL** instead of the tarball:
-       ```
-       https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
-       ```
-    7. (Optional) **Build the tarball yourself** from a checked-out repo:
-       ```bash
-       tools/package-sauti.sh                  # full build with tests
-       tools/package-sauti.sh --skip-tests     # quick build
-       # → dist/com.sauti.voice-ai-1.2.0.tgz + dist/sha256sums.txt
-       ```
-    8. Open your project in the Unity Editor. After the first import completes, run **Sauti → Verify Setup** to confirm everything is wired up (registry, defines, models). The wizard auto-fixes missing pieces.
+    ```json
+    {
+      "scopedRegistries": [
+        {
+          "name": "npmjs",
+          "url": "https://registry.npmjs.com",
+          "scopes": ["com.github.asus4"]
+        }
+      ],
+      "dependencies": {
+        "com.sauti.voice-ai": "https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai",
+        "com.github.asus4.onnxruntime": "0.4.7"
+      }
+    }
+    ```
 
-    The tarball is ~88 KB (code + samples + offline docs). **The AI models are NOT bundled** — too large for UPM. Copy `Assets/StreamingAssets/VoiceAI/` from the source repo into your project, or wait for the planned `Sauti → Download Default Models` Editor menu (post-v1.2).
+    That gives Unity the three things it can't auto-discover:
+
+    - **Sauti itself** (Git URL — no download needed; Unity clones from GitHub on first import).
+    - **A scoped registry** so the ONNX Runtime peer dependency can be resolved (Unity intentionally won't let packages add registries to consumer projects).
+    - **ONNX Runtime** itself — Sauti's only hard peer dep.
+
+    **Step 2 — Open the project in Unity.** First import takes 1–3 min (Git clone + UPM resolution). When it finishes, the Sauti Setup Wizard auto-opens. If it doesn't, run **Sauti → Verify Setup** manually from the menu bar.
+
+    **Step 3 — Click "Fix everything I can"** in the wizard. It adds the remaining peer deps (LLMUnity, whisper.unity, Unity Collections, Unity Mathematics) to your `manifest.json` and writes the two scripting-define symbols (`SAUTI_LLMUNITY_AVAILABLE`, `SAUTI_WHISPER_UNITY_AVAILABLE`) to Player Settings. Unity re-resolves packages once, then you're done with setup.
+
+    **Step 4 — Download the AI models** *(one-time, ~1.6 GB)*. Either clone the source repo and copy `Assets/StreamingAssets/VoiceAI/` into your project, or wait for the planned `Sauti → Download Default Models` menu (post-v1.3).
+
+    ---
+
+    ??? note "Alternative install methods"
+        - **Tarball file:** download `com.sauti.voice-ai-<version>.tgz` from [GitHub Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases), put it under `Packages/tarballs/`, replace the `com.sauti.voice-ai` line in `manifest.json` with `"com.sauti.voice-ai": "file:tarballs/com.sauti.voice-ai-1.3.1.tgz"`.
+        - **Package Manager GUI:** `Window → Package Manager → ➕ → Install package from tarball...` then select the `.tgz`. You still need Step 1's scoped registry + ONNX entry; UPM won't auto-add either.
+        - **Build the tarball yourself:** `tools/package-sauti.sh --skip-tests` from a checked-out source repo.
+        - **Headless CI fix:** `unity -batchmode -quit -projectPath <path> -executeMethod Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless` applies every auto-fix the wizard would, without showing dialogs. Useful for fresh-project bootstrapping in CI.
+
+    ??? note "What the wizard writes (so you can preview)"
+        After clicking "Fix everything I can", `Packages/manifest.json` ends up with:
+
+        ```json
+        "dependencies": {
+          "com.sauti.voice-ai":                 "...",
+          "com.github.asus4.onnxruntime":       "0.4.7",
+          "com.github.asus4.onnxruntime.unity": "0.4.7",
+          "ai.undream.llm":                     "https://github.com/undreamai/LLMUnity.git#main",
+          "com.whisper.unity":                  "https://github.com/Macoron/whisper.unity.git?path=/Packages/com.whisper.unity#master",
+          "com.unity.collections":              "2.5.7",
+          "com.unity.mathematics":              "1.3.2"
+        }
+        ```
+
+        and **Player Settings → Scripting Define Symbols** gains `SAUTI_LLMUNITY_AVAILABLE;SAUTI_WHISPER_UNITY_AVAILABLE`.
+
+    ??? note "Running Sauti's own tests inside your project"
+        Add `"testables": ["com.sauti.voice-ai"]` to your `manifest.json`. The 62 EditMode tests then show up under **Window → General → Test Runner → EditMode**.
 
 The rest of this page assumes **Path A**. If you took Path B, skip to [Step 4](#step-4-define-the-runtime-scripting-symbols).
 

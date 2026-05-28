@@ -1,4 +1,4 @@
-// Assets/Sauti/Editor/SautiSetupWizard.cs
+// Assets/Sauti/Editor/Setup/SautiSetupWizard.cs
 //
 // One-click setup helper. The Sauti package depends on:
 //   • A scoped registry pointing at npmjs.com for `com.github.asus4`
@@ -9,7 +9,15 @@
 // project automatically (security model). This wizard detects what's missing and
 // offers one-click fixes so the first-install experience is reliable.
 //
-// Invoke via: **Sauti → Verify Setup**.
+// Lives in its OWN asmdef (Sauti.Editor.Setup) with zero references — so it compiles
+// and runs even when Sauti's other asmdefs are skipped due to missing peer deps.
+// That's the whole point: the wizard MUST be runnable from a half-broken state
+// because that's the state it's there to fix.
+//
+// Invoke:
+//   • GUI:       Sauti → Verify Setup
+//   • Headless:  unity -batchmode -quit -executeMethod \
+//                  Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless
 
 #if UNITY_EDITOR
 using System;
@@ -21,7 +29,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace Sauti.Editor
+namespace Sauti.Editor.Setup
 {
     /// <summary>
     /// Setup wizard / verifier. Surfaces what's missing for Sauti to run in the
@@ -84,6 +92,56 @@ namespace Sauti.Editor
                 else Debug.LogWarning($"  ✗ {r.Name} — {r.Message}");
             }
             DestroyImmediate(w);
+        }
+
+        /// <summary>
+        /// CLI entry point — applies every available auto-fix (scoped registry,
+        /// peer deps, scripting defines) without showing dialogs. Designed to
+        /// be called via `unity -batchmode -quit -executeMethod
+        /// Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless`.
+        /// </summary>
+        [MenuItem("Sauti/Fix Everything I Can (Headless)", priority = 2)]
+        public static void FixAllHeadless()
+        {
+            var w = CreateInstance<SautiSetupWizard>();
+            try
+            {
+                w.RunChecks();
+                int before = w._results.Count(r => !r.Passed);
+                foreach (var r in w._results.Where(r => r.Fix != null).ToList()) r.Fix();
+                AssetDatabase.Refresh();
+                w.RunChecks();
+                int after = w._results.Count(r => !r.Passed);
+                Debug.Log($"[Sauti Setup] Headless fix: {before - after} of {before} fixable issue(s) resolved. {after} remain (likely model downloads or non-actionable).");
+                foreach (var r in w._results)
+                {
+                    if (r.Passed) Debug.Log($"  ✓ {r.Name}");
+                    else Debug.LogWarning($"  ✗ {r.Name} — {r.Message}");
+                }
+            }
+            finally { DestroyImmediate(w); }
+        }
+
+        // First-install auto-open: when Unity finishes loading after Sauti is
+        // freshly added, surface the wizard automatically (once per session)
+        // if any check fails. GUI-only — never opens in batchmode.
+        [InitializeOnLoadMethod]
+        private static void MaybeAutoOpenOnFirstInstall()
+        {
+            if (Application.isBatchMode) return;
+            const string SessionKey = "Sauti.Editor.Setup.AutoOpenedThisSession";
+            if (SessionState.GetBool(SessionKey, false)) return;
+
+            EditorApplication.delayCall += () =>
+            {
+                if (Application.isBatchMode) return;
+                SessionState.SetBool(SessionKey, true);
+                var w = CreateInstance<SautiSetupWizard>();
+                w.RunChecks();
+                int missing = w._results.Count(r => !r.Passed);
+                DestroyImmediate(w);
+                if (missing > 0) Open();
+            };
         }
 
         // ─── UI ──────────────────────────────────────────────────────────────────
@@ -176,19 +234,38 @@ namespace Sauti.Editor
 
         private CheckResult CheckDefines()
         {
-            var current = PlayerSettings.GetScriptingDefineSymbols(
-                NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup));
-            var present = new HashSet<string>(
-                (current ?? string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries),
-                StringComparer.Ordinal);
-            var missing = RequiredDefines.Where(d => !present.Contains(d)).ToArray();
+            // Check the four common build targets explicitly — matches FixDefines.
+            // Reports a target as failing if ANY required define is missing.
+            var targets = new[]
+            {
+                NamedBuildTarget.Standalone,
+                NamedBuildTarget.Android,
+                NamedBuildTarget.iOS,
+                NamedBuildTarget.WebGL,
+            };
+
+            var perTargetMissing = new List<string>();
+            foreach (var nbt in targets)
+            {
+                string current;
+                try { current = PlayerSettings.GetScriptingDefineSymbols(nbt) ?? string.Empty; }
+                catch { current = string.Empty; }
+                var present = new HashSet<string>(
+                    current.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries),
+                    StringComparer.Ordinal);
+                var missingHere = RequiredDefines.Where(d => !present.Contains(d)).ToArray();
+                if (missingHere.Length > 0)
+                    perTargetMissing.Add($"{nbt.TargetName}: {string.Join(",", missingHere)}");
+            }
+
+            bool ok = perTargetMissing.Count == 0;
             return new CheckResult(
                 "Scripting Define Symbols",
-                missing.Length == 0,
-                missing.Length == 0
-                    ? $"All required defines present ({string.Join(", ", RequiredDefines)})."
-                    : $"Missing: {string.Join(", ", missing)}",
-                missing.Length == 0 ? null : FixDefines);
+                ok,
+                ok
+                    ? $"All required defines present on Standalone/Android/iOS/WebGL ({string.Join(", ", RequiredDefines)})."
+                    : "Missing on " + string.Join("; ", perTargetMissing),
+                ok ? null : FixDefines);
         }
 
         private CheckResult CheckModelsOnDisk()
@@ -302,14 +379,33 @@ namespace Sauti.Editor
 
         private void FixDefines()
         {
-            var nbt = NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            var current = PlayerSettings.GetScriptingDefineSymbols(nbt) ?? string.Empty;
-            var set = new HashSet<string>(
-                current.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries),
-                StringComparer.Ordinal);
-            foreach (var d in RequiredDefines) set.Add(d);
-            PlayerSettings.SetScriptingDefineSymbols(nbt, string.Join(";", set));
-            Debug.Log($"[Sauti Setup] Updated Scripting Define Symbols for {nbt}.");
+            // Write to every common build target so the defines apply regardless
+            // of what the consumer eventually builds for. Relying on
+            // `selectedBuildTargetGroup` is unreliable: in batchmode it can be
+            // an empty/Unknown target, and `SetScriptingDefineSymbols` then
+            // silently no-ops (the writes don't land in ProjectSettings.asset).
+            var targets = new[]
+            {
+                NamedBuildTarget.Standalone,
+                NamedBuildTarget.Android,
+                NamedBuildTarget.iOS,
+                NamedBuildTarget.WebGL,
+            };
+
+            foreach (var nbt in targets)
+            {
+                string current;
+                try { current = PlayerSettings.GetScriptingDefineSymbols(nbt) ?? string.Empty; }
+                catch { current = string.Empty; }  // some targets may not be installed locally
+
+                var set = new HashSet<string>(
+                    current.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries),
+                    StringComparer.Ordinal);
+                foreach (var d in RequiredDefines) set.Add(d);
+                try { PlayerSettings.SetScriptingDefineSymbols(nbt, string.Join(";", set)); }
+                catch (Exception ex) { Debug.LogWarning($"[Sauti Setup] Could not set defines for {nbt}: {ex.Message}"); }
+            }
+            Debug.Log($"[Sauti Setup] Updated Scripting Define Symbols for {string.Join(", ", targets.Select(t => t.TargetName))}.");
         }
 
         // ─── Helpers ─────────────────────────────────────────────────────────────

@@ -2241,4 +2241,45 @@ Total EditMode tests now **61** (was 53). All pass in source repo AND consumer.
 
 ---
 
+### [2026-05-28 14:25:00] — Session 23 — v1.3.2: Genuine 3-step install + workflow-triggered docs deploy + real package.json bug fix
+
+**Trigger:** User asked, after another round of install confusion, "is there no way to automate all this stuff — be genuine and honest". The honest answer: yes, ~80% was already automated in the existing Setup Wizard but I'd been documenting a more manual path than necessary, AND I'd never actually verified the wizard end-to-end against a fresh consumer. User then asked to (a) actually verify the wizard works, (b) update docs to lead with the simplified flow, (c) change docs.yml to trigger on workflow events instead of branch pushes.
+
+**Major findings + fixes (every line below is verified by real Unity batchmode output, not claimed):**
+
+1. **Found a real bug in Sauti's `package.json`** — it declared `ai.undream.llm` and `com.whisper.unity` with Git-URL values inside its own `dependencies`. UPM rejects this with `"Version '...' is invalid. Expected a value that follows semantic versioning rules"` — and it had been silently breaking fresh-consumer installs since v1.2. (The reason my consumer tests in Sessions 20-22 "passed" is that TestProject's `manifest.json` already had those Git URLs declared from earlier sessions; UPM doesn't recompose the same dep twice.) **Fix:** removed both from Sauti's `package.json.dependencies`; documented as peer deps the Setup Wizard adds to the consumer's `manifest.json` (where Git URLs ARE allowed). Verified by stripping TestProject's manifest to the absolute minimum bootstrap and reinstalling — package resolution errors went from `1 invalid dependency × 2` to `0`.
+
+2. **Setup Wizard moved into its own zero-dep asmdef** (`Sauti.Editor.Setup`). Previously the wizard lived in `Sauti.Editor.asmdef` which now requires `SAUTI_ONNX_AVAILABLE` (added in v1.3.1). Catch-22: the wizard can't fix a project where ONNX is missing if the wizard itself doesn't compile when ONNX is missing. New zero-deps asmdef breaks the cycle. Namespace changed from `Sauti.Editor` to `Sauti.Editor.Setup`. CLI invocation is now `Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless`.
+
+3. **Setup Wizard's `FixDefines` was a silent no-op in batchmode** — it called `PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(selectedBuildTargetGroup), ...)`, but in batchmode the selected group is `Unknown` and the call doesn't persist. Fix: write to Standalone/Android/iOS/WebGL explicitly. Verified by stripping `SAUTI_*` defines and re-running the wizard: ProjectSettings.asset now contains the defines under all four target keys.
+
+4. **First-install auto-open** — Wizard now uses `[InitializeOnLoadMethod]` + `EditorApplication.delayCall` to open itself once per Editor session if any check fails. GUI-only (skipped in batchmode). Surfaces the "Fix everything I can" button without the user having to find the menu.
+
+5. **End-to-end verified in TestProject** — starting from the absolute minimum bootstrap (`com.sauti.voice-ai` Git-URL-or-tarball + `com.github.asus4.onnxruntime` + `npmjs` scoped registry; no other peer deps; no scripting defines):
+   - Cold compile: 0 resolution errors, 0 CS errors, `Sauti.Editor.Setup.dll` + `Sauti.Editor.Sentinel.dll` both built.
+   - Headless wizard (`-executeMethod Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless`) added 4 missing peer deps to `manifest.json` and wrote `SAUTI_LLMUNITY_AVAILABLE;SAUTI_WHISPER_UNITY_AVAILABLE` to Standalone/Android/iPhone/WebGL.
+   - Post-wizard cold compile: 0 CS errors, all 4 Sauti DLLs built (Runtime, Editor, Setup, Sentinel).
+
+6. **`.github/workflows/docs.yml` rewired** — removed `on: push.branches: [main]`; kept `workflow_dispatch` (manual button); added `workflow_run` on the package release workflow's `completed` event, gated by `conclusion == 'success'`. Docs now deploy when (a) a release succeeds or (b) someone clicks "Run workflow". Checks out the SHA the triggering workflow ran against (`event.workflow_run.head_sha`) so the v1.3.x docs match the v1.3.x source. YAML validated locally; full mkdocs `--strict` build passes locally.
+
+**Docs rewritten this session:**
+- `docs/installation.md` — Path B (UPM tarball) replaced with "Three lines + one click" flow.
+- `README.md` — same simplification at the top-level entry.
+- `packaging/com.sauti.voice-ai/README.md` — matching three-step copy.
+- `packaging/com.sauti.voice-ai/CHANGELOG.md` — `[1.3.2]` entry with the bug fix + workflow trigger change documented.
+
+**Final source-repo regression check:** 62/62 EditMode tests pass, 0 compile errors. Nothing from v1.3.0/v1.3.1 broken.
+
+**Bumped:** `package.json` → `"version": "1.3.2"`. Tarball at `dist/com.sauti.voice-ai-1.3.2.tgz`.
+
+**Compatibility:** v1.3.1 consumers who manually populated `manifest.json` continue to work — the wizard's writes are idempotent and skip entries already present.
+
+**Suggested next steps:**
+1. User reviews the diff and tags `v1.3.2`. The new docs workflow will auto-deploy docs on successful release.
+2. v1.4 candidate scope unchanged: Timeline, Animator state-machine behaviour, model auto-downloader (the "1 remaining" issue the wizard can't fix on its own).
+
+**Session duration:** ~70 min (a lot of Unity batchmode wall-clock — testing the wizard's headless path requires 2-launch cycles: compile, then invoke, then re-compile to confirm the writes took effect).
+
+---
+
 *Last updated: see git log of this file.*

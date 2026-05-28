@@ -6,7 +6,28 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
-## [1.3.1] — 2026-05-27
+## [1.3.2] — 2026-05-28
+
+Patch release: install is now genuinely 3-step (paste 3-line bootstrap → wizard → done). Plus a real package.json bug fix that was silently breaking fresh-consumer installs since v1.2.
+
+### Fixed
+
+- **`package.json` no longer declares `ai.undream.llm` or `com.whisper.unity` in `dependencies`** — UPM rejects packages whose dependencies contain non-semver values (Git URLs). The previous shape `"ai.undream.llm": "https://github.com/undreamai/LLMUnity.git#main"` triggered `Package com.sauti.voice-ai has invalid dependencies: Version '...' is invalid. Expected a value that follows semantic versioning rules.` in any fresh consumer project — silently failing the entire Sauti install. These are now documented as peer deps that the Setup Wizard adds to the consumer's `manifest.json` (where Git URLs ARE allowed).
+- **`SautiSetupWizard.FixDefines` now writes to Standalone/Android/iPhone/WebGL explicitly** instead of relying on `selectedBuildTargetGroup`. In batchmode (and any project where the user hasn't picked a build target) the previous approach silently no-op'd — the wizard logged "Updated" but `PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Unknown, ...)` doesn't persist.
+
+### Changed
+
+- **`SautiSetupWizard` moved into its own asmdef** (`Sauti.Editor.Setup`) with zero references. The wizard now compiles and runs even when `Sauti.Editor` itself is skipped due to a missing peer dep — which is the whole point of a setup wizard. Namespace changed from `Sauti.Editor` to `Sauti.Editor.Setup`. Headless CLI invocation: `unity -batchmode -quit -executeMethod Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless`.
+- **`SautiSetupWizard` auto-opens on first install** via `[InitializeOnLoadMethod]` + `EditorApplication.delayCall`. Once per Editor session, only if any check fails. GUI-only (never opens in batchmode).
+- **`docs/installation.md`, `README.md`, `packaging/com.sauti.voice-ai/README.md`** all rewritten to lead with the simplified install: paste a 3-line bootstrap to `Packages/manifest.json` (Sauti via Git URL + `npmjs` scoped registry + ONNX peer dep), open the project, click "Fix everything I can". The tarball path becomes an alternative-install option.
+
+### Workflow / CI
+
+- **`.github/workflows/docs.yml` no longer triggers on branch push.** New triggers: (a) manual `workflow_dispatch` from the Actions UI, (b) `workflow_run` on successful completion of the package release workflow. The previous "every push to main rebuilds docs" pattern made every README typo kick off a Pages deploy. Now docs move on a deliberate signal — manual click or successful release. Failed-release runs are gated out via `if: github.event.workflow_run.conclusion == 'success'`. Docs deploys check out the SHA the triggering workflow ran against, so a v1.3.x docs deploy contains the v1.3.x source.
+
+### Compatibility
+
+The pure-C# API and the v1.3.0 component layer are unchanged. Consumers who were on v1.3.1 with the full manifest manually populated continue to work — the wizard idempotently skips entries that are already present.
 
 Patch release: prevent the "extracted into Assets/" mis-install from being silent. Three-layer defense.
 

@@ -44,36 +44,48 @@ cd sauti-unity-plugin
 
 ### B. Install as a UPM package (recommended for downstream projects)
 
-Download the latest `com.sauti.voice-ai-<version>.tgz` from [Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases). In your Unity project:
+**Three lines + one click.**
 
-**Window → Package Manager → + → Install package from tarball** → select the file.
+**Step 1 — Paste this bootstrap into your project's `Packages/manifest.json`:**
 
-Or **add by Git URL** (consumes the embedded UPM tree at `packaging/com.sauti.voice-ai/` directly):
-
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "npmjs",
+      "url": "https://registry.npmjs.com",
+      "scopes": ["com.github.asus4"]
+    }
+  ],
+  "dependencies": {
+    "com.sauti.voice-ai":           "https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai",
+    "com.github.asus4.onnxruntime": "0.4.7"
+  }
+}
 ```
-https://github.com/SeedeXR/sauti-unity-plugin.git?path=packaging/com.sauti.voice-ai
-```
 
-Or **build it yourself** from a checked-out repo:
+That's the minimum bootstrap — Sauti itself + the one peer dep + the scoped registry Unity needs to find it.
+
+**Step 2 — Open the project in Unity.** First import takes 1–3 min (Git clone + UPM resolution). The Sauti Setup Wizard auto-opens; if it doesn't, run **Sauti → Verify Setup** from the menu bar.
+
+**Step 3 — Click "Fix everything I can"** in the wizard. It writes the remaining peer deps (LLMUnity, whisper.unity, Unity Collections, Unity Mathematics) into your `manifest.json` and sets the two scripting-define symbols (`SAUTI_LLMUNITY_AVAILABLE`, `SAUTI_WHISPER_UNITY_AVAILABLE`) across Standalone/Android/iOS/WebGL. Unity re-resolves packages once.
+
+**Step 4 — Download the ~1.6 GB of AI models** (the only thing Sauti can't auto-fetch — Hugging Face license walls). Clone the source repo and copy `Assets/StreamingAssets/VoiceAI/`, or wait for the post-v1.3 model downloader.
+
+### Headless / CI install
+
+Same logic as the GUI wizard, no dialogs:
 
 ```bash
-tools/package-sauti.sh                  # default: run tests then package
-tools/package-sauti.sh --skip-tests     # fast: just package
-# Output: dist/com.sauti.voice-ai-1.2.0.tgz
+unity -batchmode -quit -projectPath <project> \
+  -executeMethod Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless
 ```
 
-### Required UPM dependencies (auto-fetched on first open)
+### Alternative install methods
 
-| Package | Source | Version |
-|---|---|---|
-| `com.github.asus4.onnxruntime` | npmjs (scoped registry) | `0.4.7` |
-| `com.github.asus4.onnxruntime.unity` | same | `0.4.7` |
-| `ai.undream.llm` (LLMUnity) | https://github.com/undreamai/LLMUnity | `main` |
-| `com.whisper.unity` | https://github.com/Macoron/whisper.unity | `master` |
-| `com.unity.collections` | Unity Registry | `2.5.7` |
-| `com.unity.mathematics` | Unity Registry | `1.3.2` |
-
-On first compile, set `SAUTI_LLMUNITY_AVAILABLE;SAUTI_WHISPER_UNITY_AVAILABLE` in **Edit → Project Settings → Player → Other Settings → Scripting Define Symbols**.
+- **Tarball file:** download `com.sauti.voice-ai-<version>.tgz` from [Releases](https://github.com/SeedeXR/sauti-unity-plugin/releases), put it under `Packages/tarballs/`, replace the Git URL in Step 1 with `"file:tarballs/com.sauti.voice-ai-1.3.2.tgz"`.
+- **Package Manager GUI:** `Window → Package Manager → ➕ → Install package from tarball` → select the `.tgz`. You still need the scoped registry + ONNX line from Step 1.
+- **Build the tarball yourself:** `tools/package-sauti.sh --skip-tests` from a checked-out source repo → `dist/com.sauti.voice-ai-<version>.tgz`.
 
 ---
 

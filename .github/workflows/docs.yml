@@ -1,16 +1,25 @@
 name: Deploy docs to GitHub Pages
 
+# Triggered by other GitHub workflows / manual dispatch — never by branch push.
+# Rationale: a docs deploy is a release event. Coupling it to every push to main
+# made every typo-fix to README.md kick off a Pages deploy. Now the docs site
+# moves on a deliberate signal: either (a) the package release workflow succeeded
+# (so the deployed docs match a tagged release), or (b) someone clicked
+# "Run workflow" in the Actions UI.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'requirements-docs.txt'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why are you publishing docs? (free text, appears in run summary)'
+        required: false
+        type: string
+        default: 'manual dispatch'
+  workflow_run:
+    workflows: ['Package Sauti UPM release']
+    types: [completed]
+    branches: [main]
 
-# Single concurrent deployment; cancel in-progress on new push.
+# Single concurrent deployment; do not cancel in-flight deploys.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -24,11 +33,34 @@ jobs:
   build:
     name: Build MkDocs site
     runs-on: ubuntu-latest
+    # workflow_run fires on EVERY completion (success/failure). Gate on success
+    # so a failed package release doesn't deploy stale or partial docs.
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # full history so git-revision-date-localized plugin works if added later
+          # workflow_run runs against the default branch SHA by default; check
+          # out the SHA the triggering workflow ran against so the docs match
+          # the released package exactly.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Run summary
+        run: |
+          {
+            echo "### Docs deploy trigger"
+            echo ""
+            echo "- Event: \`${{ github.event_name }}\`"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "- Reason: ${{ inputs.reason }}"
+            else
+              echo "- Triggered by: \`${{ github.event.workflow_run.name }}\` run #${{ github.event.workflow_run.run_number }}"
+              echo "- SHA: \`${{ github.event.workflow_run.head_sha }}\`"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set up Python
         uses: actions/setup-python@v5
