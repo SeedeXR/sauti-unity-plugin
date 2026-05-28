@@ -127,6 +127,14 @@ artifacts/
 # Claude Code locally against this repo; never relevant on GitHub.
 .claude/
 
+# ─── Personal / local-only scripts ────────────────────────────────────────────
+# Maintainer-only helpers (e.g. tools/creator.sh) that wire the source-repo's
+# already-downloaded models into a personal Unity test project. Hardcoded local
+# paths, not useful to anyone else, intentionally never committed.
+tools/creator.sh
+tools/creator*.sh
+tools/*.local.sh
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Project design history + engineering charter — TRACKED (flipped 2026-05-26)
 # ─────────────────────────────────────────────────────────────────────────────

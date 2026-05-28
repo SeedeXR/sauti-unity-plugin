@@ -1,12 +1,20 @@
 name: Deploy docs to GitHub Pages
 
-# Triggered by other GitHub workflows / manual dispatch — never by branch push.
-# Rationale: a docs deploy is a release event. Coupling it to every push to main
-# made every typo-fix to README.md kick off a Pages deploy. Now the docs site
-# moves on a deliberate signal: either (a) the package release workflow succeeded
-# (so the deployed docs match a tagged release), or (b) someone clicked
-# "Run workflow" in the Actions UI.
+# Three triggers, by intent:
+#   1. push to main with docs/mkdocs changes → auto-deploy. Filtered by `paths:`
+#      so unrelated commits don't churn through a Pages deploy.
+#   2. workflow_dispatch → manual "Run workflow" button in the Actions UI.
+#   3. workflow_run after the package release workflow succeeds → docs deploy
+#      pairs with each release tag so the published site matches the version.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - '.github/workflows/docs.yml'
+      - 'README.md'
   workflow_dispatch:
     inputs:
       reason:
@@ -33,10 +41,12 @@ jobs:
   build:
     name: Build MkDocs site
     runs-on: ubuntu-latest
-    # workflow_run fires on EVERY completion (success/failure). Gate on success
-    # so a failed package release doesn't deploy stale or partial docs.
+    # `workflow_run` fires on EVERY completion (success/failure); gate on
+    # success so a failed package release doesn't deploy stale docs. `push`
+    # and `workflow_dispatch` always proceed.
     if: >-
-      ${{ github.event_name == 'workflow_dispatch' ||
+      ${{ github.event_name == 'push' ||
+          github.event_name == 'workflow_dispatch' ||
           (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
     steps:
       - name: Checkout
@@ -49,17 +59,30 @@ jobs:
           fetch-depth: 0
 
       - name: Run summary
+        env:
+          # Commit messages are user-controlled and can contain shell metachars
+          # (`;`, `$()`, backticks) — pass via env var to neutralise injection.
+          # actionlint flags this specifically (good — listen to it).
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           {
             echo "### Docs deploy trigger"
             echo ""
             echo "- Event: \`${{ github.event_name }}\`"
-            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-              echo "- Reason: ${{ inputs.reason }}"
-            else
-              echo "- Triggered by: \`${{ github.event.workflow_run.name }}\` run #${{ github.event.workflow_run.run_number }}"
-              echo "- SHA: \`${{ github.event.workflow_run.head_sha }}\`"
-            fi
+            case "${{ github.event_name }}" in
+              workflow_dispatch)
+                echo "- Reason: ${{ inputs.reason }}"
+                ;;
+              workflow_run)
+                echo "- Triggered by: \`${{ github.event.workflow_run.name }}\` run #${{ github.event.workflow_run.run_number }}"
+                echo "- SHA: \`${{ github.event.workflow_run.head_sha }}\`"
+                ;;
+              push)
+                echo "- Pushed by: \`${{ github.actor }}\`"
+                echo "- SHA: \`${{ github.sha }}\`"
+                echo "- Commit: ${COMMIT_MESSAGE%%$'\n'*}"
+                ;;
+            esac
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set up Python
@@ -67,6 +90,12 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+          # actions/setup-python@v5's pip cache defaults to scanning for
+          # requirements.txt / pyproject.toml. We install from
+          # requirements-docs.txt instead, so point the cache at it explicitly.
+          # Without this, the job fails with:
+          #   "No file in <repo> matched to [**/requirements.txt or **/pyproject.toml]"
+          cache-dependency-path: requirements-docs.txt
 
       - name: Install MkDocs + plugins
         run: |
