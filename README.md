@@ -44,7 +44,41 @@ cd sauti-unity-plugin
 
 ### B. Install as a UPM package (recommended for downstream projects)
 
-**Three lines + one click.**
+**One command — `tools/setup-sauti.sh`** *(macOS/Linux/WSL)* — handles all three install steps + the model downloads:
+
+```bash
+# From a checked-out copy of this repo:
+./tools/setup-sauti.sh --project-path /path/to/YourUnityProject
+
+# Or, if you only have the script and want a fresh install:
+curl -fsSL https://raw.githubusercontent.com/SeedeXR/sauti-unity-plugin/main/tools/setup-sauti.sh -o setup-sauti.sh
+chmod +x setup-sauti.sh
+./setup-sauti.sh --project-path /path/to/YourUnityProject
+```
+
+What it does, in order:
+
+1. **Writes the bootstrap to `Packages/manifest.json`** — Sauti dep (via Git URL by default) + `npmjs` scoped registry + `com.github.asus4.onnxruntime` peer. Idempotent — re-runs are no-ops if the entries are already present.
+2. **Invokes Unity in batchmode** to run `Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless` — adds the remaining peer deps (LLMUnity, whisper.unity, Collections, Mathematics) and writes the scripting-define symbols across Standalone/Android/iOS/WebGL.
+3. **Downloads the AI models from Hugging Face** into `<project>/Assets/StreamingAssets/VoiceAI/` with SHA-256 verification. Default profile (`--models essential`, ~1.4 GB): Kokoro 82M + 1 voice + MiniLM + Whisper Tiny + Qwen3-1.7B. `--models all` adds the other 10 voices + Whisper Small. `--models none` skips downloads.
+
+Common variants:
+
+```bash
+# Local tarball install (no internet for Sauti's source — still needs HF for models):
+./tools/setup-sauti.sh --project-path <proj> \
+    --source tarball --tarball dist/com.sauti.voice-ai-1.3.2.tgz
+
+# Just verify the model files match their SHA-256s, don't redownload anything:
+./tools/setup-sauti.sh --project-path <proj> --no-bootstrap --no-wizard --verify
+
+# Bootstrap only, defer the rest:
+./tools/setup-sauti.sh --project-path <proj> --no-wizard --models none
+```
+
+Run `./tools/setup-sauti.sh --help` for the full option list.
+
+#### Or do it manually — three lines + one click
 
 **Step 1 — Paste this bootstrap into your project's `Packages/manifest.json`:**
 

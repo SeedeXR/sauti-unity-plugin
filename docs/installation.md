@@ -35,7 +35,23 @@ The Sauti repository **is** a Unity project. There is no separate `unity/` subdi
 
 === "Path B — UPM into an existing project *(recommended)*"
 
-    Best for shipping Sauti as a dependency in **your own** Unity project. **Three steps + one click.**
+    Best for shipping Sauti as a dependency in **your own** Unity project.
+
+    !!! tip "Fastest path: one command"
+        On macOS/Linux/WSL, run **`tools/setup-sauti.sh`** from a checked-out copy of the source repo. It does all three steps below *plus* downloads the AI models:
+
+        ```bash
+        ./tools/setup-sauti.sh --project-path /path/to/YourUnityProject
+        ```
+
+        - Writes `Packages/manifest.json` bootstrap (Sauti dep + scoped registry + ONNX peer).
+        - Runs Unity batchmode → `Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless` → adds remaining peer deps + scripting defines.
+        - Downloads the AI models (~1.4 GB essential, ~1.9 GB with `--models all`) from Hugging Face into `Assets/StreamingAssets/VoiceAI/` with SHA-256 verification.
+        - Idempotent — safe to re-run.
+
+        Run `./tools/setup-sauti.sh --help` for full options (`--source git|tarball`, `--models`, `--verify`, `--no-wizard`, `--no-bootstrap`, `--unity-path`, `--keep-going`).
+
+    **If you'd rather do it manually, three steps + one click:**
 
     !!! danger "Never extract the tarball into `Assets/`"
         If you download the `.tgz` and drop it into `Assets/` (Unity auto-extracts to `Assets/package/`), the install is silently broken — peer dependencies don't get resolved. From **v1.3.1**, Sauti ships a sentinel that detects this and an EditMode test (`InstallLocationGuardTest`) that fails fast in CI. **The path below avoids the trap entirely.**

@@ -9,7 +9,24 @@ This is the Unity Package (`com.sauti.voice-ai`). You're looking at it because y
 
 ---
 
-## Install — three lines + one click
+## Install
+
+### Fastest: one command *(macOS/Linux/WSL)*
+
+```bash
+# From a checked-out copy of the source repo:
+./tools/setup-sauti.sh --project-path /path/to/YourUnityProject
+```
+
+Handles **all three install steps + the model downloads** in one shot:
+
+1. Writes the `Packages/manifest.json` bootstrap (Sauti dep + scoped registry + ONNX peer).
+2. Runs Unity in batchmode and invokes the Setup Wizard's `FixAllHeadless` — adds the remaining peer deps and scripting defines.
+3. Downloads the AI models (~1.4 GB essential / ~1.9 GB with `--models all`) from Hugging Face into `<project>/Assets/StreamingAssets/VoiceAI/` with SHA-256 verification.
+
+Run `./tools/setup-sauti.sh --help` for full options. Idempotent — safe to re-run.
+
+### Or do it manually — three lines + one click
 
 > ⚠ **Never extract the `.tgz` into `Assets/`** (Sauti v1.3.1+ ships a sentinel + EditMode test that catch this, but the path below avoids the trap entirely).
 

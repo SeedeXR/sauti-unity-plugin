@@ -28,6 +28,32 @@ Failed to resolve assembly: 'Sauti.Editor, ...'
 
 ## How to install correctly
 
+### Fastest: one command *(macOS/Linux/WSL)*
+
+```bash
+# From a checked-out copy of the source repo:
+./tools/setup-sauti.sh --project-path /path/to/YourUnityProject
+```
+
+Handles **all three install steps below + downloads the AI models** (~1.4 GB essential / ~1.9 GB with `--models all`) into `Assets/StreamingAssets/VoiceAI/` with SHA-256 verification. Idempotent; safe to re-run.
+
+Common variants:
+
+```bash
+# Use a local tarball instead of the Git URL
+./tools/setup-sauti.sh --project-path <proj> --source tarball --tarball /path/to/com.sauti.voice-ai-1.3.2.tgz
+
+# Just verify the already-downloaded models match their hashes
+./tools/setup-sauti.sh --project-path <proj> --no-bootstrap --no-wizard --verify
+
+# Only the manifest bootstrap (no Unity invocation, no downloads)
+./tools/setup-sauti.sh --project-path <proj> --no-wizard --models none
+```
+
+Run `./tools/setup-sauti.sh --help` for the full option list.
+
+### Or do it manually — three lines + one click
+
 ### Step 1 — Place the tarball somewhere OTHER THAN Assets/
 
 The conventional location is `Packages/tarballs/` (you may need to create the `tarballs/` folder):

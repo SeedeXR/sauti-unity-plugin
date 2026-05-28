@@ -6,6 +6,21 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
+## [1.3.3] — 2026-05-28
+
+Adds `tools/setup-sauti.sh` — a one-command installer that handles bootstrap + wizard + model downloads in a single invocation.
+
+### Added
+
+- **`tools/setup-sauti.sh`** — macOS/Linux/WSL bash script that does the full install end-to-end:
+  - Step 1: writes the bootstrap `manifest.json` (Sauti via Git URL or local tarball + `npmjs` scoped registry + ONNX peer dep). Idempotent.
+  - Step 2: invokes Unity in batchmode and runs `Sauti.Editor.Setup.SautiSetupWizard.FixAllHeadless`. Auto-discovers the Unity executable from `ProjectSettings/ProjectVersion.txt` + Unity Hub install paths; override via `--unity-path`.
+  - Step 3: downloads the AI models from Hugging Face into `<project>/Assets/StreamingAssets/VoiceAI/` with SHA-256 verification. Two profiles: `--models essential` (~1.4 GB — Kokoro + 1 voice + MiniLM + Whisper Tiny + Qwen3-1.7B) or `--models all` (~1.9 GB — adds Whisper Small + all 11 voices).
+  - `--verify` re-verifies existing models without redownloading.
+  - `--keep-going` continues past individual download failures.
+  - `--source git|tarball` switches between Git URL and local-tarball install paths.
+- `README.md`, `docs/installation.md`, `packaging/com.sauti.voice-ai/README.md`, `packaging/com.sauti.voice-ai/INSTALL.md` all lead with the one-command flow and keep the manual three-step path as the fallback.
+
 ## [1.3.2] — 2026-05-28
 
 Patch release: install is now genuinely 3-step (paste 3-line bootstrap → wizard → done). Plus a real package.json bug fix that was silently breaking fresh-consumer installs since v1.2.
@@ -46,6 +61,21 @@ Patch release: prevent the "extracted into Assets/" mis-install from being silen
 ### Compatibility
 
 The source repo + correct UPM-consumer install still work unchanged — `versionDefines` defines `SAUTI_ONNX_AVAILABLE` automatically when the peer is installed, so existing consumers see no behavioural change. All 62 EditMode tests pass in both source and consumer.
+
+## [1.3.1] — 2026-05-27
+
+Patch release: prevent the "extracted into Assets/" mis-install from being silent. Three-layer defense.
+
+### Added
+
+- **`Sauti.Editor.Sentinel` asmdef** — zero references, zero defineConstraints, always compiles regardless of peer-dep state. Runs `AssetPostprocessor.OnPostprocessAllAssets` AND `[InitializeOnLoadMethod]` belt-and-braces. Detects `Sauti.Runtime.asmdef` at any path other than `Assets/Sauti/Runtime/` (source repo) or `Packages/<id>/` (UPM-installed) and emits a `Debug.LogError` + Editor popup with the exact fix.
+- **`Sauti.Tests.InstallGuard` asmdef + `InstallLocationGuardTest`** — a standalone NUnit EditMode test in its own asmdef with no Sauti.Runtime reference. Runs via `-runTests` / `Window → Test Runner` even when Sauti's other asmdefs are skipped due to missing peer deps. Fails fast with an actionable message.
+- **`INSTALL.md`** at the package root with `.meta` sidecar — first file users see when they `tar tzf` the tarball.
+- Total EditMode tests: **62** (was 61).
+
+### Changed
+
+- **`Sauti.Runtime.asmdef`, `Sauti.Editor.asmdef`, `Sauti.Tests.Editor.asmdef` now use `versionDefines` + `defineConstraints`** keyed on `SAUTI_ONNX_AVAILABLE`. When `com.github.asus4.onnxruntime` is UPM-installed, the symbol is auto-defined and the asmdefs compile normally. When it's missing (e.g. tarball extracted into `Assets/` with no UPM install), the asmdefs are cleanly skipped — no more wall of misleading `CS0246: 'InferenceSession' could not be found` errors from inside Sauti.
 
 ## [1.3.0] — 2026-05-27
 
