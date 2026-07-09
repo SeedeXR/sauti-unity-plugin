@@ -11,8 +11,9 @@
 // See memory/kokoro_author_report.md for the full caveat. The planned
 // upgrade path (vendor a CMUDict subset) is now IMPLEMENTED: call
 // EnglishG2P.LoadCmudict(path) with a cmudict.dict (~125k words) and the
-// ~120-word ceiling lifts. CommonWords still wins as a hand-tuned override
-// layer; letter-spell remains the final fallback for true out-of-vocab words.
+// ~120-word ceiling lifts. Proper nouns and project terms register via
+// EnglishG2P.AddOverride (or the SautiPronunciationOverrides ScriptableObject).
+// Lookup order: Overrides → CommonWords → CMUDict → letter-spell fallback.
 //
 // What it produces:
 //   - A single string of IPA characters drawn from the Kokoro vocab
@@ -52,11 +53,64 @@ namespace Sauti.Tts
 
         /// <summary>
         /// Diagnostic: lowercased words that fell through to the letter-spell fallback
-        /// (in neither CommonWords nor CMUDict). Add these to CommonWords as hand-tuned
-        /// overrides for correct pronunciation (proper nouns, project-specific terms).
-        /// Not cleared automatically.
+        /// (in no override layer, CommonWords, nor CMUDict). Feed these to
+        /// <see cref="AddOverride"/> for correct pronunciation (proper nouns,
+        /// project-specific terms). Not cleared automatically.
         /// </summary>
         public static readonly HashSet<string> UnknownWords = new HashSet<string>(StringComparer.Ordinal);
+
+        // ── Pronunciation overrides (proper nouns, project-specific terms) ────────
+        // Highest-priority lookup layer, above CommonWords and CMUDict. Copy-on-write:
+        // AddOverride swaps in a fresh dictionary under the lock, so the synthesis
+        // hot path reads the reference lock-free (same pattern as _cmudict above).
+        private static volatile Dictionary<string, string[]> _overrides;
+        private static readonly object _overridesLock = new object();
+
+        /// <summary>Number of pronunciation overrides currently registered.</summary>
+        public static int OverrideCount => _overrides?.Count ?? 0;
+
+        /// <summary>
+        /// Register a pronunciation override for <paramref name="word"/> (case-insensitive).
+        /// Overrides are the FIRST lookup layer — they beat CommonWords and CMUDict —
+        /// so this is the way to fix proper nouns and project-specific terms without
+        /// touching plugin source. <paramref name="arpabet"/> is CMU-style phonemes
+        /// with optional 0/1/2 stress digits, e.g. ["B","AA0","R","AA1","Z","AA0"].
+        /// Thread-safe. Throws <see cref="ArgumentException"/> on an unknown phoneme
+        /// token so typos surface immediately instead of being silently dropped.
+        /// Designers: use the SautiPronunciationOverrides ScriptableObject instead.
+        /// </summary>
+        public static void AddOverride(string word, string[] arpabet)
+        {
+            if (string.IsNullOrWhiteSpace(word))
+                throw new ArgumentException("Override word is null or blank.", nameof(word));
+            if (arpabet == null || arpabet.Length == 0)
+                throw new ArgumentException($"Override for '{word}' has no phonemes.", nameof(arpabet));
+            foreach (string tok in arpabet)
+            {
+                if (tok == null || !ArpabetToIpa.ContainsKey(StripStressDigit(tok)))
+                    throw new ArgumentException(
+                        $"Override for '{word}' contains unknown ARPABET phoneme '{tok}'. " +
+                        "Valid: AA AE AH AO AW AY EH ER EY IH IY OW OY UH UW AX B CH D DH F G HH " +
+                        "JH K L M N NG P R S SH T TH V W Y Z ZH, each with optional stress digit 0/1/2.",
+                        nameof(arpabet));
+            }
+            string key = word.Trim().ToLowerInvariant();
+            lock (_overridesLock)
+            {
+                var next = _overrides == null
+                    ? new Dictionary<string, string[]>(StringComparer.Ordinal)
+                    : new Dictionary<string, string[]>(_overrides, StringComparer.Ordinal);
+                next[key] = (string[])arpabet.Clone();
+                _overrides = next;
+            }
+            UnknownWords.Remove(key); // it is known now — keep the diagnostic honest
+        }
+
+        /// <summary>Remove all pronunciation overrides. Thread-safe.</summary>
+        public static void ClearOverrides()
+        {
+            lock (_overridesLock) { _overrides = null; }
+        }
 
         /// <summary>
         /// Load a CMU Pronouncing Dictionary in cmudict.dict format
@@ -113,7 +167,12 @@ namespace Sauti.Tts
                     continue;
                 }
                 string lowered = word.ToLowerInvariant();
-                if (CommonWords.TryGetValue(lowered, out string[] dictPhones))
+                var overrides = _overrides; // volatile snapshot — see AddOverride
+                if (overrides != null && overrides.TryGetValue(lowered, out string[] overridePhones))
+                {
+                    foreach (string p in overridePhones) phonemes.Add(p);
+                }
+                else if (CommonWords.TryGetValue(lowered, out string[] dictPhones))
                 {
                     foreach (string p in dictPhones) phonemes.Add(p);
                 }

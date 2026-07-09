@@ -6,6 +6,21 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
+## [1.3.5] — 2026-07-09
+
+Designer-facing pronunciation overrides for proper nouns and project-specific terms. CMUDict (1.3.4) covers general English; names and invented words will always be out-of-vocabulary — this release makes fixing them a data edit instead of a source edit. Fully backward-compatible: with no overrides registered, behaviour is unchanged.
+
+### Added
+
+- **`EnglishG2P.AddOverride(word, arpabet[])` / `ClearOverrides()` / `OverrideCount`** — a highest-priority pronunciation layer. Lookup order is now **Overrides → CommonWords → CMUDict → letter-spell**. Case-insensitive, thread-safe (copy-on-write, lock-free reads on the synthesis path), pure C# (stays dotnet-lintable). Invalid ARPABET tokens throw `ArgumentException` immediately so typos can't silently degrade audio. Registering a word also removes it from the `UnknownWords` diagnostic.
+- **`SautiPronunciationOverrides` ScriptableObject** (Assets → Create → Sauti → Pronunciation Overrides) — a designer-editable word → ARPABET list with an inline phoneme key in the tooltips. `Apply()` registers every entry; invalid entries are logged and skipped so one typo doesn't block the list.
+- **`SautiSpeaker.pronunciationOverrides` slot** — drag the asset in; it is applied automatically when the speaker's runner initialises. Overrides are process-global, so one asset covers every speaker.
+- **EditMode tests** (`EnglishG2POverrideTests`) pinning the lookup order, case-insensitivity, validation, diagnostic behaviour, and the ScriptableObject surface.
+
+### Notes
+
+- Intended workflow: synthesise once → read `EnglishG2P.UnknownWords` → author overrides for what it lists → done. Example entry: `baraza` → `B AA0 R AA1 Z AA0`.
+
 ## [1.3.4] — 2026-07-08
 
 Lifts the TTS pronunciation quality ceiling (was ~120 words) by adding optional CMUDict support to the English G2P. Fully backward-compatible: absent the dictionary file, behaviour is unchanged.

@@ -28,6 +28,11 @@ namespace Sauti.Components
         [Tooltip("Voice + model paths. Create via Assets → Create → Sauti → Voice Profile.")]
         [SerializeField] private SautiVoiceProfile profile;
 
+        [Tooltip("Optional proper-noun pronunciations (character names, invented places). " +
+                 "Create via Assets → Create → Sauti → Pronunciation Overrides. " +
+                 "Applied globally when this speaker initialises.")]
+        [SerializeField] private SautiPronunciationOverrides pronunciationOverrides;
+
         [Tooltip("If true, the generated PCM is wrapped in an AudioClip and " +
                  "played through the attached AudioSource on completion.")]
         [SerializeField] private bool autoPlayAudio = true;
@@ -139,6 +144,10 @@ namespace Sauti.Components
                 tokenizerPath: profile.ResolveTokenizerPath(),
                 voicesDirectoryPath: profile.ResolveVoicesDirectoryPath(),
                 cmudictPath: profile.ResolveG2PDictionaryPath());
+
+            // After CMUDict is in: overrides sit above it in the lookup order,
+            // so proper nouns from the asset win over any dictionary entry.
+            if (pronunciationOverrides != null) pronunciationOverrides.Apply();
         }
     }
 }
