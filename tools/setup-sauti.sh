@@ -67,9 +67,9 @@ OPTIONS
 
   --models all|essential|none
                              Which models to download. Default: essential.
-                               essential (~1.4 GB): Kokoro + 1 voice + MiniLM
-                                 + Whisper Tiny + Qwen3-1.7B GGUF
-                               all (~1.9 GB): adds all 11 voices + Whisper Small
+                               essential (~1.5 GB): Kokoro + 1 voice + MiniLM
+                                 + Whisper Tiny GGML + Qwen3-1.7B GGUF
+                               all (~2.2 GB): adds all 11 voices + Whisper Small GGML
                                none: skip model downloads
   --verify                   Re-verify SHA-256 of already-downloaded models;
                              don't redownload anything that's intact.
@@ -304,11 +304,7 @@ ESSENTIAL_MODELS=$(cat <<'EOF'
 |524288|tts/voices/af_bella.bin|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/voices/af_bella.bin
 afdb6f1a0e45b715d0bb9b11772f032c399babd23bfc31fed1c170afc848bdb1|22972370|embeddings/model_int8.onnx|https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_int8.onnx
 |231508|embeddings/vocab.txt|https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/vocab.txt
-2af4a414ca47aa30f61246017e5fe82b0a8d229281d1255ba666a2a7f6b84d19|10124990|stt/whisper-tiny/encoder_model_quantized.onnx|https://huggingface.co/onnx-community/whisper-tiny/resolve/main/onnx/encoder_model_quantized.onnx
-25e807a962b6349356d0ea5d0dfe530b7e5bf0e2a484aeca0359d03143faddd3|30719241|stt/whisper-tiny/decoder_model_merged_quantized.onnx|https://huggingface.co/onnx-community/whisper-tiny/resolve/main/onnx/decoder_model_merged_quantized.onnx
-27fc476bfe7f17299480be2273fc0608e4d5a99aba2ab5dec5374b4482d1a566|2480466|stt/whisper-tiny/tokenizer.json|https://huggingface.co/onnx-community/whisper-tiny/resolve/main/tokenizer.json
-46aeea0a406afbeb563fc8e59ca10609203df4299af6a83f73752fef369efd2d|2243|stt/whisper-tiny/config.json|https://huggingface.co/onnx-community/whisper-tiny/resolve/main/config.json
-f5c67e5a4f7102f8cb4d058bc95da276bbc19eeec997267c3bb0f25ef68facd1|3772|stt/whisper-tiny/generation_config.json|https://huggingface.co/onnx-community/whisper-tiny/resolve/main/generation_config.json
+921e4cf8686fdd993dcd081a5da5b6c365bfde1162e72b08d75ac75289920b1f|77704715|stt/ggml-tiny.en.bin|https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en.bin
 b0949de5b2e06cbed6aa96517f9bd8afb334584b6f95ee83479292ff4bdd8ed3|1257880128|llm/Qwen3-1.7B-Q5_K_M.gguf|https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q5_K_M.gguf
 EOF
 )
@@ -325,11 +321,7 @@ EXTRA_MODELS=$(cat <<'EOF'
 |524288|tts/voices/bf_isabella.bin|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/voices/bf_isabella.bin
 |524288|tts/voices/bm_george.bin|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/voices/bm_george.bin
 |524288|tts/voices/bm_lewis.bin|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/voices/bm_lewis.bin
-a43a83f3c5361cd591cfa7c36f14b43cf7cb22f47a415cc14a8d557be800fa92|92326160|stt/whisper-small/encoder_model_quantized.onnx|https://huggingface.co/onnx-community/whisper-small/resolve/main/onnx/encoder_model_quantized.onnx
-ec07c3cbb64172c39791e26ee870a65ac22b458c36722bfe2776b3dbf741e0c9|156750845|stt/whisper-small/decoder_model_merged_quantized.onnx|https://huggingface.co/onnx-community/whisper-small/resolve/main/onnx/decoder_model_merged_quantized.onnx
-27fc476bfe7f17299480be2273fc0608e4d5a99aba2ab5dec5374b4482d1a566|2480466|stt/whisper-small/tokenizer.json|https://huggingface.co/onnx-community/whisper-small/resolve/main/tokenizer.json
-457854d452f17661e197d74aee12b8e74fb75ba30ebfaa7426d0d61ea1e08a18|2227|stt/whisper-small/config.json|https://huggingface.co/onnx-community/whisper-small/resolve/main/config.json
-f538b28220c6a6d6f1af1458d4141cacb4ef4963df3de98a19490440c412ddf0|3893|stt/whisper-small/generation_config.json|https://huggingface.co/onnx-community/whisper-small/resolve/main/generation_config.json
+c6138d6d58ecc8322097e0f987c32f1be8bb0a18532a3f88f734d1bbf9c41e5d|487614201|stt/ggml-small.en.bin|https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin
 EOF
 )
 

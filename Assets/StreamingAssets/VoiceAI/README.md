@@ -6,7 +6,7 @@ Layout at runtime:
 
 ```
 Assets/StreamingAssets/VoiceAI/
-├── stt/          ← whisper-small-int8.onnx OR whisper-tiny-int8.onnx
+├── stt/          ← ggml-small.en.bin OR ggml-tiny.en.bin (whisper.cpp GGML)
 ├── llm/          ← qwen3-1.7b-q5_k_m.gguf OR gemma3-1b-q4_k_m.gguf
 ├── embeddings/   ← all-minilm-l6-v2-int8.onnx
 ├── rag/          ← knowledge.db

@@ -1,4 +1,4 @@
-# Experiment 06 — VR Quest NPC
+﻿# Experiment 06 — VR Quest NPC
 
 > **The VR variant of the integrated voice loop.** Quest 3 controller trigger starts mic capture -> Whisper Tiny ONNX -> memory + RAG -> Qwen3 GGUF -> Kokoro TTS -> spatialised audio at the NPC's position. Demonstrates the Quest-platform path through the Sauti pipeline.
 
@@ -25,7 +25,7 @@ The MonoBehaviour mirrors `FullVoiceLoop.cs` for the inner orchestration (mic ->
 
 - **XR controller polling.** On `Update`, reads the right-hand controller's primary trigger via `UnityEngine.XR.InputDevices.GetDeviceAtXRNode(XRNode.RightHand)`. Trigger-down calls `StartListening`; trigger-up calls `StopAndProcess`. (The XR binding is fenced as `XR-API-001` — confirm against the modern `XR Interaction Toolkit` `InputAction` pattern when you wire your own.)
 - **Spatial audio playback.** The Kokoro TTS PCM is wrapped in an `AudioClip` and played through an `AudioSource` attached to the **NPC GameObject** (a child of the scene, not the camera). The `AudioSource` uses 3D spatial blend = 1.0, so distance attenuation works.
-- **Quest-aware model picks.** The same model-resolution code from EXP-05 picks `whisper-tiny/encoder_model_quantized.onnx` before `whisper-small/...` based on filename presence under `StreamingAssets/`. On a properly-built Quest APK, only `whisper-tiny/` ships (the build pre-processor strips the unused variant).
+- **Quest-aware model picks.** The same model-resolution code from EXP-05 picks `ggml-tiny.en.bin` before `ggml-small.en.bin` based on filename presence under `StreamingAssets/`. On a properly-built Quest APK, only the tiny model ships (the build pre-processor strips the unused variant).
 
 The Kokoro integration shape:
 

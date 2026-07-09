@@ -4,7 +4,13 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 ## [Unreleased]
 
-(none yet)
+### Fixed
+
+- **STT models are now GGML (whisper.cpp format) instead of ONNX — STT works end-to-end for the first time.** The shipped `onnx-community` Whisper exports could never load: `Macoron/whisper.unity` wraps **whisper.cpp**, whose native model format is single-file GGML, not ONNX. Every consumer following the install docs got an unloadable STT stage. Changes:
+  - `tools/setup-sauti.sh` downloads `ggml-tiny.en.bin` (75 MB, essential) / `ggml-small.en.bin` (466 MB, `--models all`) from `ggerganov/whisper.cpp` (MIT), SHA-pinned, placed flat under `StreamingAssets/VoiceAI/stt/`.
+  - Samples 02/05/06 resolve a single GGML file (`sttModelFilePreference`) instead of a subdir + ONNX anchor file, and pass it straight to `WhisperManager.ModelPath`.
+  - `SautiSetupWizard` model check now looks for `stt/ggml-tiny.en.bin`.
+  - `ai-models/stt/manifest.json`, `ai-models/manifest.json`, `ai-models/stt/README.md`, `docs/reference/models.md`, `NOTICE` all updated to the GGML entries (GGML models are self-contained — no tokenizer/config sidecars).
 
 ## [1.3.3] — 2026-05-28
 

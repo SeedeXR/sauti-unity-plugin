@@ -1,4 +1,4 @@
-# Experiment 05 — Full Voice Loop
+﻿# Experiment 05 — Full Voice Loop
 
 > **The headline demo.** Mic -> Whisper STT -> memory + RAG -> Qwen3 LLM -> sentence-stream event (ready for Kokoro TTS). The first experiment that composes **every** Sauti subsystem into the canonical voice-AI pipeline from `voice_ai_architecture.md`.
 
@@ -26,7 +26,7 @@ Source: [`experiments/05-full-voice-loop/FullVoiceLoop.cs`](https://github.com/S
 
 ### Init flow (`Awake`)
 
-1. Resolve the STT model directory (prefers `whisper-small`, falls back to `whisper-tiny`).
+1. Resolve the STT GGML model file (prefers `ggml-small.en.bin`, falls back to `ggml-tiny.en.bin`).
 2. Resolve the LLM GGUF (prefers Qwen3, falls back to Gemma3 once it lands post-v1.2).
 3. Add `WhisperManager`, `LLM`, `LLMAgent` components to the host GameObject.
 4. Initialise each: `await whisper.InitModel()`, `await llm.WaitUntilReady()`.

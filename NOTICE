@@ -10,11 +10,10 @@ Third-party AI models and their licenses
 Sauti bundles pre-quantised AI models. Each model retains its own license, recorded
 per-entry in ai-models/<stage>/manifest.json. Summary:
 
-* Whisper Small + Whisper Tiny INT8 ONNX exports
-    Original by OpenAI; ONNX conversion by onnx-community.
+* Whisper Small.en + Whisper Tiny.en GGML models
+    Original by OpenAI; GGML conversion by Georgi Gerganov (whisper.cpp).
     License: MIT.
-    Source: https://huggingface.co/onnx-community/whisper-small
-            https://huggingface.co/onnx-community/whisper-tiny
+    Source: https://huggingface.co/ggerganov/whisper.cpp
 
 * Qwen3-1.7B-Q5_K_M GGUF
     Original by Alibaba (Qwen team); GGUF quantisation by unsloth.

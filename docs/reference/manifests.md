@@ -1,4 +1,4 @@
-# Manifest schema
+﻿# Manifest schema
 
 Every model file Sauti can load is described in a per-stage manifest under `ai-models/<stage>/manifest.json`. All four current manifests (`stt`, `llm`, `embeddings`, `tts`) validate against one shared JSON Schema: [`ai-models/_schema/stage-manifest.schema.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/_schema/stage-manifest.schema.json).
 
@@ -36,7 +36,7 @@ One of: `"stt"`, `"llm"`, `"embeddings"`, `"tts"`, `"rag"`. Tells the build pre-
 
 ### `models` (array, **required**, minItems: 1)
 
-One entry per model file Sauti can load for this stage. Multi-file model bundles (e.g. Whisper splits into encoder + decoder + tokenizer) get one entry per file.
+One entry per model file Sauti can load for this stage. Multi-file model bundles (e.g. Kokoro's per-voice .bin files) get one entry per file.
 
 ---
 
@@ -46,7 +46,7 @@ Every model entry must include the eleven fields below.
 
 ### `fileName` (string, 1–200 chars)
 
-Exact filename on disk under `ai-models/<stage>/`. Forward slashes for subfolder paths (e.g. `"whisper-small/encoder_model_quantized.onnx"`, `"voices/af.bin"`).
+Exact filename on disk under `ai-models/<stage>/`. Forward slashes for subfolder paths (e.g. `"voices/af.bin"`).
 
 ### `displayName` (string, 1–200 chars)
 

@@ -34,9 +34,9 @@ namespace Sauti.Experiments.FullVoiceLoop
         [SerializeField] private string microphoneDeviceName = "";
 
         [Header("STT")]
-        [Tooltip("First present sub-dir under StreamingAssets/VoiceAI/stt/ wins. Small → Tiny fallback.")]
-        [SerializeField] private string[] sttModelSubdirPreference = { "whisper-small", "whisper-tiny" };
-        [SerializeField] private string sttAnchorFileName = "encoder_model_quantized.onnx";
+        [Tooltip("First present GGML file under StreamingAssets/VoiceAI/stt/ wins. Small → Tiny fallback. " +
+                 "whisper.unity wraps whisper.cpp — single-file GGML models only (not ONNX).")]
+        [SerializeField] private string[] sttModelFilePreference = { "ggml-small.en.bin", "ggml-tiny.en.bin" };
 
         [Header("LLM")]
         [SerializeField] private string[] llmModelFileNamePreference =
@@ -79,8 +79,8 @@ namespace Sauti.Experiments.FullVoiceLoop
         private async void Awake()
         {
             // --- STT model resolution ---
-            string sttDir = ResolveSttDir();
-            if (sttDir == null) { Fail("STT model not found — see WHISPER-DL-001."); return; }
+            string sttModelPath = ResolveSttModelPath();
+            if (sttModelPath == null) { Fail("STT model not found — see WHISPER-DL-001."); return; }
 
             // --- LLM model resolution ---
             string llmPath = ResolveLlmPath();
@@ -92,7 +92,7 @@ namespace Sauti.Experiments.FullVoiceLoop
 #if SAUTI_WHISPER_UNITY_AVAILABLE && SAUTI_LLMUNITY_AVAILABLE
             // STT
             _whisper = gameObject.AddComponent<WhisperManager>();
-            _whisper.ModelPath = Path.Combine(sttDir, sttAnchorFileName);
+            _whisper.ModelPath = sttModelPath;
             _whisper.IsModelPathInStreamingAssets = false;
             _whisper.language = "en";
             await _whisper.InitModel();
@@ -294,14 +294,13 @@ namespace Sauti.Experiments.FullVoiceLoop
             return -1;
         }
 
-        private string ResolveSttDir()
+        private string ResolveSttModelPath()
         {
             string sttRoot = Path.Combine(Application.streamingAssetsPath, "VoiceAI/stt");
-            foreach (string sub in sttModelSubdirPreference)
+            foreach (string fileName in sttModelFilePreference)
             {
-                string candidate = Path.Combine(sttRoot, sub);
-                if (Directory.Exists(candidate) && File.Exists(Path.Combine(candidate, sttAnchorFileName)))
-                    return candidate;
+                string candidate = Path.Combine(sttRoot, fileName);
+                if (File.Exists(candidate)) return candidate;
             }
             return null;
         }

@@ -1,4 +1,4 @@
-# experiments/06-vr-quest-npc — VR Quest NPC (Push-to-Talk)
+﻿# experiments/06-vr-quest-npc — VR Quest NPC (Push-to-Talk)
 
 > **The VR variant of the integrated voice loop.** Quest 3 controller trigger starts mic capture → Whisper Tiny ONNX → memory + RAG → Gemma3 (or Qwen3) GGUF → Kokoro TTS → spatialised audio at the NPC's position. Demonstrates the Quest-platform path through the Sauti pipeline.
 
@@ -16,7 +16,7 @@
 | Item | Where |
 |---|---|
 | Unity 6+ LTS with Android Build Support + OpenXR + XR Plugin Management | Install via Unity Hub; configure for Android + Meta Quest. |
-| Whisper Tiny multi-file set | Already downloaded — `ai-models/stt/whisper-tiny/` (`WHISPER-DL-001`). |
+| Whisper Tiny.en GGML | `ai-models/stt/ggml-tiny.en.bin` from `ggerganov/whisper.cpp` (`WHISPER-DL-001`). |
 | Gemma3-1B Q4_K_M | **Currently license-blocked** — see `GEMMA-DL-001`. Falls back to Qwen3-1.7B if Gemma is absent (Qwen3 fits Quest 3's 8 GB but is tight). |
 | MiniLM + vocab | `MINILM-DL-001` ✓ |
 | Kokoro + voices + tokenizer | `KOKORO-DL-001` + `KOKORO-VOICES-DL-001` ✓ |

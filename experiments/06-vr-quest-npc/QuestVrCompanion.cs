@@ -43,8 +43,9 @@ namespace Sauti.Experiments.VrQuest
         [SerializeField] private string microphoneDeviceName = "";
 
         [Header("STT (Quest: prefer Tiny)")]
-        [SerializeField] private string[] sttModelSubdirPreference = { "whisper-tiny", "whisper-small" };
-        [SerializeField] private string sttAnchorFileName = "encoder_model_quantized.onnx";
+        [Tooltip("First present GGML file under StreamingAssets/VoiceAI/stt/ wins. Quest prefers Tiny. " +
+                 "whisper.unity wraps whisper.cpp — single-file GGML models only (not ONNX).")]
+        [SerializeField] private string[] sttModelFilePreference = { "ggml-tiny.en.bin", "ggml-small.en.bin" };
 
         [Header("LLM (Quest in v1.2: Qwen3-1.7B only; Gemma3 deferred post-v1.2)")]
         [Tooltip("Quest 3 (8 GB RAM) runs Qwen3-1.7B but RAM headroom is tight. " +
@@ -98,9 +99,9 @@ namespace Sauti.Experiments.VrQuest
         {
             _audioSource = GetComponent<AudioSource>();
 
-            string sttDir = ResolveSttDir();
+            string sttModelPath = ResolveSttModelPath();
             string llmPath = ResolveLlmPath();
-            if (sttDir == null) { Fail("STT model missing — WHISPER-DL-001."); return; }
+            if (sttModelPath == null) { Fail("STT model missing — WHISPER-DL-001."); return; }
             if (llmPath == null) { Fail("LLM model missing — QWEN-DL-001 / GEMMA-DL-001."); return; }
 
             // --- Kokoro TTS ---
@@ -119,7 +120,7 @@ namespace Sauti.Experiments.VrQuest
 #if SAUTI_WHISPER_UNITY_AVAILABLE && SAUTI_LLMUNITY_AVAILABLE
             // --- Whisper ---
             _whisper = gameObject.AddComponent<WhisperManager>();
-            _whisper.ModelPath = Path.Combine(sttDir, sttAnchorFileName);
+            _whisper.ModelPath = sttModelPath;
             _whisper.IsModelPathInStreamingAssets = false;
             _whisper.language = "en";
             await _whisper.InitModel();
@@ -143,7 +144,7 @@ namespace Sauti.Experiments.VrQuest
                 await _rag.LoadAsync(ragDbPath);
             }
 
-            Debug.Log($"[Sauti][VrQuest] init complete: stt={Path.GetFileName(sttDir)} " +
+            Debug.Log($"[Sauti][VrQuest] init complete: stt={Path.GetFileName(sttModelPath)} " +
                       $"llm={Path.GetFileName(llmPath)} rag={(_rag != null && _rag.IsLoaded)}");
             _initialised = true;
 #else
@@ -345,14 +346,13 @@ namespace Sauti.Experiments.VrQuest
             return -1;
         }
 
-        private string ResolveSttDir()
+        private string ResolveSttModelPath()
         {
             string root = Path.Combine(Application.streamingAssetsPath, "VoiceAI/stt");
-            foreach (string sub in sttModelSubdirPreference)
+            foreach (string fileName in sttModelFilePreference)
             {
-                string candidate = Path.Combine(root, sub);
-                if (Directory.Exists(candidate) && File.Exists(Path.Combine(candidate, sttAnchorFileName)))
-                    return candidate;
+                string candidate = Path.Combine(root, fileName);
+                if (File.Exists(candidate)) return candidate;
             }
             return null;
         }
