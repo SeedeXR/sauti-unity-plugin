@@ -271,12 +271,12 @@ namespace Sauti.Editor.Setup
         private CheckResult CheckModelsOnDisk()
         {
             string streamingTts = Path.Combine(Application.streamingAssetsPath, "VoiceAI/tts/model_quantized.onnx");
-            string streamingStt = Path.Combine(Application.streamingAssetsPath, "VoiceAI/stt/whisper-tiny/encoder_model_quantized.onnx");
+            string streamingStt = Path.Combine(Application.streamingAssetsPath, "VoiceAI/stt/ggml-tiny.en.bin");
             string streamingEmb = Path.Combine(Application.streamingAssetsPath, "VoiceAI/embeddings/model_int8.onnx");
             string streamingLlm = Path.Combine(Application.streamingAssetsPath, "VoiceAI/llm/Qwen3-1.7B-Q5_K_M.gguf");
             var missing = new List<string>();
             if (!File.Exists(streamingTts)) missing.Add("Kokoro TTS (tts/model_quantized.onnx)");
-            if (!File.Exists(streamingStt)) missing.Add("Whisper Tiny STT (stt/whisper-tiny/encoder_model_quantized.onnx)");
+            if (!File.Exists(streamingStt)) missing.Add("Whisper Tiny STT (stt/ggml-tiny.en.bin)");
             if (!File.Exists(streamingEmb)) missing.Add("MiniLM embeddings (embeddings/model_int8.onnx)");
             if (!File.Exists(streamingLlm)) missing.Add("Qwen3-1.7B LLM (llm/Qwen3-1.7B-Q5_K_M.gguf)");
             return new CheckResult(

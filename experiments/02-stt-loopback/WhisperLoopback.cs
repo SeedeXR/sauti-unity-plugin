@@ -1,7 +1,9 @@
 // experiments/02-stt-loopback/WhisperLoopback.cs
 //
-// EXP-002: smallest end-to-end STT via Whisper ONNX (Macoron/whisper.unity v1.4.0).
-// API surface verified: memory/api_surfaces.md "Whisper.WhisperManager".
+// EXP-002: smallest end-to-end STT via Whisper GGML (Macoron/whisper.unity v1.4.0).
+// whisper.unity wraps whisper.cpp, whose native model format is GGML — single
+// .bin files from ggerganov/whisper.cpp. (ONNX Whisper exports are NOT loadable
+// by this engine.) API surface verified: memory/api_surfaces.md "Whisper.WhisperManager".
 //
 // This scaffold uses a **push-to-talk** flow for simplicity: hold/click the trigger,
 // `Microphone` captures into an AudioClip, on release we hand the clip to
@@ -25,19 +27,13 @@ namespace Sauti.Experiments.SttLoopback
     {
         [Header("Model selection")]
         [Tooltip("Tried in order; first present file under StreamingAssets/VoiceAI/stt/ wins. " +
-                 "Whisper Small (flagship) → Whisper Tiny (Quest / low-end fallback). " +
-                 "These are SUBDIRECTORIES per the v1.2 multi-file Whisper layout.")]
-        [SerializeField] private string[] modelSubdirPreference =
+                 "Single-file GGML models (whisper.cpp format) — " +
+                 "Whisper Small (flagship) → Whisper Tiny (Quest / low-end fallback).")]
+        [SerializeField] private string[] modelFilePreference =
         {
-            "whisper-small",
-            "whisper-tiny"
+            "ggml-small.en.bin",
+            "ggml-tiny.en.bin"
         };
-
-        [Tooltip("Encoder + decoder + tokenizer file naming inside the subdir. " +
-                 "whisper.unity loads from a single .bin/.ggml or from a folder per its loader; " +
-                 "this scaffold points at the encoder ONNX as the canonical entry — adjust if the " +
-                 "package needs a different anchor file.")]
-        [SerializeField] private string anchorFileName = "encoder_model_quantized.onnx";
 
         [Header("Capture")]
         [Tooltip("Push-to-talk window length (seconds). Whisper consumes mono 16 kHz.")]
@@ -56,18 +52,18 @@ namespace Sauti.Experiments.SttLoopback
 #if SAUTI_WHISPER_UNITY_AVAILABLE
         private WhisperManager _manager;
 #endif
-        private string _resolvedModelDir;
+        private string _resolvedModelPath;
         private AudioClip _micClip;
         private bool _isListening;
 
         private async void Awake()
         {
-            _resolvedModelDir = ResolveModelDir();
-            if (_resolvedModelDir == null)
+            _resolvedModelPath = ResolveModelPath();
+            if (_resolvedModelPath == null)
             {
-                Debug.LogError("[Sauti][STT] no Whisper variant found under " +
-                               $"{Application.streamingAssetsPath}/VoiceAI/stt/. Tried subdirs: " +
-                               string.Join(", ", modelSubdirPreference) +
+                Debug.LogError("[Sauti][STT] no Whisper GGML model found under " +
+                               $"{Application.streamingAssetsPath}/VoiceAI/stt/. Tried: " +
+                               string.Join(", ", modelFilePreference) +
                                ". See WHISPER-DL-001.");
                 enabled = false;
                 return;
@@ -77,13 +73,13 @@ namespace Sauti.Experiments.SttLoopback
             // Per memory/api_surfaces.md, WhisperManager is a MonoBehaviour; add it to this
             // GameObject and configure via its public fields.
             _manager = gameObject.AddComponent<WhisperManager>();
-            _manager.ModelPath = Path.Combine(_resolvedModelDir, anchorFileName);
+            _manager.ModelPath = _resolvedModelPath;
             _manager.IsModelPathInStreamingAssets = false;  // we resolved an absolute path above
             _manager.language = language;
             _manager.OnNewSegment += HandleSegment;
 
             await _manager.InitModel();
-            Debug.Log($"[Sauti][STT] init modelDir={_resolvedModelDir} anchor={anchorFileName} loaded={_manager.IsLoaded}");
+            Debug.Log($"[Sauti][STT] init model={Path.GetFileName(_resolvedModelPath)} loaded={_manager.IsLoaded}");
 #else
             Debug.LogError("[Sauti][STT] SAUTI_WHISPER_UNITY_AVAILABLE not defined. " +
                            "Install Macoron/whisper.unity, add to asmdef references, " +
@@ -141,14 +137,13 @@ namespace Sauti.Experiments.SttLoopback
         }
 #endif
 
-        private string ResolveModelDir()
+        private string ResolveModelPath()
         {
             string sttRoot = Path.Combine(Application.streamingAssetsPath, "VoiceAI/stt");
-            foreach (string sub in modelSubdirPreference)
+            foreach (string fileName in modelFilePreference)
             {
-                string candidate = Path.Combine(sttRoot, sub);
-                if (Directory.Exists(candidate) && File.Exists(Path.Combine(candidate, anchorFileName)))
-                    return candidate;
+                string candidate = Path.Combine(sttRoot, fileName);
+                if (File.Exists(candidate)) return candidate;
             }
             return null;
         }

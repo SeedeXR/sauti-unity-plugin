@@ -58,8 +58,8 @@ Everything below is the long-form version of those eight steps.
 
 | Stage | File | Source | Size | Status |
 |---|---|---|---|---|
-| STT | `whisper-small/{encoder,decoder,tokenizer,config,generation_config}` | `onnx-community/whisper-small` | 252 MB | ready |
-| STT | `whisper-tiny/{encoder,decoder,tokenizer,config,generation_config}` | `onnx-community/whisper-tiny` | 43 MB | ready |
+| STT | `ggml-small.en.bin` | `ggerganov/whisper.cpp` | 466 MB | ready |
+| STT | `ggml-tiny.en.bin` | `ggerganov/whisper.cpp` | 75 MB | ready |
 | LLM | `Qwen3-1.7B-Q5_K_M.gguf` | `unsloth/Qwen3-1.7B-GGUF` | 1.26 GB | ready |
 | LLM | `gemma3-1b-q4_k_m.gguf` | `google/gemma-3-1b-it-GGUF` | — | **pending — TOS** |
 | Embeddings | `model_int8.onnx` + `vocab.txt` | `Xenova/all-MiniLM-L6-v2` | 22 MB | ready |

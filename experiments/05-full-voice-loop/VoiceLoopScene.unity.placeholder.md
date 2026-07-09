@@ -1,4 +1,4 @@
-# VoiceLoopScene.unity — Manual scene creation steps
+﻿# VoiceLoopScene.unity — Manual scene creation steps
 
 The integrated voice loop needs a slightly richer UI than the earlier experiment scenes because four pipeline stages produce visible output. Build the scene on first open:
 
@@ -16,7 +16,7 @@ The integrated voice loop needs a slightly richer UI than the earlier experiment
 7. In the `Full Voice Loop` component:
    - **Max Capture Seconds** = 8 (raise for longer answers).
    - **Microphone Device Name** = empty (system default).
-   - **STT Model Subdir Preference** = leave defaults.
+   - **STT Model File Preference** = leave defaults.
    - **LLM Model File Name Preference** = leave defaults.
    - **Use Rag** = checked (provided `knowledge.db` exists).
    - **Num Rag Chunks** = 3.

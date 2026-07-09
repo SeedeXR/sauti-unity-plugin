@@ -1,4 +1,4 @@
-# experiments/05-full-voice-loop — Integrated Voice Loop
+﻿# experiments/05-full-voice-loop — Integrated Voice Loop
 
 > **The headline demo.** Mic → Whisper STT → memory + RAG → Qwen3 LLM → on-screen text (Kokoro TTS stub). This is the first experiment that composes every Sauti subsystem into the canonical voice-AI pipeline from `voice_ai_architecture.md`.
 
@@ -19,7 +19,7 @@
 | Item | Where |
 |---|---|
 | Unity 6+ LTS | Install via Unity Hub. |
-| Whisper Small / Tiny (multi-file) | `WHISPER-DL-001` — already downloaded Session 11. |
+| Whisper Small.en / Tiny.en (GGML single-file) | `WHISPER-DL-001` — from `ggerganov/whisper.cpp`. |
 | Qwen3-1.7B-Q5_K_M (or Gemma3) | `QWEN-DL-001` — already downloaded. |
 | `all-MiniLM-L6-v2` INT8 + WordPiece vocab | `MINILM-DL-001` — already downloaded. |
 | `knowledge.db` | Build via **Sauti → Build Knowledge Base** Editor menu (`MEM-003`) — requires `MINILM-AUTHOR-001` to ship first. |

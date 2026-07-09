@@ -155,8 +155,8 @@ The real implementation lives in [`experiments/05-full-voice-loop/FullVoiceLoop.
                   ---------------                        -----------------
                   ai-models/                             Assets/StreamingAssets/VoiceAI/
                     stt/                                   stt/
-                      whisper-small/                         whisper-small/ (PC, iOS, Android flagship)
-                      whisper-tiny/                          whisper-tiny/  (Quest, Android low-end)
+                      ggml-small.en.bin                      ggml-small.en.bin (PC, iOS, Android flagship)
+                      ggml-tiny.en.bin                       ggml-tiny.en.bin  (Quest, Android low-end)
                     llm/                                   llm/
                       Qwen3-1.7B-Q5_K_M.gguf                 Qwen3-1.7B-Q5_K_M.gguf
                       gemma3-1b-q4_k_m.gguf                  (Quest / low-end only — deferred v1.2)

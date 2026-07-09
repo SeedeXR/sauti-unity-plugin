@@ -1,4 +1,4 @@
-# VrCompanionScene.unity — Manual Quest scene creation steps
+﻿# VrCompanionScene.unity — Manual Quest scene creation steps
 
 This is a VR scene; it cannot be authored as YAML and needs Unity Editor + XR Plug-in Management configured for Quest. Build the scene on first open:
 
@@ -34,7 +34,7 @@ This is a VR scene; it cannot be authored as YAML and needs Unity Editor + XR Pl
 5. In the `Quest Vr Companion` Inspector:
    - **Trigger Hand** = RightHand (or LeftHand for left-handed players).
    - **Max Capture Seconds** = 8.
-   - **STT Model Subdir Preference** = `whisper-tiny`, `whisper-small` (Quest prefers Tiny).
+   - **STT Model File Preference** = `ggml-tiny.en.bin`, `ggml-small.en.bin` (Quest prefers Tiny).
    - **LLM Model File Name Preference** = `gemma3-1b-q4_k_m.gguf`, `Qwen3-1.7B-Q5_K_M.gguf` (Quest prefers Gemma3 once `GEMMA-DL-001` resolves; falls back to Qwen3 today).
    - **Voice Id** = `af_bella` or any from the 11 voices.
    - **Use Rag** = checked (provided `knowledge.db` exists; experiment works without it).

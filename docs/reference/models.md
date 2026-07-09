@@ -11,42 +11,30 @@ Every model file Sauti can load, by stage. Each row is verbatim from the per-sta
 
 **Stage:** `stt`
 **Manifest:** [`ai-models/stt/manifest.json`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/ai-models/stt/manifest.json)
-**Runtime:** `asus4/onnxruntime-unity` via `Macoron/whisper.unity`
-**Language:** English only (`language = "en"`)
+**Runtime:** `Macoron/whisper.unity` — a **whisper.cpp** wrapper. It loads single-file **GGML** models only; ONNX Whisper exports are not loadable by this engine.
+**Language:** English only (`.en` model variants, `language = "en"`)
 
-### Whisper Small (flagship)
+### Whisper Small.en (flagship)
 
-Targets: `windows`, `macos`, `linux`, `ios`, `android_flagship`. Lives under `ai-models/stt/whisper-small/`.
-
-| File | Size | SHA-256 (first 16 chars) | Format | Status |
-|---|---|---|---|---|
-| `encoder_model_quantized.onnx` | 88 MB | `a43a83f3c5361cd5...` | ONNX INT8 | ready |
-| `decoder_model_merged_quantized.onnx` | 149 MB | `ec07c3cbb64172c3...` | ONNX INT8 | ready |
-| `tokenizer.json` | 2 MB | `27fc476bfe7f1729...` | Binary | ready |
-| `config.json` | 2 KB | `457854d452f17661...` | Binary | ready |
-| `generation_config.json` | 4 KB | `f538b28220c6a6d6...` | Binary | ready |
-
-**Source:** [`onnx-community/whisper-small`](https://huggingface.co/onnx-community/whisper-small) — MIT licensed, license confirmed 2026-05-26.
-
-Total Whisper Small: **~239 MB**.
-
-### Whisper Tiny (Quest / low-end)
-
-Targets: `quest`, `android_lowend`. Lives under `ai-models/stt/whisper-tiny/`.
+Targets: `windows`, `macos`, `linux`, `ios`, `android_flagship`. Lives flat at `ai-models/stt/ggml-small.en.bin`.
 
 | File | Size | SHA-256 (first 16 chars) | Format | Status |
 |---|---|---|---|---|
-| `encoder_model_quantized.onnx` | 10 MB | `2af4a414ca47aa30...` | ONNX INT8 | ready |
-| `decoder_model_merged_quantized.onnx` | 29 MB | `25e807a962b63493...` | ONNX INT8 | ready |
-| `tokenizer.json` | 2 MB | `27fc476bfe7f1729...` | Binary | ready |
-| `config.json` | 2 KB | `46aeea0a406afbeb...` | Binary | ready |
-| `generation_config.json` | 4 KB | `f5c67e5a4f7102f8...` | Binary | ready |
+| `ggml-small.en.bin` | 466 MB | `c6138d6d58ecc832...` | GGML | ready |
 
-**Source:** [`onnx-community/whisper-tiny`](https://huggingface.co/onnx-community/whisper-tiny) — MIT licensed.
+**Source:** [`ggerganov/whisper.cpp`](https://huggingface.co/ggerganov/whisper.cpp) — MIT licensed (original model by OpenAI).
 
-Total Whisper Tiny: **~43 MB**.
+### Whisper Tiny.en (Quest / low-end)
 
-The Whisper Tiny tokenizer is byte-identical to the Whisper Small tokenizer (`sha256` matches) — all Whisper variants share one tokeniser.
+Targets: `quest`, `android_lowend`. Lives flat at `ai-models/stt/ggml-tiny.en.bin`.
+
+| File | Size | SHA-256 (first 16 chars) | Format | Status |
+|---|---|---|---|---|
+| `ggml-tiny.en.bin` | 75 MB | `921e4cf8686fdd99...` | GGML | ready |
+
+**Source:** [`ggerganov/whisper.cpp`](https://huggingface.co/ggerganov/whisper.cpp) — MIT licensed (original model by OpenAI).
+
+GGML models are self-contained — tokenizer, config, and both encoder/decoder graphs live inside the single `.bin`, so there are no companion files to download.
 
 ---
 
@@ -195,11 +183,11 @@ Which files end up in a given build:
 
 | Platform | STT | LLM | Embeddings | TTS | Total bundle |
 |---|---|---|---|---|---|
-| Windows / Linux | Whisper Small (239 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.6 GiB |
-| macOS / iOS | Whisper Small (239 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.6 GiB |
-| Android (flagship) | Whisper Small (239 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.6 GiB |
-| Android (low-end) | Whisper Tiny (43 MB) | Qwen3 (1.26 GB) [^1] | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.4 GiB |
-| Quest 2 / 3 | Whisper Tiny (43 MB) | Qwen3 (1.26 GB) [^1] | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.4 GiB |
+| Windows / Linux | Whisper Small.en (466 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.8 GiB |
+| macOS / iOS | Whisper Small.en (466 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.8 GiB |
+| Android (flagship) | Whisper Small.en (466 MB) | Qwen3 (1.26 GB) | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.8 GiB |
+| Android (low-end) | Whisper Tiny.en (75 MB) | Qwen3 (1.26 GB) [^1] | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.4 GiB |
+| Quest 2 / 3 | Whisper Tiny.en (75 MB) | Qwen3 (1.26 GB) [^1] | MiniLM (22 MB) | Kokoro + voices (94 MB) | ~1.4 GiB |
 
 [^1]: When Gemma3-1B Q4_K_M is re-introduced post-v1.2 (728 MB), Quest and Android low-end builds will drop to ~870 MiB total.
 

@@ -1,4 +1,4 @@
-# experiments/02-stt-loopback — Whisper STT Loopback
+﻿# experiments/02-stt-loopback — Whisper STT Loopback
 
 > **Mic → Whisper ONNX → on-screen text.** The smallest end-to-end STT slice. Validates the speech-to-text pipeline before adding memory, RAG, or LLM stages.
 
@@ -7,7 +7,7 @@
 ## What this experiment proves
 
 1. Unity's `Microphone` API captures audio on the host platform without device-permission friction.
-2. `whisper.unity` (which wraps `Macoron/whisper.unity` over `asus4/onnxruntime-unity`) initialises against either `whisper-small-int8.onnx` (flagship) or `whisper-tiny-int8.onnx` (Quest / low-end).
+2. `Macoron/whisper.unity` (a **whisper.cpp** wrapper — single-file GGML models only) initialises against either `ggml-small.en.bin` (flagship) or `ggml-tiny.en.bin` (Quest / low-end).
 3. Audio chunks are transcribed to English text and surfaced to a `TextMeshProUGUI` label.
 4. The platform-aware model selection convention in `voice_ai_architecture.md § 6` works at runtime (Small preferred; Tiny fallback).
 
@@ -34,7 +34,7 @@
 - On Awake, the script picks the first Whisper model file it finds in `Assets/StreamingAssets/VoiceAI/stt/`. Order: Small, then Tiny. If neither is present, logs an error and disables itself.
 - `StartListening()` opens a 1–2 second rolling mic buffer (Unity `Microphone`) and feeds it through `whisper.unity` once per window.
 - `OnTranscriptionSegment(string text)` UnityEvent fires per recognised segment, updating the UI label.
-- Editor console shows: `[Sauti][STT] init model=whisper-small-int8.onnx ok`, then `[Sauti][STT] segment "..." TTFA=NNNms` per utterance.
+- Editor console shows: `[Sauti][STT] init model=ggml-small.en.bin loaded=True`, then `[Sauti][STT] segment "..." TTFA=NNNms` per utterance.
 
 ## Known limitations (Session 7 scaffold)
 

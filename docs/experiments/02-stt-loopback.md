@@ -1,4 +1,4 @@
-# Experiment 02 — STT Loopback
+﻿# Experiment 02 — STT Loopback
 
 > **Mic -> Whisper ONNX -> on-screen text.** The smallest end-to-end STT slice. Validates the speech-to-text pipeline before adding memory, RAG, or LLM.
 
@@ -9,7 +9,7 @@ The scaffold lives at [`experiments/02-stt-loopback/`](https://github.com/SeedeX
 ## What this experiment proves
 
 1. Unity's `Microphone` API captures audio on the host platform without device-permission friction.
-2. `Macoron/whisper.unity` (which wraps Whisper ONNX over `asus4/onnxruntime-unity`) initialises against either `whisper-small/...` (flagship) or `whisper-tiny/...` (Quest / low-end).
+2. `Macoron/whisper.unity` (a **whisper.cpp** wrapper — single-file GGML models only) initialises against either `ggml-small.en.bin` (flagship) or `ggml-tiny.en.bin` (Quest / low-end).
 3. Audio chunks are transcribed to English text and surfaced to an on-screen label.
 4. The platform-aware model selection convention from [Architecture § Per-platform model selection](../developer-guide/architecture.md#per-platform-model-selection) works at runtime — Small preferred, Tiny fallback.
 
@@ -21,7 +21,7 @@ Source: [`experiments/02-stt-loopback/WhisperLoopback.cs`](https://github.com/Se
 
 The MonoBehaviour:
 
-- On `Awake`, picks the first Whisper model directory it finds under `Assets/StreamingAssets/VoiceAI/stt/` (order: `whisper-small/`, then `whisper-tiny/`). The anchor file is `encoder_model_quantized.onnx` — the rest of the Whisper bundle (decoder + tokenizer + configs) is loaded by the upstream package.
+- On `Awake`, picks the first Whisper GGML file it finds under `Assets/StreamingAssets/VoiceAI/stt/` (order: `ggml-small.en.bin`, then `ggml-tiny.en.bin`). GGML models are self-contained — tokenizer and both graphs live inside the single `.bin`.
 - Attaches a `WhisperManager` component, sets `ModelPath`, `IsModelPathInStreamingAssets = false`, `language = "en"`, then calls `await manager.InitModel()`.
 - On button press (`StartListening` / `StopListening`), opens / closes a rolling mic buffer (`UnityEngine.Microphone`) and passes the captured clip into `await manager.GetTextAsync(audioClip)`.
 - Surfaces the `WhisperResult.Result` string to a `TextMeshProUGUI` label and optionally fires per-segment events via the upstream `OnNewSegment` callback.
@@ -29,7 +29,7 @@ The MonoBehaviour:
 The transcription call shape:
 
 ```csharp
-manager.ModelPath = Path.Combine(sttDir, "encoder_model_quantized.onnx");
+manager.ModelPath = resolvedGgmlPath;  // e.g. .../VoiceAI/stt/ggml-tiny.en.bin
 manager.IsModelPathInStreamingAssets = false;
 manager.language = "en";
 await manager.InitModel();
@@ -61,7 +61,7 @@ Follow [`experiments/02-stt-loopback/LoopbackScene.unity.placeholder.md`](https:
 Expected console output:
 
 ```
-[Sauti][STT] init model=encoder_model_quantized.onnx (whisper-small) ok
+[Sauti][STT] init model=ggml-small.en.bin loaded=True
 [Sauti][STT] segment "what's the weather in Stormwall" TTFA=NNNms
 ```
 
@@ -73,7 +73,7 @@ Latency target: ≤ 300 ms desktop CPU TTFA per `voice_ai_architecture.md § 8`.
 
 Three modifications to try as you read the code:
 
-1. **Switch to Whisper Tiny.** Delete `Assets/StreamingAssets/VoiceAI/stt/whisper-small/` (keep a backup) and rerun. The scaffold should pick `whisper-tiny/` automatically. Notice the smaller model is faster but loses accuracy on long words and accents.
+1. **Switch to Whisper Tiny.** Delete `Assets/StreamingAssets/VoiceAI/stt/ggml-small.en.bin` (keep a backup) and rerun. The scaffold should pick `ggml-tiny.en.bin` automatically. Notice the smaller model is faster but loses accuracy on long words and accents.
 2. **Subscribe to streaming segments.** The upstream package fires `OnNewSegment(WhisperSegment)` as the model produces output. Wire it up:
     ```csharp
     manager.OnNewSegment += seg => Debug.Log($"segment: {seg.Text}");

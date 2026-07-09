@@ -1,4 +1,4 @@
-# Adding a model
+﻿# Adding a model
 
 You found a great new ONNX or GGUF model. This page walks the eight steps from "I have a download URL" to "the model is shipping in Sauti".
 
@@ -42,8 +42,8 @@ If your model doesn't fit one of these, you're introducing a new stage — which
 Conventions:
 
 - Single-file model: drop directly under `ai-models/<stage>/` (e.g. `ai-models/llm/Qwen3-1.7B-Q5_K_M.gguf`).
-- Multi-file model: put into a subfolder named after the model variant (e.g. `ai-models/stt/whisper-small/`).
-- The filename in the manifest's `fileName` field must match the on-disk filename exactly (use forward slashes for subfolder paths: `"whisper-small/encoder_model_quantized.onnx"`).
+- Multi-file model: put into a subfolder named after the model variant (e.g. `ai-models/tts/voices/`).
+- The filename in the manifest's `fileName` field must match the on-disk filename exactly (use forward slashes for subfolder paths: `"voices/af.bin"`).
 
 The Sauti repo expects model files to land here **first**. The build pre-processor (planned, `BUILD-001`) reads from here and copies the platform-appropriate subset into `Assets/StreamingAssets/VoiceAI/<stage>/` at build time.
 
