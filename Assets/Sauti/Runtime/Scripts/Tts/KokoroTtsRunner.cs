@@ -42,9 +42,11 @@
 //   Kokoro requires IPA phonemes, not graphemes. The upstream pipeline
 //   uses `misaki` (Python) or `espeak-ng` (native), neither of which is
 //   shippable inside a UPM-managed Unity package without a native dep.
-//   We ship `EnglishG2P.cs` as a best-effort pure-C# fallback. Speech
-//   quality on out-of-dictionary words will be poor. This is tracked
-//   as a follow-up — see memory/kokoro_author_report.md.
+//   We ship `EnglishG2P.cs` as a pure-C# G2P. Pass a `cmudictPath` (a
+//   cmudict.dict, ~125k words) to this runner and EnglishG2P.LoadCmudict lifts
+//   the quality ceiling; without it, EnglishG2P falls back to a ~120-word table
+//   (poor on out-of-vocab words). For maximum fidelity, phonemise externally
+//   and call SynthesizeFromPhonemesAsync. See memory/kokoro_author_report.md.
 
 using System;
 using System.Collections.Generic;
@@ -86,6 +88,7 @@ namespace Sauti.Tts
         private readonly string _modelPath;
         private readonly string _tokenizerPath; // optional — may be null
         private readonly string _voicesDirectoryPath;
+        private readonly string _cmudictPath; // optional — may be null (built-in G2P fallback)
 
         private InferenceSession _session;
         private SessionOptions _sessionOptions;
@@ -146,7 +149,7 @@ namespace Sauti.Tts
         /// raw float32 shape (-1, 1, 256). Filenames (sans extension) are
         /// the voice ids returned by <see cref="AvailableVoiceIds"/>.
         /// </param>
-        public KokoroTtsRunner(string modelPath, string tokenizerPath, string voicesDirectoryPath)
+        public KokoroTtsRunner(string modelPath, string tokenizerPath, string voicesDirectoryPath, string cmudictPath = null)
         {
             if (string.IsNullOrWhiteSpace(modelPath))
                 throw new ArgumentException("modelPath must not be empty", nameof(modelPath));
@@ -161,6 +164,7 @@ namespace Sauti.Tts
             _modelPath = modelPath;
             _tokenizerPath = tokenizerPath; // optional — null/missing is fine
             _voicesDirectoryPath = voicesDirectoryPath;
+            _cmudictPath = cmudictPath;     // optional — null/missing → built-in G2P fallback
         }
 
         private void EnsureInitialised()
@@ -181,6 +185,12 @@ namespace Sauti.Tts
             {
                 _tokenizer = KokoroPhonemeTokenizer.CreateDefault();
             }
+
+            // G2P dictionary: load CMUDict if a path was supplied. Absent → EnglishG2P
+            // keeps its built-in ~120-word table (backward-compatible). Idempotent, so
+            // multiple runners sharing the static EnglishG2P load it at most once.
+            if (!string.IsNullOrEmpty(_cmudictPath))
+                EnglishG2P.LoadCmudict(_cmudictPath);
 
             // Voice scan.
             string[] voiceFiles = Directory.GetFiles(_voicesDirectoryPath, "*" + VoiceFileExtension);

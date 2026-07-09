@@ -6,6 +6,38 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
+## [1.3.5] — 2026-07-09
+
+Designer-facing pronunciation overrides for proper nouns and project-specific terms. CMUDict (1.3.4) covers general English; names and invented words will always be out-of-vocabulary — this release makes fixing them a data edit instead of a source edit. Fully backward-compatible: with no overrides registered, behaviour is unchanged.
+
+### Added
+
+- **`EnglishG2P.AddOverride(word, arpabet[])` / `ClearOverrides()` / `OverrideCount`** — a highest-priority pronunciation layer. Lookup order is now **Overrides → CommonWords → CMUDict → letter-spell**. Case-insensitive, thread-safe (copy-on-write, lock-free reads on the synthesis path), pure C# (stays dotnet-lintable). Invalid ARPABET tokens throw `ArgumentException` immediately so typos can't silently degrade audio. Registering a word also removes it from the `UnknownWords` diagnostic.
+- **`SautiPronunciationOverrides` ScriptableObject** (Assets → Create → Sauti → Pronunciation Overrides) — a designer-editable word → ARPABET list with an inline phoneme key in the tooltips. `Apply()` registers every entry; invalid entries are logged and skipped so one typo doesn't block the list.
+- **`SautiSpeaker.pronunciationOverrides` slot** — drag the asset in; it is applied automatically when the speaker's runner initialises. Overrides are process-global, so one asset covers every speaker.
+- **EditMode tests** (`EnglishG2POverrideTests`) pinning the lookup order, case-insensitivity, validation, diagnostic behaviour, and the ScriptableObject surface.
+
+### Notes
+
+- Intended workflow: synthesise once → read `EnglishG2P.UnknownWords` → author overrides for what it lists → done. Example entry: `baraza` → `B AA0 R AA1 Z AA0`.
+
+## [1.3.4] — 2026-07-08
+
+Lifts the TTS pronunciation quality ceiling (was ~120 words) by adding optional CMUDict support to the English G2P. Fully backward-compatible: absent the dictionary file, behaviour is unchanged.
+
+### Added
+
+- **`EnglishG2P.LoadCmudict(path)`** — loads a CMU Pronouncing Dictionary (`cmudict.dict` format, ~125k words). Once loaded, `GraphemesToPhonemes` looks up CommonWords (hand-tuned overrides, still win) → CMUDict → letter-spell fallback. Real English words now pronounce instead of being spelled letter-by-letter (measured: a 5-word test sentence dropped from 8.0 s of spelled-out audio to 4.3 s pronounced). Pure `System.IO`, no Unity dependency — the file stays dotnet-lintable.
+- **`EnglishG2P.UnknownWords`** — diagnostic set of words that fell through to letter-spell (proper nouns / project terms); add them to CommonWords as overrides.
+- **`KokoroTtsRunner` optional 4th constructor arg `cmudictPath`** — loads the dictionary during init. Existing 3-arg callers are unaffected.
+- **`SautiVoiceProfile.g2pDictionaryPathRelative`** (default `VoiceAI/tts/cmudict.dict`) + `ResolveG2PDictionaryPath()`; `SautiSpeaker` passes it through automatically.
+- **`tools/setup-sauti.sh`** now downloads `cmudict.dict` (3.5 MB, CMU BSD-2-Clause, pinned to a cmusphinx commit) into `StreamingAssets/VoiceAI/tts/` as part of the essential model set.
+
+### Notes
+
+- For maximum fidelity (out-of-vocabulary proper nouns, exact stress), phonemise externally and call `SynthesizeFromPhonemesAsync`; CMUDict covers common English automatically.
+- Follow-up (metadata only, not build-affecting): add a `cmudict.dict` entry to `ai-models/tts/manifest.json` + `docs/reference/models.md`.
+
 ## [1.3.3] — 2026-05-28
 
 Adds `tools/setup-sauti.sh` — a one-command installer that handles bootstrap + wizard + model downloads in a single invocation.
