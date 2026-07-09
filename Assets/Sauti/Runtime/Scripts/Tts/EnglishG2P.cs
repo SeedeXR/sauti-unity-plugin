@@ -8,9 +8,11 @@
 // What we ship here is a small ARPABet → IPA table + the ~120 most common
 // English words pre-baked + a character-by-character "spell it out" fallback
 // for unknown words. Out-of-distribution words will sound robotic or wrong.
-// See memory/kokoro_author_report.md for the full caveat and the planned
-// upgrade path (vendor a CMUDict subset behind BUILD-001, or wire in a
-// native phonemiser binding).
+// See memory/kokoro_author_report.md for the full caveat. The planned
+// upgrade path (vendor a CMUDict subset) is now IMPLEMENTED: call
+// EnglishG2P.LoadCmudict(path) with a cmudict.dict (~125k words) and the
+// ~120-word ceiling lifts. CommonWords still wins as a hand-tuned override
+// layer; letter-spell remains the final fallback for true out-of-vocab words.
 //
 // What it produces:
 //   - A single string of IPA characters drawn from the Kokoro vocab
@@ -26,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Sauti.Tts
@@ -36,6 +39,61 @@ namespace Sauti.Tts
     /// </summary>
     public static class EnglishG2P
     {
+        // ── CMUDict support (added to fix the ~120-word quality ceiling) ──────────
+        // Optional CMU Pronouncing Dictionary (~125k words). Loaded once from a file
+        // path handed in by KokoroTtsRunner. Pure System.IO — no Unity dependency —
+        // so this file stays dotnet-lintable. Absent file → we fall back to the
+        // built-in CommonWords + letter-spell path (fully backward-compatible).
+        private static Dictionary<string, string[]> _cmudict;
+        private static readonly object _cmudictLock = new object();
+
+        /// <summary>True once a CMUDict has been loaded via <see cref="LoadCmudict"/>.</summary>
+        public static bool HasCmudict => _cmudict != null;
+
+        /// <summary>
+        /// Diagnostic: lowercased words that fell through to the letter-spell fallback
+        /// (in neither CommonWords nor CMUDict). Add these to CommonWords as hand-tuned
+        /// overrides for correct pronunciation (proper nouns, project-specific terms).
+        /// Not cleared automatically.
+        /// </summary>
+        public static readonly HashSet<string> UnknownWords = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Load a CMU Pronouncing Dictionary in cmudict.dict format
+        /// ("word AH0 B ...", one entry per line, '#' comments, "word(2)" alternates).
+        /// Idempotent — the first successful load wins; later calls no-op. A missing
+        /// or blank path is a silent no-op (we keep the built-in fallback). After a
+        /// load, GraphemesToPhonemes covers ~125k English words; CommonWords still
+        /// wins as a hand-tuned override layer.
+        /// </summary>
+        public static void LoadCmudict(string path)
+        {
+            if (_cmudict != null) return;
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) return;
+            lock (_cmudictLock)
+            {
+                if (_cmudict != null) return;
+                var dict = new Dictionary<string, string[]>(StringComparer.Ordinal);
+                foreach (string raw in File.ReadLines(path))
+                {
+                    string line = raw;
+                    if (line.StartsWith(";;;", StringComparison.Ordinal)) continue;
+                    int hash = line.IndexOf('#'); if (hash >= 0) line = line.Substring(0, hash);
+                    line = line.Trim();
+                    if (line.Length == 0) continue;
+                    string[] parts = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length < 2) continue;
+                    string word = parts[0];
+                    int paren = word.IndexOf('('); if (paren >= 0) word = word.Substring(0, paren); // drop alt marker word(2)
+                    if (dict.ContainsKey(word)) continue; // keep first (primary) pronunciation
+                    string[] phones = new string[parts.Length - 1];
+                    Array.Copy(parts, 1, phones, 0, phones.Length);
+                    dict[word] = phones;
+                }
+                _cmudict = dict;
+            }
+        }
+
         /// <summary>
         /// Convert <paramref name="englishText"/> to an array of ARPABet-flavoured
         /// phoneme tokens (CMU-style). Caller may post-process; the more useful
@@ -59,8 +117,13 @@ namespace Sauti.Tts
                 {
                     foreach (string p in dictPhones) phonemes.Add(p);
                 }
+                else if (_cmudict != null && _cmudict.TryGetValue(lowered, out string[] cmuPhones))
+                {
+                    foreach (string p in cmuPhones) phonemes.Add(p);
+                }
                 else
                 {
+                    UnknownWords.Add(lowered); // diagnostic — see LoadCmudict summary
                     // Spell-out fallback: per-letter ARPABet for ASCII letters.
                     foreach (char c in lowered)
                     {

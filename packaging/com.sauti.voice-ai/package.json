@@ -1,6 +1,6 @@
 {
   "name": "com.sauti.voice-ai",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "displayName": "Sauti \u2014 Native Voice-AI Plugin",
   "description": "Native Unity voice-AI plugin. Fully offline. English. Privacy-first. Mic \u2192 Whisper \u2192 memory + RAG \u2192 Qwen3 GGUF \u2192 Kokoro \u2192 audio. Two strictly-partitioned runtimes (ONNX Runtime + llama.cpp) on a managed C# fa\u00e7ade with three-layer memory (conversation history + temporary KV + RAG over a knowledge base you author).",
   "unity": "6000.0",

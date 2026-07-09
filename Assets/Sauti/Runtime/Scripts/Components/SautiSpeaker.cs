@@ -137,7 +137,8 @@ namespace Sauti.Components
             _runner = new KokoroTtsRunner(
                 modelPath: profile.ResolveModelPath(),
                 tokenizerPath: profile.ResolveTokenizerPath(),
-                voicesDirectoryPath: profile.ResolveVoicesDirectoryPath());
+                voicesDirectoryPath: profile.ResolveVoicesDirectoryPath(),
+                cmudictPath: profile.ResolveG2PDictionaryPath());
         }
     }
 }

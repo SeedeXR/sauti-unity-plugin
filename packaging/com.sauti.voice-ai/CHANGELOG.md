@@ -6,6 +6,23 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 (none yet)
 
+## [1.3.4] — 2026-07-08
+
+Lifts the TTS pronunciation quality ceiling (was ~120 words) by adding optional CMUDict support to the English G2P. Fully backward-compatible: absent the dictionary file, behaviour is unchanged.
+
+### Added
+
+- **`EnglishG2P.LoadCmudict(path)`** — loads a CMU Pronouncing Dictionary (`cmudict.dict` format, ~125k words). Once loaded, `GraphemesToPhonemes` looks up CommonWords (hand-tuned overrides, still win) → CMUDict → letter-spell fallback. Real English words now pronounce instead of being spelled letter-by-letter (measured: a 5-word test sentence dropped from 8.0 s of spelled-out audio to 4.3 s pronounced). Pure `System.IO`, no Unity dependency — the file stays dotnet-lintable.
+- **`EnglishG2P.UnknownWords`** — diagnostic set of words that fell through to letter-spell (proper nouns / project terms); add them to CommonWords as overrides.
+- **`KokoroTtsRunner` optional 4th constructor arg `cmudictPath`** — loads the dictionary during init. Existing 3-arg callers are unaffected.
+- **`SautiVoiceProfile.g2pDictionaryPathRelative`** (default `VoiceAI/tts/cmudict.dict`) + `ResolveG2PDictionaryPath()`; `SautiSpeaker` passes it through automatically.
+- **`tools/setup-sauti.sh`** now downloads `cmudict.dict` (3.5 MB, CMU BSD-2-Clause, pinned to a cmusphinx commit) into `StreamingAssets/VoiceAI/tts/` as part of the essential model set.
+
+### Notes
+
+- For maximum fidelity (out-of-vocabulary proper nouns, exact stress), phonemise externally and call `SynthesizeFromPhonemesAsync`; CMUDict covers common English automatically.
+- Follow-up (metadata only, not build-affecting): add a `cmudict.dict` entry to `ai-models/tts/manifest.json` + `docs/reference/models.md`.
+
 ## [1.3.3] — 2026-05-28
 
 Adds `tools/setup-sauti.sh` — a one-command installer that handles bootstrap + wizard + model downloads in a single invocation.

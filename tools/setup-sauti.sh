@@ -301,6 +301,7 @@ fi
 ESSENTIAL_MODELS=$(cat <<'EOF'
 0d55b15d4b735d61a21b0105136bc81b8768c4db94753193c19354fa863cd556|92360543|tts/model_quantized.onnx|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/onnx/model_quantized.onnx
 |4608|tts/tokenizer.json|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/tokenizer.json
+81917843c7f44ce2b094ac63873c2c7a4cf802040792c455ba3ca406891c3d22|3618488|tts/cmudict.dict|https://raw.githubusercontent.com/cmusphinx/cmudict/74790861f652b15e4ac49015a90074ad62a27690/cmudict.dict
 |524288|tts/voices/af_bella.bin|https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/voices/af_bella.bin
 afdb6f1a0e45b715d0bb9b11772f032c399babd23bfc31fed1c170afc848bdb1|22972370|embeddings/model_int8.onnx|https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_int8.onnx
 |231508|embeddings/vocab.txt|https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/vocab.txt

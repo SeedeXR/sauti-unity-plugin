@@ -37,6 +37,11 @@ namespace Sauti.Components
                  "Leave blank to use the embedded vocab.")]
         public string tokenizerPathRelative = "";
 
+        [Tooltip("Optional path under Application.streamingAssetsPath to a CMU pronouncing " +
+                 "dictionary (cmudict.dict, ~125k words). Lifts pronunciation far above the " +
+                 "built-in ~120-word fallback. Leave blank to use the fallback.")]
+        public string g2pDictionaryPathRelative = "VoiceAI/tts/cmudict.dict";
+
         /// <summary>Absolute path to the ONNX model file at runtime.</summary>
         public string ResolveModelPath() =>
             Path.Combine(Application.streamingAssetsPath, modelPathRelative);
@@ -50,5 +55,11 @@ namespace Sauti.Components
             string.IsNullOrWhiteSpace(tokenizerPathRelative)
                 ? null
                 : Path.Combine(Application.streamingAssetsPath, tokenizerPathRelative);
+
+        /// <summary>Absolute CMUDict path (or null if blank).</summary>
+        public string ResolveG2PDictionaryPath() =>
+            string.IsNullOrWhiteSpace(g2pDictionaryPathRelative)
+                ? null
+                : Path.Combine(Application.streamingAssetsPath, g2pDictionaryPathRelative);
     }
 }
