@@ -192,7 +192,7 @@ Each is a Unity scene with a single MonoBehaviour orchestrator + a README explai
 - No telemetry, no analytics, no model downloads after install.
 - All four models live on disk in `Assets/StreamingAssets/VoiceAI/` and load from there.
 - User audio and conversation history stay on the device. Per-session memory clears on app exit.
-- Android caveat: models copy from the compressed `.jar` to `Application.persistentDataPath` on first launch.
+- Android caveat: models copy from the compressed `.jar` to `Application.persistentDataPath/SautiAssets/` on first use (handled by `SautiStreamingAssets`; the copy reads only the app's own APK — still zero network).
 
 ---
 
