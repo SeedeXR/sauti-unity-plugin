@@ -13,6 +13,7 @@
 // additive — it never replaces the code-only API.
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Sauti.Tts;
@@ -45,6 +46,7 @@ namespace Sauti.Components
         public UnityEvent<string> OnSpeakError = new UnityEvent<string>();
 
         private KokoroTtsRunner _runner;
+        private Task _runnerInit; // in-flight EnsureRunnerAsync, so re-entrant Speak calls share one init
         private AudioSource _audioSource;
         private CancellationTokenSource _activeCts;
 
@@ -52,7 +54,7 @@ namespace Sauti.Components
         public SautiVoiceProfile Profile
         {
             get => profile;
-            set { profile = value; _runner?.Dispose(); _runner = null; }
+            set { profile = value; _runner?.Dispose(); _runner = null; _runnerInit = null; }
         }
 
         /// <summary>Audio source the generated clip is routed through.</summary>
@@ -97,7 +99,7 @@ namespace Sauti.Components
 
             try
             {
-                EnsureRunner();
+                await EnsureRunnerAsync(ct);
                 float[] pcm = await _runner.SynthesizeAsync(text, profile.voiceId, ct).ConfigureAwait(true);
                 if (ct.IsCancellationRequested) return;
 
@@ -128,16 +130,79 @@ namespace Sauti.Components
         /// <summary>
         /// Lazy-initialise the underlying KokoroTtsRunner. Exposed so custom
         /// inspectors can probe model availability without invoking synthesis.
+        /// Synchronous — only valid where StreamingAssets is directly readable
+        /// (every Editor, desktop, iOS). On the Android/Quest player use
+        /// <see cref="EnsureRunnerAsync"/> (Speak/SpeakAsync do this for you).
         /// </summary>
         public void EnsureRunner()
         {
             if (_runner != null) return;
             if (profile == null) throw new InvalidOperationException("Profile not assigned");
+            if (SautiStreamingAssets.CopyRequired)
+                throw new InvalidOperationException(
+                    "On Android/Quest, StreamingAssets must be copied out of the APK " +
+                    "before models can load — call EnsureRunnerAsync() (or just " +
+                    "SpeakAsync, which awaits it) instead of EnsureRunner().");
 
             _runner = new KokoroTtsRunner(
                 modelPath: profile.ResolveModelPath(),
                 tokenizerPath: profile.ResolveTokenizerPath(),
                 voicesDirectoryPath: profile.ResolveVoicesDirectoryPath());
+        }
+
+        /// <summary>
+        /// Platform-safe lazy init. Passthrough to <see cref="EnsureRunner"/>
+        /// where StreamingAssets is directly readable; on the Android/Quest
+        /// player it first copies the profile's model, optional tokenizer and
+        /// voice file to persistentDataPath via <see cref="SautiStreamingAssets"/>.
+        /// Concurrent callers share one in-flight init.
+        /// </summary>
+        public async Task EnsureRunnerAsync(CancellationToken ct = default)
+        {
+            if (_runner != null) return;
+
+            if (!SautiStreamingAssets.CopyRequired)
+            {
+                EnsureRunner();
+                return;
+            }
+
+            if (profile == null) throw new InvalidOperationException("Profile not assigned");
+
+            if (_runnerInit == null) _runnerInit = BuildRunnerFromCopiesAsync(ct);
+            try
+            {
+                await _runnerInit;
+            }
+            catch
+            {
+                _runnerInit = null; // allow retry after a failed copy
+                throw;
+            }
+        }
+
+        private async Task BuildRunnerFromCopiesAsync(CancellationToken ct)
+        {
+            string modelPath = await SautiStreamingAssets.ResolveFileAsync(
+                profile.modelPathRelative, required: true, ct);
+
+            string tokenizerPath = string.IsNullOrWhiteSpace(profile.tokenizerPathRelative)
+                ? null
+                : await SautiStreamingAssets.ResolveFileAsync(
+                    profile.tokenizerPathRelative, required: false, ct);
+
+            // ponytail: copy only this profile's voice — Android can't enumerate
+            // StreamingAssets directories, so there's no way to copy "all"
+            // voices without a build-time index. Another profile's voice copies
+            // on its own first use.
+            string voiceFile = await SautiStreamingAssets.ResolveFileAsync(
+                profile.voicesDirectoryPathRelative + "/" + profile.voiceId + ".bin",
+                required: true, ct);
+
+            _runner = new KokoroTtsRunner(
+                modelPath: modelPath,
+                tokenizerPath: tokenizerPath,
+                voicesDirectoryPath: Path.GetDirectoryName(voiceFile));
         }
     }
 }

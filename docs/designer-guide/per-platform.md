@@ -125,10 +125,10 @@ Models live under `StreamingAssets/VoiceAI/` at build time. Read-path quirks:
 |---|---|---|
 | Windows / macOS / Linux | Direct `File.OpenRead(Application.streamingAssetsPath + ...)` | Works as expected. |
 | iOS / visionOS | Direct `File.OpenRead(...)` | StreamingAssets ships unpacked in the bundle. |
-| Android | **First-launch copy required.** | StreamingAssets is inside a compressed `.jar` and cannot be mmapped. Copy each model to `Application.persistentDataPath/VoiceAI/...` on first run, then load from there. |
-| Quest | Same as Android. | Quest is an Android variant; the same copy-on-first-launch rule applies. |
+| Android | **First-launch copy — handled by the runtime.** | StreamingAssets is inside a compressed `.jar` and cannot be mmapped. `SautiStreamingAssets.ResolveFileAsync` copies each model to `Application.persistentDataPath/SautiAssets/...` on first use, then loads from there. |
+| Quest | Same as Android. | Quest is an Android variant; the same copy-on-first-use rule applies. |
 
-Sauti's runtime is expected to handle the Android copy-on-first-launch transparently — this is part of the planned `BUILD-001` packaging work tracked in [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md).
+Sauti's runtime handles the Android copy-out transparently: `SautiSpeaker` resolves its model, tokenizer and voice through `SautiStreamingAssets` before constructing the TTS runner (a no-op passthrough on every other platform). The cache is stamped with `Application.version` and wiped on app updates, so a new release never serves last release's models. Code that builds `KokoroTtsRunner` from raw paths should call `SautiStreamingAssets.ResolveFileAsync` on each path first — see `Samples~/06-vr-quest-npc`. The first launch copies ~90 MB of TTS model, so expect a few seconds behind a loading screen; later launches hit the cache. (The build-time half — copying only the platform-tagged model subset into `StreamingAssets/` — remains tracked as `BUILD-001` in [`memory/todo.md`](https://github.com/SeedeXR/sauti-unity-plugin/blob/main/memory/todo.md).)
 
 ---
 
@@ -150,7 +150,7 @@ See [AI models catalogue](../reference/models.md) for the full per-file breakdow
 
 **None.** Sauti runs **fully offline**. The runtime never makes a network request. The only time the network is touched in the whole project is the **Editor download step** that fetches model files into `ai-models/` on the developer machine — that step never runs on a player device.
 
-This is a hard architectural constraint, not a recommendation. The runtime has no HTTP client, no credentials, no API endpoint configured. A privacy review can confirm this by `grep`-ing the runtime source for `http`, `Uri`, or `WebRequest` — there are no hits in `Assets/Sauti/Runtime/`.
+This is a hard architectural constraint, not a recommendation. The runtime has no HTTP client, no credentials, no API endpoint configured. One clarification for a privacy review that greps the runtime source: `SautiStreamingAssets.cs` uses `UnityWebRequest`, but exclusively to read the app's **own APK** on Android (the `jar:file://` URL Unity assigns to `StreamingAssets` — the only API Android exposes for it). It never touches a network URL; there is no endpoint anywhere in the runtime.
 
 ---
 

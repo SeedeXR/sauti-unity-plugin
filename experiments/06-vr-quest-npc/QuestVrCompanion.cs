@@ -104,17 +104,23 @@ namespace Sauti.Experiments.VrQuest
             if (llmPath == null) { Fail("LLM model missing — QWEN-DL-001 / GEMMA-DL-001."); return; }
 
             // --- Kokoro TTS ---
-            string ttsRoot = Path.Combine(Application.streamingAssetsPath, "VoiceAI/tts");
-            string ttsModelPath = Path.Combine(ttsRoot, ttsModelFileName);
-            string ttsTokenizerPath = Path.Combine(ttsRoot, ttsTokenizerFileName);
-            string ttsVoicesPath = Path.Combine(ttsRoot, ttsVoicesDirectoryName);
-            if (!File.Exists(ttsModelPath) || !Directory.Exists(ttsVoicesPath))
+            // SautiStreamingAssets copies files out of the APK to
+            // persistentDataPath on Android/Quest (StreamingAssets is inside
+            // the compressed .jar there); on desktop it's a passthrough.
+            string ttsModelPath = await SautiStreamingAssets.ResolveFileAsync(
+                "VoiceAI/tts/" + ttsModelFileName, required: false);
+            string effectiveTokenizer = await SautiStreamingAssets.ResolveFileAsync(
+                "VoiceAI/tts/" + ttsTokenizerFileName, required: false);
+            // Quest can't enumerate StreamingAssets dirs — resolve the one
+            // voice this NPC uses and hand its parent dir to the runner.
+            string ttsVoiceFile = await SautiStreamingAssets.ResolveFileAsync(
+                "VoiceAI/tts/" + ttsVoicesDirectoryName + "/" + voiceId + ".bin", required: false);
+            if (ttsModelPath == null || ttsVoiceFile == null)
             {
                 Fail("Kokoro TTS files missing — KOKORO-DL-001 / KOKORO-VOICES-DL-001.");
                 return;
             }
-            string effectiveTokenizer = File.Exists(ttsTokenizerPath) ? ttsTokenizerPath : null;
-            _ttsRunner = new KokoroTtsRunner(ttsModelPath, effectiveTokenizer, ttsVoicesPath);
+            _ttsRunner = new KokoroTtsRunner(ttsModelPath, effectiveTokenizer, Path.GetDirectoryName(ttsVoiceFile));
 
 #if SAUTI_WHISPER_UNITY_AVAILABLE && SAUTI_LLMUNITY_AVAILABLE
             // --- Whisper ---

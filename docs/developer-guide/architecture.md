@@ -182,7 +182,7 @@ These files are large. They are either checked in via Git LFS or downloaded via 
 At build time the Editor build pre-processor copies the platform-relevant subset of `ai-models/` into `StreamingAssets/VoiceAI/`. Only the models tagged for the current build target ship.
 
 - `StreamingAssets/` is **read-only at runtime** on every platform. Models are read from disk; never downloaded at runtime. Fully offline.
-- **Android caveat:** `StreamingAssets/` on Android lives inside a compressed `.jar` and cannot be memory-mapped directly. The plugin must copy each model to `Application.persistentDataPath/` on first launch and load from there.
+- **Android caveat:** `StreamingAssets/` on Android lives inside a compressed `.jar` and cannot be memory-mapped directly. `SautiStreamingAssets.ResolveFileAsync` copies each model to `Application.persistentDataPath/SautiAssets/` on first use and loads from there (a passthrough on every other platform). `SautiSpeaker` does this automatically; code that constructs runners from raw paths should resolve them the same way.
 
 ---
 
@@ -268,7 +268,7 @@ LLM output feeds **directly** into Kokoro TTS — markdown or list syntax become
 - **No internet required or used.** Ever.
 - **No user audio or conversation data leaves the device.**
 - **The two runtimes share no memory and no GPU context.** Only `string` flows across the C# boundary.
-- **Android:** load models from `Application.persistentDataPath` (copy from `StreamingAssets` on first launch).
+- **Android:** load models from `Application.persistentDataPath` — `SautiStreamingAssets.ResolveFileAsync` performs the copy from `StreamingAssets` on first use.
 
 ---
 

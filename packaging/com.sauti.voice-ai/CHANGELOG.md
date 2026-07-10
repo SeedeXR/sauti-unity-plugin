@@ -4,7 +4,9 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 ## [Unreleased]
 
-(none yet)
+### Added
+
+- **Android/Quest StreamingAssets copy-out (`SautiStreamingAssets`)** — the runtime half of `BUILD-001`. On Android (including Quest), `StreamingAssets/` lives inside the compressed APK, so `File.Exists`/ONNX Runtime's file loaders could not read any model and nothing loaded on device, despite the documented copy-on-first-launch contract. `SautiStreamingAssets.ResolveFileAsync(relativePath)` now returns a System.IO-readable absolute path on every platform: a passthrough to `Application.streamingAssetsPath` on desktop/iOS/Editor, and on the Android player a one-time streamed copy (UnityWebRequest + `DownloadHandlerFile`, no whole-model managed allocation) to `persistentDataPath/SautiAssets/`, version-stamped so app updates wipe and re-copy. `SautiSpeaker` gains `EnsureRunnerAsync()` and uses it from `SpeakAsync` automatically; the synchronous `EnsureRunner()` now throws a directing error on Android instead of failing with a misleading file-not-found. `Samples~/06-vr-quest-npc` resolves its TTS paths through the new API. STT needs no equivalent — whisper.unity already reads Android StreamingAssets via UnityWebRequest internally.
 
 ## [1.3.3] — 2026-05-28
 
