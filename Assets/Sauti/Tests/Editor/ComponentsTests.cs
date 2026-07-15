@@ -9,11 +9,14 @@
 //     SautiRagTests) so we don't depend on real ONNX / LLMUnity.
 //   • The agent's reply-event path fires OnReplyReady when AcceptReply is called.
 
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Sauti.Components;
 using Sauti.Memory;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Sauti.Tests.Components
 {
@@ -129,6 +132,47 @@ namespace Sauti.Tests.Components
             agent.AcceptReply("Hello, traveller.");
             Assert.AreEqual("Hello, traveller.", received);
             Object.DestroyImmediate(agent.gameObject);
+        }
+
+        // --- SautiSpeaker CTS lifecycle (B6) ---------------------------------
+
+        [Test]
+        public async Task SpeakAsync_ReEntry_DisposesSupersededCts()
+        {
+            var go = new GameObject("test-speaker");
+            go.AddComponent<AudioSource>();
+            var sp = go.AddComponent<SautiSpeaker>();
+            var profile = ScriptableObject.CreateInstance<SautiVoiceProfile>();
+            profile.modelPathRelative = "VoiceAI/tts/does-not-exist.onnx";
+            sp.Profile = profile;
+
+            try
+            {
+                // Each call fails at EnsureRunner (missing model) AFTER creating
+                // its linked CTS — exactly the leak path: the superseded CTS was
+                // cancelled but never disposed, so its registration on the
+                // external token kept it alive. The speaker logs each failure
+                // as an error by design; don't let those fail the test.
+                LogAssert.ignoreFailingMessages = true;
+                await sp.SpeakAsync("one");
+                var ctsField = typeof(SautiSpeaker).GetField(
+                    "_activeCts", BindingFlags.NonPublic | BindingFlags.Instance);
+                Assert.IsNotNull(ctsField, "SautiSpeaker._activeCts field renamed? Update this test.");
+                var first = (CancellationTokenSource)ctsField.GetValue(sp);
+                Assert.IsNotNull(first, "SpeakAsync should have created a linked CTS.");
+
+                await sp.SpeakAsync("two");
+                // CancellationTokenSource.Token throws once the source is disposed.
+                Assert.Throws<System.ObjectDisposedException>(
+                    () => _ = first.Token,
+                    "Re-entrant SpeakAsync must dispose the superseded CTS.");
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = false;
+                Object.DestroyImmediate(go);
+                Object.DestroyImmediate(profile);
+            }
         }
 
         // --- Helpers --------------------------------------------------------
