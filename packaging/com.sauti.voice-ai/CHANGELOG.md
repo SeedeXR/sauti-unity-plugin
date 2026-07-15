@@ -4,7 +4,10 @@ All notable changes to **com.sauti.voice-ai** will be documented here. Format: [
 
 ## [Unreleased]
 
-(none yet)
+### Fixed
+
+- **`SautiSpeaker` no longer freezes the main thread during synthesis** — `SpeakAsync` awaited `KokoroTtsRunner.SynthesizeAsync` directly on the Unity main thread, and the runner (by documented design) runs ONNX inference synchronously on the calling thread, so every `Speak()` stalled rendering for the full synth time (hundreds of ms to seconds — a VR comfort violation on Quest). Inference now runs via `Task.Run` on a thread-pool worker; events (`OnPcmReady`/`OnAudioReady`/`OnSpeakError`) and audio playback still fire on the main thread. A per-speaker gate serialises synthesis (the `InferenceSession` is not concurrent-safe) and also guards `Profile` swaps / `OnDestroy` so the native session can never be disposed mid-inference. `KokoroTtsRunner` itself is unchanged — its sync-on-calling-thread contract still holds for code-only users.
+- **`SautiSpeaker` no longer leaks `CancellationTokenSource`s on re-entrant `Speak` calls** — the superseded linked CTS was cancelled but never disposed, so its registration on the caller's external token kept it alive for that token's lifetime. Re-entry now disposes it; a regression test pins the contract.
 
 ## [1.3.3] — 2026-05-28
 

@@ -48,11 +48,22 @@ namespace Sauti.Components
         private AudioSource _audioSource;
         private CancellationTokenSource _activeCts;
 
+        // Serialises worker-thread synthesis and runner disposal. Inference
+        // must never overlap itself (InferenceSession is not concurrent-safe
+        // per the KokoroTtsRunner header) or a Dispose() of the native session.
+        private readonly SemaphoreSlim _synthGate = new SemaphoreSlim(1, 1);
+
         /// <summary>The voice profile currently in use. Settable from code at runtime.</summary>
         public SautiVoiceProfile Profile
         {
             get => profile;
-            set { profile = value; _runner?.Dispose(); _runner = null; }
+            set
+            {
+                profile = value;
+                var old = _runner;
+                _runner = null;
+                _ = DisposeRunnerWhenIdleAsync(old);
+            }
         }
 
         /// <summary>Audio source the generated clip is routed through.</summary>
@@ -67,7 +78,24 @@ namespace Sauti.Components
         {
             _activeCts?.Cancel();
             _activeCts?.Dispose();
-            _runner?.Dispose();
+            _activeCts = null;
+            var old = _runner;
+            _runner = null;
+            _ = DisposeRunnerWhenIdleAsync(old);
+        }
+
+        /// <summary>
+        /// Dispose a runner only once no synthesis is in flight — disposing
+        /// the native ONNX session while a worker thread is inside Run() is
+        /// a native crash, not a catchable exception.
+        /// </summary>
+        private async Task DisposeRunnerWhenIdleAsync(KokoroTtsRunner runner)
+        {
+            if (runner == null) return;
+            await _synthGate.WaitAsync();
+            try { runner.Dispose(); }
+            catch (Exception ex) { Debug.LogError($"[Sauti][Speaker] Runner dispose failed: {ex}"); }
+            finally { _synthGate.Release(); }
         }
 
         /// <summary>
@@ -80,6 +108,8 @@ namespace Sauti.Components
         /// Synthesise <paramref name="text"/> through the configured voice and, if
         /// <see cref="autoPlayAudio"/>, play it through the attached AudioSource.
         /// Subsequent calls cancel any prior in-flight synthesis on this speaker.
+        /// Inference runs on a thread-pool worker (the main thread stays
+        /// responsive); events and audio playback fire back on the main thread.
         /// </summary>
         public async Task SpeakAsync(string text, CancellationToken externalCt = default)
         {
@@ -92,13 +122,30 @@ namespace Sauti.Components
             }
 
             _activeCts?.Cancel();
+            _activeCts?.Dispose(); // linked CTS must be disposed to unregister from externalCt
             _activeCts = CancellationTokenSource.CreateLinkedTokenSource(externalCt);
             var ct = _activeCts.Token;
 
             try
             {
                 EnsureRunner();
-                float[] pcm = await _runner.SynthesizeAsync(text, profile.voiceId, ct).ConfigureAwait(true);
+                // Capture before the worker hop: a Profile swap mid-synth nulls
+                // _runner / changes voiceId, and Time.frameCount is
+                // main-thread-only API.
+                var runner = _runner;
+                string voiceId = profile.voiceId;
+                int startFrame = Time.frameCount;
+
+                // Inference runs on a thread-pool worker so a multi-second synth
+                // no longer freezes rendering (VR judder). The runner is
+                // documented sync-on-calling-thread; the gate serialises calls.
+                await _synthGate.WaitAsync(ct);
+                float[] pcm;
+                try
+                {
+                    pcm = await Task.Run(() => runner.SynthesizeAsync(text, voiceId, ct), ct).ConfigureAwait(true);
+                }
+                finally { _synthGate.Release(); }
                 if (ct.IsCancellationRequested) return;
 
                 OnPcmReady?.Invoke(pcm);
@@ -106,10 +153,10 @@ namespace Sauti.Components
                 if (autoPlayAudio)
                 {
                     var clip = AudioClip.Create(
-                        name: $"sauti-{profile.voiceId}-{Time.frameCount}",
+                        name: $"sauti-{profile.voiceId}-{startFrame}",
                         lengthSamples: pcm.Length,
                         channels: 1,
-                        frequency: _runner.SampleRate,
+                        frequency: runner.SampleRate,
                         stream: false);
                     clip.SetData(pcm, 0);
                     AudioSource.clip = clip;
